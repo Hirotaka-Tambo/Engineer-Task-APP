@@ -1,4 +1,4 @@
-# 🚀 Task Management App (Notion-like Sidebar)
+# Task Management App (Notion-like Sidebar)
 
 本アプリは、個人・グループ・チーム単位でのタスク管理を行うWebアプリです。  
 UIは **Notion** を参考にし、タスクの登録・管理・カレンダー表示・モーダルでの詳細編集をサポートします。  
@@ -75,6 +75,48 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ## 📁 ディレクトリ構成 (React)/後述
 
+src/
+│
+├─ components/              # 共通コンポーネント
+│  ├─ Sidebar/              
+│  │   ├─ Sidebar.tsx        # サイドバーのメインコンポーネント
+│  │   └─ SidebarItem.tsx    # サイドバーの各項目
+│  │
+│  ├─ TaskCard/              
+│  │   ├─ TaskCard.tsx       # タスク表示用カード
+│  │   └─ PriorityBadge.tsx  # 優先度を色で示すバッジ
+│  │
+│  ├─ TaskModal/             
+│  │   └─ TaskModal.tsx      # タスクの詳細表示・編集用モーダル
+│  │
+│  ├─ TaskForm/              
+│  │   └─ TaskForm.tsx       # タスクの入力・編集フォーム
+│  │
+│  ├─ Tabs/                  
+│  │   └─ Tabs.tsx           # タブ切り替えコンポーネント
+│  │
+│  └─ Calendar/              
+│      └─ CalendarView.tsx   # カレンダー表示コンポーネント
+│
+├─ pages/                   # ページコンポーネント
+│  ├─ SoloTask.tsx           # 個人タスク管理ページ
+│  ├─ GroupTask.tsx          # グループタスク管理ページ
+│  ├─ TeamTask.tsx           # チームタスク管理ページ
+│  ├─ AdminPage.tsx          # 管理者向けページ
+│  └─ Login.tsx              # ログインページ
+│
+├─ services/                # API通信および外部サービス関連
+│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
+│  └─ authService.ts         # 認証関連のサービス
+│
+├─ hooks/                   # カスタムフック
+│  └─ useTasks.ts            # タスクデータ取得用のカスタムフック
+│
+├─ utils/                   # 共通ユーティリティ関数
+│  └─ dateUtils.ts           # 日付操作関連のヘルパー関数
+│
+├─ App.tsx                  # アプリケーションのルートコンポーネント
+└─ main.tsx                 # アプリケーションのエントリーポイント
 
 
 
