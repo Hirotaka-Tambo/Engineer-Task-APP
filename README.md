@@ -78,6 +78,9 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 src/
 │
 ├─ components/              # 共通コンポーネント
+│  ├─ Calender/             
+│  │   └─ CalenderView.tsx   # カレンダー表示コンポーネント
+│  │
 │  ├─ Sidebar/              
 │  │   ├─ Sidebar.tsx        # サイドバーのメインコンポーネント
 │  │   └─ SidebarItem.tsx    # サイドバーの各項目
@@ -92,22 +95,19 @@ src/
 │  ├─ TaskForm/              
 │  │   └─ TaskForm.tsx       # タスクの入力・編集フォーム
 │  │
-│  ├─ Tabs/                  
-│  │   └─ Tabs.tsx           # タブ切り替えコンポーネント
-│  │
-│  └─ Calendar/              
-│      └─ CalendarView.tsx   # カレンダー表示コンポーネント
+│  └─ Tabs/                  
+│      └─ Tabs.tsx           # タブ切り替えコンポーネント
 │
 ├─ pages/                   # ページコンポーネント
-│  ├─ SoloTask.tsx           # 個人タスク管理ページ
-│  ├─ GroupTask.tsx          # グループタスク管理ページ
-│  ├─ TeamTask.tsx           # チームタスク管理ページ
 │  ├─ AdminPage.tsx          # 管理者向けページ
-│  └─ Login.tsx              # ログインページ
+│  ├─ GroupTask.tsx          # グループタスク管理ページ
+│  ├─ Login.tsx              # ログインページ
+│  ├─ SoloTask.tsx           # 個人タスク管理ページ
+│  └─ TeamTask.tsx           # チームタスク管理ページ
 │
 ├─ services/                # API通信および外部サービス関連
-│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
-│  └─ authService.ts         # 認証関連のサービス
+│  ├─ authService.ts         # 認証関連のサービス
+│  └─ supabaseClient.ts      # Supabaseクライアントの初期化
 │
 ├─ hooks/                   # カスタムフック
 │  └─ useTasks.ts            # タスクデータ取得用のカスタムフック
@@ -115,8 +115,12 @@ src/
 ├─ utils/                   # 共通ユーティリティ関数
 │  └─ dateUtils.ts           # 日付操作関連のヘルパー関数
 │
+├─ assets/                  # 静的アセット
+│  └─ react.svg             # Reactロゴ
+│
 ├─ App.tsx                  # アプリケーションのルートコンポーネント
-└─ main.tsx                 # アプリケーションのエントリーポイント
+├─ main.tsx                 # アプリケーションのエントリーポイント
+└─ vite-env.d.ts            # Vite環境の型定義
 ```
 
 
