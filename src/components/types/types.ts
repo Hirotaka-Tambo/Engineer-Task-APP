@@ -11,9 +11,13 @@ export interface Task {
     id: number;
     text: string;
     done: boolean;
-    priority: Priority;
-    tag: string;
+    priority: Priority; // 優先度
+    tag: string;     // 言語カテゴリ
+    assign: string; // 配属(タスク担当者)*soloTaskには表示しないようにする
+    oneLine: string; // 1行メモ
+    memo: string; // 備考欄 *モーダルで表示
     // icon: string; 画像ファイルは後々収集して再定義。(SVGで記述。)
+    deadline: Date; // 締め切り
     createdAt: Date;
 }
 
