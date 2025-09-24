@@ -1,3 +1,10 @@
+/* tailwindcssの宣言
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+*/
+
+
 /* リセットとベーススタイル */
 * {
   margin: 0;
