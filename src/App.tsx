@@ -1,6 +1,6 @@
 //import React from 'react';(後々、コメントアウト解除)
 //tailwind cssを利用
-
+// コメントアウトiiiiiiiii
 // 必ずdevelopブランチに向けてadd/commit/pushすること!!
 
 function App() {
