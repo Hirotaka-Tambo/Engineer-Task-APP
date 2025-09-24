@@ -1,5 +1,5 @@
 //import React from 'react';(後々、コメントアウト解除)
-import './App.css'; //tailwind cssを利用
+//tailwind cssを利用
 
 function App() {
   return (
