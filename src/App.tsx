@@ -4,7 +4,7 @@
 function App() {
   return (
     // 全体コンテナ
-    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] p-4 md:p-12">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] p-2 md:p-4">
       {/* 左サイドバー */}
       <div className="w-full md:w-[280px] bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 md:p-10 m-0 md:m-4 shadow-xl border border-white border-opacity-60 transition-all duration-300 ease-in-out">
         <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible">
@@ -27,7 +27,7 @@ function App() {
       </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex flex-col p-4 md:p-8">
+      <div className="flex-1 flex flex-col p-2 md:p-4">
         {/* 上部ヘッダー */}
         <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-6 md:p-8 mb-8 flex justify-between items-center shadow-xl border border-white border-opacity-60">
           <h1 className="text-xl md:text-3xl font-extrabold text-gray-800 m-0">Task Management</h1>
