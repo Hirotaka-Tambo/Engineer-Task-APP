@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import { Priority, Task } from "../types/types";
+import type{ Priority, Task } from "../types/types";
 
 
 // taskの初期状態
@@ -10,6 +10,7 @@ const initialTask : NewTask = {
     done: false,
     priority: 1, // 「低」
     tag:'',
+    // iconも後々の追記が必須
     assign:'',
     oneLine:'',
     memo:'',
@@ -23,14 +24,23 @@ interface TaskFromProps{
 const TaskForm: React.FC<TaskFromProps> = ({ onAddTask})=>{
     const [task,setTask] = useState<NewTask>(initialTask);
 
+    // 文字列関連(text/tag/assign/oneLine/memo)
     const handleInputChange= (e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>)=>{
-        const{name, value,type,checked} = e.target;
+        // 文字列
+        const{name, value,type} = e.target;
+
+        // checked(done)は、HTMLInputElementにしか存在しないため、限定して記述する必要あり
+        const inputValue = type === 'checkbox' && e.target instanceof HTMLInputElement
+            ? e.target.checked
+            : value;
+
         setTask(prevTask =>({
             ...prevTask,
-            [name]: type === 'checkbox' ? checked : value,
+            [name]: inputValue
         }));
     };
 
+    // 優先度はセレクトタグ
     const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setTask(prevTask => ({
             ...prevTask,
@@ -38,6 +48,7 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask})=>{
         }));
     };
 
+    // 締め切りの日付設定
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTask(prevTask => ({
             ...prevTask,
