@@ -21,5 +21,8 @@ export interface Task {
     createdAt: Date;
 }
 
+// ユーザー入力用の型定義
+export type NewTask = Omit<Task, 'id' | 'createdAt'>; 
+
 // 画像ファイルは後々収集して再定義。(SVGで記述。)
 // const tsIcon: string = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#3178C6" d="..."></path></svg>`;
