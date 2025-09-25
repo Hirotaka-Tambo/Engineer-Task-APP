@@ -5,7 +5,6 @@ import type { SidebarProps, ProjectInfo } from '../types/types';
 const Sidebar: React.FC<SidebarProps> = ({
   items,
   activeItemId,
-  onItemClick,
   className = ''
 }) => {
   // プロジェクト情報（後でpropsから受け取るように変更予定）
@@ -14,13 +13,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     name: 'Project Name',
     description: 'Task Management App',
     color: '#3B62FF'
-  };
-
-  // アイテムクリック時のハンドラー
-  const handleItemClick = (item: any) => {
-    if (onItemClick) {
-      onItemClick(item);
-    }
   };
 
 
@@ -55,7 +47,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             key={item.id}
             item={item}
             isActive={activeItemId === item.id}
-            onClick={handleItemClick}
           />
         ))}
       </div>

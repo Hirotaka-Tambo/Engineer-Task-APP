@@ -8,12 +8,12 @@ interface PriorityBadgeProps {
 const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => {
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case 1:
-        return 'bg-red-500';
+      case 1: //低
+        return 'bg-green-500';
       case 2:
         return 'bg-yellow-500';
       case 3:
-        return 'bg-green-500';
+        return 'bg-red-500';
       default:
         return 'bg-gray-500';
     }
@@ -22,11 +22,11 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => {
   const getPriorityLabel = (priority: Priority) => {
     switch (priority) {
       case 1:
-        return '高';
+        return '低';
       case 2:
         return '中';
       case 3:
-        return '低';
+        return '高';
       default:
         return '未設定';
     }
