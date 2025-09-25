@@ -16,14 +16,19 @@ export interface Task {
     assign: string; // 配属(タスク担当者)*soloTaskには表示しないようにする
     oneLine: string; // 1行メモ
     memo: string; // 備考欄 *モーダルで表示
-    // relatedUrl?: string; // 関連URL（例: GitHub Issue）
+    relatedUrl?: string; // 関連URL（例: GitHub Issue）
     // icon: string; 画像ファイルは後々収集して再定義。(SVGで記述。)
     deadline: Date; // 締め切り
     createdAt: Date;
 }
 
 // ユーザー入力用の型定義
-export type NewTask = Omit<Task, 'id' | 'createdAt'>; 
+export type NewTask = Omit<Task, 'id' | 'createdAt'>;
+
+// 拡張されたTask型（types.tsの基本型に追加フィールドを加えたもの）
+export interface ExtendedTask extends Task {
+  status?: TaskStatus;
+} 
 
 // サイドバー関連の型定義
 // サイドバーのメニューアイテムの基本型

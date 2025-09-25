@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
 import TaskCard from "../components/TaskCard/TaskCard";
-import TaskForm from "../components/TaskForm/TaskForm";
-import TaskModal from ".._components/TaskModal/TaskModal";
+import TaskModal from "../components/TaskModal/TaskModal";
 import { useTasks } from "../hooks/useTasks"
-import type { Task } from "../components/types/types";
+import type { Task, ExtendedTask } from "../components/types/types";
 
-const SoloTask = () => {
-    const {tasks, addTask, deleteTask, toggleTaskDone, updateTask} = useTasks();
+// SoloTaskのプロパティ型定義
+interface SoloTaskProps {
+  tasks: ExtendedTask[];
+  onTaskClick?: (task: ExtendedTask) => void;
+}
+
+const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
+    const {deleteTask, toggleTaskDone, updateTask} = useTasks();
 
     // 編集中のタスクを保持
-    const [editingTask,setEditingTask] = useState<Task | null>(null);
+    const [editingTask,setEditingTask] = useState<ExtendedTask | null>(null);
+
+    // タスククリック時のハンドラー
+    const handleTaskClick = (task: ExtendedTask) => {
+        if (onTaskClick) {
+            onTaskClick(task);
+        } else {
+            // フォールバック: ローカルでモーダル表示
+            setEditingTask(task);
+        }
+    };
 
     // 編集ボタン押下
     const handleEditTask = (taskToEdit : Task)=>{
@@ -31,18 +46,15 @@ const SoloTask = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text -3x1 font-bold text-center text-gray-800 mb-8">
-                個人タスク
-            </h1>
-            <TaskForm onAddTask={addTask} />
-            <div className="mt-8 grid gp-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tasks.length === 0?(
-                    <p className="text-center text-gray-500">タスクを追加してください。</p>
+                    <p className="text-center text-gray-500 col-span-full">タスクを追加してください。</p>
                 ):(
                     tasks.map((task) =>(
                         <TaskCard
                             key = {task.id}
                             task={task}
+                            onClick={handleTaskClick}
                             onToggleDone={toggleTaskDone}
                             onDelete={deleteTask}
                             onEdit={handleEditTask}
@@ -51,8 +63,8 @@ const SoloTask = () => {
                 )}
             </div>
 
-            {/*TaskModalの追加*/}
-            {editingTask &&(
+            {/*TaskModalの追加（フォールバック用）*/}
+            {editingTask && !onTaskClick && (
                 <TaskModal
                 task = {editingTask}
                 isOpen = {!!editingTask}
