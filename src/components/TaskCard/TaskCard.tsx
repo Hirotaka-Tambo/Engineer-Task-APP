@@ -119,7 +119,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           
           {task.deadline && (
             <span className="text-xs text-gray-600 bg-white bg-opacity-30 px-2 py-1 rounded-lg border border-white border-opacity-40">
-              期限: {task.deadline}
+              期限: {formatDate(task.deadline)}
             </span>
           )}
         </div>
