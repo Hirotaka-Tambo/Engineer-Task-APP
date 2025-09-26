@@ -1,0 +1,35 @@
+// タスクの優先度を表すリテラル型
+export type Priority = 1 | 2 | 3;
+
+// タスクの状態を表す型
+export type TaskStatus = 'todo' | 'in-progress' | 'done';
+
+/**
+ * @description タスクの基本要素を定義する型
+ */
+export interface Task {
+    id: number; // taskCardには非表示にすること!!
+    text: string;
+    status: TaskStatus; // タスクの状態(上記で限定的に型を指定)
+    priority: Priority; // 優先度(上記で限定的に型を指定)
+    tag: string;     // fix/addなど、タスクの役割の明確化
+    assign: string; // 配属(タスク担当者)*soloTaskには表示しないようにする
+    oneLine: string; // 1行メモ
+    memo: string; // 備考欄 *モーダルで表示
+    relatedUrl?: string; // 関連URL（例: GitHub Issue）
+    icon: string;  // 画像ファイルは後々収集して再定義。(SVGで記述。)
+    deadline: Date; // 締め切り
+    createdAt: Date;
+}
+
+// ユーザー入力用の型定義
+// タスクidのみを省略(idはUI上不必要のため)
+export type NewTask = Omit<Task, 'id'>;
+
+// 拡張されたTask型（types.tsの基本型に追加フィールドを加えたもの）
+export interface ExtendedTask extends Task {
+  status: TaskStatus;
+} 
+
+// 画像ファイルは後々収集して再定義。(SVGで記述。)
+// const tsIcon: string = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#3178C6" d="..."></path></svg>`;
