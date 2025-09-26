@@ -45,12 +45,27 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
   }, [task]);
 
 
-  // モーダルを閉じる処理
-  const handleClose = () => {
-    if (editedTask && task) {
+  // キャンセル処理（保存せずに閉じる）
+  const handleCancel = () => {
+    onClose();
+  };
+
+  // 保存処理
+  const handleSave = () => {
+    if (editedTask) {
+      // バリデーションエラーがある場合は保存しない
+      if (Object.keys(errors).length > 0) {
+        return;
+      }
+      
+      // タイトルが空の場合は保存しない
+      if (!editedTask.text || editedTask.text.trim() === '') {
+        setErrors(prev => ({ ...prev, text: 'タイトルは必須です' }));
+        return;
+      }
+      
       onSave(editedTask);
     }
-    onClose();
   };
 
   // 入力値の変更ハンドラー
@@ -99,7 +114,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             {task ? 'タスク詳細・編集' : '新規タスク作成'}
           </h2>
           <button
-            onClick={handleClose}
+            onClick={handleCancel}
             className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-2"
             aria-label="閉じる"
           >
@@ -229,28 +244,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             </div>
           </div>
 
-          {/* 完了状態 */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">完了状態</span>
-            <div className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id="done"
-                checked={editedTask.done}
-                onChange={(e) => handleInputChange('done', e.target.checked)}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="done" className="text-sm font-medium text-gray-700">
-                このタスクは完了しました
-              </label>
-            </div>
-          </div>
         </div>
 
         {/* フッター */}
-        <div className="flex justify-end p-8 border-t border-gray-200 bg-gray-50 bg-opacity-50">
+        <div className="flex justify-end gap-4 p-8 border-t border-gray-200 bg-gray-50 bg-opacity-50">
           <button
-            onClick={handleClose}
+            onClick={handleCancel}
+            className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 font-medium"
+          >
+            キャンセル
+          </button>
+          <button
+            onClick={handleSave}
             className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
           >
             {task ? '保存して閉じる' : 'タスクを作成'}

@@ -6,12 +6,16 @@ import type { Task, ExtendedTask } from "../components/types/types";
 
 // SoloTaskのプロパティ型定義
 interface SoloTaskProps {
-    tasks: ExtendedTask[];
-    onTaskClick?: (task: ExtendedTask) => void;
+  tasks: ExtendedTask[];
+  onTaskClick?: (task: ExtendedTask) => void;
+  onToggleDone?: (taskId: number) => void;
 }
 
-const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
-    const {deleteTask, toggleTaskDone, updateTask} = useTasks();
+const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone }) => {
+    const {toggleTaskDone: localToggleTaskDone, updateTask} = useTasks();
+    
+    // 外部から渡されたonToggleDoneを使用、なければローカルのtoggleTaskDoneを使用
+    const handleToggleDone = onToggleDone || localToggleTaskDone;
 
     // 編集中のタスクを保持
     const [editingTask,setEditingTask] = useState<ExtendedTask | null>(null);
@@ -26,10 +30,6 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
         }
     };
 
-    // 編集ボタン押下
-    const handleEditTask = (taskToEdit : Task)=>{
-        setEditingTask(taskToEdit);
-    }
 
     // モーダルを閉じる
     const closeModal = () =>{
@@ -55,9 +55,7 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
                             key = {task.id}
                             task={task}
                             onClick={handleTaskClick}
-                            onToggleDone={toggleTaskDone}
-                            onDelete={deleteTask}
-                            onEdit={handleEditTask}
+                            onToggleDone={handleToggleDone}
                         />
                     ))
                 )}
