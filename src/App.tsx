@@ -39,7 +39,7 @@ const App = ()=>{
       </Route>
 
       {/*すべてのパスにマッチしない(404Found)*/}
-      <Route path = "*" element={<div>404 Not Foound</div>}/>
+      <Route path = "*" element={<div>404 Not Found</div>}/>
 
     </Routes>
   );
