@@ -8,10 +8,14 @@ import type { Task, ExtendedTask } from "../components/types/task";
 interface SoloTaskProps {
   tasks: ExtendedTask[];
   onTaskClick?: (task: ExtendedTask) => void;
+  onToggleDone?: (taskId: number) => void;
 }
 
-const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
-  const { deleteTask, toggleTaskDone, updateTask } = useTasks();
+const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone }) => {
+    const {toggleTaskDone: localToggleTaskDone, updateTask} = useTasks();
+    
+    // 外部から渡されたonToggleDoneを使用、なければローカルのtoggleTaskDoneを使用
+    const handleToggleDone = onToggleDone || localToggleTaskDone;
 
   // 編集中のタスクを保持
   const [editingTask, setEditingTask] = useState<ExtendedTask | null>(null);
@@ -26,10 +30,6 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
     }
   };
 
-  // 編集ボタン押下
-  const handleEditTask = (taskToEdit: Task) => {
-    setEditingTask(taskToEdit);
-  };
 
   // モーダルを閉じる
   const closeModal = () => {
@@ -42,26 +42,22 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
     closeModal();
   };
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tasks.length === 0 ? (
-          <p className="text-center text-gray-500 col-span-full">
-            タスクを追加してください。
-          </p>
-        ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onClick={handleTaskClick}
-              onToggleDone={toggleTaskDone}
-              onDelete={deleteTask}
-              onEdit={handleEditTask}
-            />
-          ))
-        )}
-      </div>
+    return (
+        <div className="container mx-auto p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {tasks.length === 0?(
+                    <p className="text-center text-gray-500 col-span-full">タスクを追加してください。</p>
+                ):(
+                    tasks.map((task) =>(
+                        <TaskCard
+                            key = {task.id}
+                            task={task}
+                            onClick={handleTaskClick}
+                            onToggleDone={handleToggleDone}
+                        />
+                    ))
+                )}
+            </div>
 
       {/*TaskModalの追加（フォールバック用）*/}
       {editingTask && !onTaskClick && (

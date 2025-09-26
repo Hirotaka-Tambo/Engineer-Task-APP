@@ -7,39 +7,40 @@ interface SidebarItemProps {
   item: SidebarItemType;
   isActive?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({
-  item,
-  isActive = false,
-  className = "",
+const SidebarItem: React.FC<SidebarItemProps> = ({ 
+  item, 
+  isActive = false, 
+  className = '',
+  onClick
 }) => {
   // アイテムクリック時のハンドラー
   const handleClick = () => {
     if (item.disabled) return;
-
-    if (item.onClick) {
+    
+    if (onClick) {
+      onClick();
+    } else if (item.onClick) {
       item.onClick();
     }
   };
 
   // アクティブ状態に応じたスタイルクラスを生成
   const getItemClasses = () => {
-    const baseClasses =
-      "p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium whitespace-nowrap md:transform-none";
-    const activeClasses = isActive
-      ? "bg-blue-600text-white font-semibold shadow-md"
-      : "hover:bg-white hover:bg-opacity-50 hover:text-gray-900 hover:font-semibold";
-    const disabledClasses = item.disabled
-      ? "opacity-50 cursor-not-allowed"
-      : "hover:translate-x-1";
-
+    const baseClasses = 'p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium whitespace-nowrap md:transform-none';
+    const activeClasses = isActive 
+      ? 'bg-blue-600 text-white font-semibold shadow-md' 
+      : 'hover:bg-white hover:bg-opacity-50 hover:text-gray-900 hover:font-semibold';
+    const disabledClasses = item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:translate-x-1';
+    
     return `${baseClasses} ${activeClasses} ${disabledClasses} ${className}`;
   };
 
   // コンテンツ(サイドバー)全体をラップするコンポーネント
   const content = (
-    <div className="flex item-center gap-3">
+    <div className='flex items-center gap-3'>
       {/*アイコンの表示*/}
       {item.icon && (
         <div
@@ -49,10 +50,13 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       )}
 
       {/*ラベル表示 */}
-      {item.badge && (
-        <span className='"bg-blue500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center'>
-          {item.badge}
-        </span>
+      <span className="flex-1">{item.label}</span>
+
+      {/*バッジ表示 */}
+      {item.badge &&(
+      <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+        {item.badge}
+      </span>
       )}
     </div>
   );

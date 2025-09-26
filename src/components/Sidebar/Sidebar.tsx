@@ -5,7 +5,8 @@ import type { SidebarProps, ProjectInfo } from "../types/sidebar";
 const Sidebar: React.FC<SidebarProps> = ({
   items,
   activeItemId,
-  className = "",
+  onItemClick,
+  className = ''
 }) => {
   // プロジェクト情報（後でpropsから受け取るように変更予定）
   const projectInfo: ProjectInfo = {
@@ -50,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             key={item.id}
             item={item}
             isActive={activeItemId === item.id}
+            onClick={onItemClick ? () => onItemClick(item) : undefined}
           />
         ))}
       </div>

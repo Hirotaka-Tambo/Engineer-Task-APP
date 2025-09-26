@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { Task, NewTask } from "../components/types/task";
+import type { Task, NewTask, ExtendedTask } from "../components/types/types";
 
 // テストのための仮データ
 
@@ -21,14 +21,18 @@ const initialTasks: Task[] = [
 export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  // タスクの追加
-  const addTask = useCallback((newTask: NewTask) => {
-    const id = Date.now(); // 仮のIDを発行
-    setTasks((prevTasks) => [
-      ...prevTasks,
-      { ...newTask, id, createdAt: new Date() },
-    ]);
-  }, []);
+    // タスクの追加
+    const addTask = useCallback((newTask: NewTask | ExtendedTask) => {
+        const id = Date.now(); // 仮のIDを発行
+        const createdAt = new Date();
+        
+        // ExtendedTaskの場合は既存のデータを使用、NewTaskの場合は新しいデータを作成
+        const taskToAdd = 'status' in newTask 
+            ? { ...newTask, id, createdAt } as Task
+            : { ...newTask, id, createdAt } as Task;
+            
+        setTasks(prevTasks => [...prevTasks, taskToAdd]);
+    }, []);
 
   // タスクの削除
   const deleteTask = useCallback((id: number) => {
