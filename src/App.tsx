@@ -1,5 +1,5 @@
 import React from "react";
-import {Routes, Route, Navigate} from "react-router-dom";
+import {Routes, Route, Navigate, useOutletContext} from "react-router-dom";
 
 import Login from "./pages/Login";
 import SoloTask from "./pages/SoloTask";
@@ -8,12 +8,14 @@ import TeamTask from "./pages/TeamTask";
 import AdminPage from "./pages/AdminPage";
 
 import MainLayout from "./components/Layout/MainLayout";
+import type { OutletContextType } from "./components/types/outletContext";
 
 const App = ()=>{
 
   // 共通レイアウト使用可否の認証判定(supabaseの際に再編集必須)
   const isAuthenticated = true;
 
+  // ルートとしての
   return(
     <Routes>
       <Route path = "/login" element ={<Login />} />
@@ -26,12 +28,12 @@ const App = ()=>{
 
         {/* MainLayout の中の <Outlet> に描画される子ルートを定義 */}
         {/* / にアクセスしたら /solo へリダイレクト */}
-        <Route index element={<Navigate to = "/solo" />} />
+        <Route index element={<Navigate to = "/solo-task" />} />
 
         {/*各ページ*/}
-        <Route path = "solo" element={<SoloTask />} />
-        <Route path = "group" element={<GroupTask />} />
-        <Route path = "team" element = {<TeamTask />} />
+        <Route path = "solo-task" element={<SoloTaskWrapper />} />
+        <Route path = "group-task" element={<GroupTask />} />
+        <Route path = "team-task" element = {<TeamTask />} />
         <Route path = "admin" element = {<AdminPage />}/>
 
       </Route>
@@ -41,6 +43,18 @@ const App = ()=>{
 
     </Routes>
   );
+};
+
+const SoloTaskWrapper = () =>{
+  const outletContext = useOutletContext<OutletContextType>();
+
+  return(
+    <SoloTask
+    tasks={ outletContext.tasks}
+    onTaskClick={outletContext.onTaskClick}
+    />
+  );
+
 };
 
 export default App;

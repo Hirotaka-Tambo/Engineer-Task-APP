@@ -6,8 +6,8 @@ import type { Task, ExtendedTask } from "../components/types/types";
 
 // SoloTaskのプロパティ型定義
 interface SoloTaskProps {
-  tasks: ExtendedTask[];
-  onTaskClick?: (task: ExtendedTask) => void;
+    tasks: ExtendedTask[];
+    onTaskClick?: (task: ExtendedTask) => void;
 }
 
 const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick }) => {
