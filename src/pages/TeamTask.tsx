@@ -1,5 +1,5 @@
-import React from 'react';
-import type { ExtendedTask } from '../components/types/types';
+import React from "react";
+import type { ExtendedTask } from "../components/types/task";
 
 // TeamTaskのプロパティ型定義
 interface TeamTaskProps {

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import Sidebar from '../Sidebar/Sidebar';
-import TaskModal from '../TaskModal/TaskModal';
-import { useTasks } from '../../hooks/useTasks';
-import type { ExtendedTask, SidebarItem } from '../types/types';
-import type { OutletContextType } from '../types/outletContext';
+import React, { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import Sidebar from "../Sidebar/Sidebar";
+import TaskModal from "../TaskModal/TaskModal";
+import { useTasks } from "../../hooks/useTasks";
+import type { ExtendedTask } from "../types/task";
+import type { SidebarItem } from "../types/sidebar";
+import type { OutletContextType } from "../types/outletContext";
 
 const MainLayout : React.FC = () =>{
   const { tasks, addTask, deleteTask, toggleTaskDone, updateTask} = useTasks();
@@ -43,14 +44,14 @@ const MainLayout : React.FC = () =>{
   // タスクをクリック(詳細閲覧と 編集時)
   const handleTaskClick = (task:ExtendedTask) =>{
     setEditingTask(task);
-  }
+  };
 
   // 新規作成用のモーダルを開く
-  const openCreateModal = () =>{
+  const openCreateModal = () => {
     setEditingTask({
       id: 0,
-      text: '',
-      done : false,
+      text: "",
+      done: false,
       priority: 2,
       tag: "",
       assign: "",
@@ -64,7 +65,7 @@ const MainLayout : React.FC = () =>{
   };
 
   // モーダルを閉じる
-  const closeModal= () =>{
+  const closeModal = () => {
     setEditingTask(null);
   };
 
@@ -78,10 +79,10 @@ const MainLayout : React.FC = () =>{
       updateTask(updatedTask);
     }
     closeModal();
-  }
+  };
 
   // Outletへの受け渡し
-  const outletContext: OutletContextType ={
+  const outletContext: OutletContextType = {
     tasks,
     onTaskClick: handleTaskClick,
     deleteTask,
@@ -137,6 +138,5 @@ const MainLayout : React.FC = () =>{
       </main>
     </div>
   );
-
 };
 export default MainLayout;

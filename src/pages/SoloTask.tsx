@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import TaskCard from "../components/TaskCard/TaskCard";
 import TaskModal from "../components/TaskModal/TaskModal";
-import { useTasks } from "../hooks/useTasks"
-import type { Task, ExtendedTask } from "../components/types/types";
+import { useTasks } from "../hooks/useTasks";
+import type { Task, ExtendedTask } from "../components/types/task";
 
 // SoloTaskのプロパティ型定義
 interface SoloTaskProps {
@@ -17,32 +17,30 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone })
     // 外部から渡されたonToggleDoneを使用、なければローカルのtoggleTaskDoneを使用
     const handleToggleDone = onToggleDone || localToggleTaskDone;
 
-    // 編集中のタスクを保持
-    const [editingTask,setEditingTask] = useState<ExtendedTask | null>(null);
+  // 編集中のタスクを保持
+  const [editingTask, setEditingTask] = useState<ExtendedTask | null>(null);
 
-    // タスククリック時のハンドラー
-    const handleTaskClick = (task: ExtendedTask) => {
-        if (onTaskClick) {
-            onTaskClick(task);
-        } else {
-            // フォールバック: ローカルでモーダル表示
-            setEditingTask(task);
-        }
-    };
-
-
-    // モーダルを閉じる
-    const closeModal = () =>{
-        setEditingTask(null);
+  // タスククリック時のハンドラー
+  const handleTaskClick = (task: ExtendedTask) => {
+    if (onTaskClick) {
+      onTaskClick(task);
+    } else {
+      // フォールバック: ローカルでモーダル表示
+      setEditingTask(task);
     }
-    
-    // モーダルでタスクが更新された時のハンドラ
-    const handleUpdateTask = (updatedTask: Task)=>{
-        updateTask(updatedTask);
-        closeModal();
-    }
+  };
 
 
+  // モーダルを閉じる
+  const closeModal = () => {
+    setEditingTask(null);
+  };
+
+  // モーダルでタスクが更新された時のハンドラ
+  const handleUpdateTask = (updatedTask: Task) => {
+    updateTask(updatedTask);
+    closeModal();
+  };
 
     return (
         <div className="container mx-auto p-4">
@@ -61,18 +59,17 @@ const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone })
                 )}
             </div>
 
-            {/*TaskModalの追加（フォールバック用）*/}
-            {editingTask && !onTaskClick && (
-                <TaskModal
-                task = {editingTask}
-                isOpen = {!!editingTask}
-                onClose = {closeModal}
-                onSave = {handleUpdateTask}
-                />
-            )}
-
-        </div>
-    );
+      {/*TaskModalの追加（フォールバック用）*/}
+      {editingTask && !onTaskClick && (
+        <TaskModal
+          task={editingTask}
+          isOpen={!!editingTask}
+          onClose={closeModal}
+          onSave={handleUpdateTask}
+        />
+      )}
+    </div>
+  );
 };
 
 export default SoloTask;

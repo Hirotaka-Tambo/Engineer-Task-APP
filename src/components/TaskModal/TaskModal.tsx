@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import type { Task, TaskStatus } from '../types/types';
+import React, { useState, useEffect } from "react";
+import type { Task, TaskStatus } from "../types/task";
 
 // 拡張されたTask型（types.tsの基本型に追加フィールドを加えたもの）
 export interface ExtendedTask extends Task {
@@ -14,7 +14,12 @@ interface TaskModalProps {
   onSave: (updatedTask: ExtendedTask) => void;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
+const TaskModal: React.FC<TaskModalProps> = ({
+  task,
+  isOpen,
+  onClose,
+  onSave,
+}) => {
   // 編集用のタスクデータ（ローカル状態）
   const [editedTask, setEditedTask] = useState<ExtendedTask | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -28,17 +33,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
       // 新規作成時のデフォルト値
       setEditedTask({
         id: 0,
-        text: '',
+        text: "",
         done: false,
         priority: 2,
-        tag: '',
-        assign: '',
-        oneLine: '',
-        memo: '',
-        relatedUrl: '',
+        tag: "",
+        assign: "",
+        oneLine: "",
+        memo: "",
+        relatedUrl: "",
         deadline: new Date(),
         createdAt: new Date(),
-        status: 'todo'
+        status: "todo",
       });
       setErrors({});
     }
@@ -74,15 +79,15 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
     setEditedTask((prev: ExtendedTask | null) => ({
       ...prev!,
-      [field]: value
+      [field]: value,
     }));
 
     // バリデーション（タイトルのみ必須）
-    if (field === 'text') {
-      if (value.trim() === '') {
-        setErrors(prev => ({ ...prev, text: 'タイトルは必須です' }));
+    if (field === "text") {
+      if (value.trim() === "") {
+        setErrors((prev) => ({ ...prev, text: "タイトルは必須です" }));
       } else {
-        setErrors(prev => {
+        setErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors.text;
           return newErrors;
@@ -93,7 +98,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
   // 日付フォーマット関数
   const formatDateForInput = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   // 日付文字列をDateオブジェクトに変換
@@ -124,125 +129,145 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
           </button>
         </div>
 
-        {/* メインコンテンツ */}
-        <div className="p-8 space-y-8">
-          {/* タスク名（必須） */}
-          <div>
+      {/* メインコンテンツ */}
+      <div className="p-8 space-y-8">
+        {/* タスク名（必須） */}
+        <div>
+          <input
+            type="text"
+            value={editedTask.text}
+            onChange={(e) => handleInputChange("text", e.target.value)}
+            className={`w-full text-2xl font-bold border-none outline-none bg-transparent placeholder-gray-400 ${
+              errors.text ? "text-red-500" : "text-gray-900"
+            }`}
+            placeholder="タスク名を入力してください"
+          />
+          {errors.text && (
+            <p className="mt-2 text-sm text-red-500">{errors.text}</p>
+          )}
+        </div>
+
+        {/* プロパティセクション */}
+        <div className="space-y-6">
+          {/* 残り日数バッジ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">残り日数</span>
+            <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+              残り
+              {Math.ceil(
+                (editedTask.deadline.getTime() - new Date().getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )}
+              日
+            </span>
+          </div>
+
+          {/* 優先度バッジ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">優先度</span>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                editedTask.priority === 1
+                  ? "bg-red-100 text-red-800"
+                  : editedTask.priority === 2
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-green-100 text-green-800"
+              }`}
+            >
+              {editedTask.priority === 1
+                ? "高"
+                : editedTask.priority === 2
+                ? "中"
+                : "低"}
+            </span>
+          </div>
+
+          {/* 担当者 */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">担当者</span>
             <input
               type="text"
-              value={editedTask.text}
-              onChange={(e) => handleInputChange('text', e.target.value)}
-              className={`w-full text-2xl font-bold border-none outline-none bg-transparent placeholder-gray-400 ${
-                errors.text ? 'text-red-500' : 'text-gray-900'
-              }`}
-              placeholder="タスク名を入力してください"
+              value={editedTask.assign}
+              onChange={(e) => handleInputChange("assign", e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+              placeholder="担当者名を入力"
             />
-            {errors.text && (
-              <p className="mt-2 text-sm text-red-500">{errors.text}</p>
-            )}
+          </div>
+        </div>
+
+        {/* 追加プロパティ */}
+        <div className="space-y-6">
+          {/* 言語カテゴリ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">
+              言語カテゴリ
+            </span>
+            <input
+              type="text"
+              value={editedTask.tag}
+              onChange={(e) => handleInputChange("tag", e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+              placeholder="例: React, TypeScript"
+            />
           </div>
 
-          {/* プロパティセクション */}
-          <div className="space-y-6">
-            {/* 残り日数バッジ */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">残り日数</span>
-              <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
-                残り{Math.ceil((editedTask.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}日
-              </span>
-            </div>
+          {/* 締切日 */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">締切日</span>
+            <input
+              type="date"
+              value={formatDateForInput(editedTask.deadline)}
+              onChange={(e) =>
+                handleInputChange(
+                  "deadline",
+                  parseDateFromInput(e.target.value)
+                )
+              }
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+            />
+          </div>
+        </div>
 
-            {/* 優先度バッジ */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">優先度</span>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                editedTask.priority === 1 
-                  ? 'bg-red-100 text-red-800' 
-                  : editedTask.priority === 2 
-                  ? 'bg-yellow-100 text-yellow-800' 
-                  : 'bg-green-100 text-green-800'
-              }`}>
-                {editedTask.priority === 1 ? '高' : editedTask.priority === 2 ? '中' : '低'}
-              </span>
-            </div>
-
-            {/* 担当者 */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">担当者</span>
-              <input
-                type="text"
-                value={editedTask.assign}
-                onChange={(e) => handleInputChange('assign', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="担当者名を入力"
-              />
-            </div>
+        {/* メモとURL */}
+        <div className="space-y-6">
+          {/* 1行メモ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">1行メモ</span>
+            <input
+              type="text"
+              value={editedTask.oneLine}
+              onChange={(e) => handleInputChange("oneLine", e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+              placeholder="簡潔なメモを入力してください"
+            />
           </div>
 
-          {/* 追加プロパティ */}
-          <div className="space-y-6">
-            {/* 言語カテゴリ */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">言語カテゴリ</span>
-              <input
-                type="text"
-                value={editedTask.tag}
-                onChange={(e) => handleInputChange('tag', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="例: React, TypeScript"
-              />
-            </div>
-
-            {/* 締切日 */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">締切日</span>
-              <input
-                type="date"
-                value={formatDateForInput(editedTask.deadline)}
-                onChange={(e) => handleInputChange('deadline', parseDateFromInput(e.target.value))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-              />
-            </div>
+          {/* 詳細メモ */}
+          <div className="flex items-start space-x-4">
+            <span className="text-sm font-medium text-gray-600 mt-2">
+              詳細メモ
+            </span>
+            <textarea
+              value={editedTask.memo}
+              onChange={(e) => handleInputChange("memo", e.target.value)}
+              rows={3}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 resize-vertical"
+              placeholder="詳細な説明やメモを入力してください"
+            />
           </div>
 
-          {/* メモとURL */}
-          <div className="space-y-6">
-            {/* 1行メモ */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">1行メモ</span>
-              <input
-                type="text"
-                value={editedTask.oneLine}
-                onChange={(e) => handleInputChange('oneLine', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="簡潔なメモを入力してください"
-              />
-            </div>
-
-            {/* 詳細メモ */}
-            <div className="flex items-start space-x-4">
-              <span className="text-sm font-medium text-gray-600 mt-2">詳細メモ</span>
-              <textarea
-                value={editedTask.memo}
-                onChange={(e) => handleInputChange('memo', e.target.value)}
-                rows={3}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 resize-vertical"
-                placeholder="詳細な説明やメモを入力してください"
-              />
-            </div>
-
-            {/* 関連URL */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600">関連URL</span>
-              <input
-                type="url"
-                value={editedTask.relatedUrl || ''}
-                onChange={(e) => handleInputChange('relatedUrl', e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="例: https://github.com/user/repo/issues/123"
-              />
-            </div>
+          {/* 関連URL */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">関連URL</span>
+            <input
+              type="url"
+              value={editedTask.relatedUrl || ""}
+              onChange={(e) => handleInputChange("relatedUrl", e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+              placeholder="例: https://github.com/user/repo/issues/123"
+            />
           </div>
+        </div>
 
         </div>
 

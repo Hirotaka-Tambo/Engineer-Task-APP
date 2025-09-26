@@ -1,6 +1,6 @@
-import React from 'react';
-import PriorityBadge from './PriorityBadge';
-import type { Task, TaskStatus } from '../types/types';
+import React from "react";
+import PriorityBadge from "./PriorityBadge";
+import type { Task, TaskStatus } from "../types/task";
 
 // 拡張されたTask型（types.tsの基本型に追加フィールドを加えたもの）
 export interface ExtendedTask extends Task {
@@ -33,9 +33,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('ja-JP', {
-      month: 'numeric',
-      day: 'numeric'
+    return date.toLocaleDateString("ja-JP", {
+      month: "numeric",
+      day: "numeric",
     });
   };
 
@@ -54,9 +54,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   ? 'bg-green-500 border-green-500 text-white' 
                   : 'border-gray-300 hover:border-green-400'
               }`}
-              title={task.done ? '完了を取り消し' : '完了にする'}
+              title={task.done ? "完了を取り消し" : "完了にする"}
             >
-              {task.done && '✓'}
+              {task.done && "✓"}
             </button>
           )}
           <h3 className="text-base font-semibold m-0 leading-tight truncate min-w-0 flex-1 text-gray-800" title={task.text}>
