@@ -148,7 +148,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 : 'bg-gray-100 text-gray-700 border-gray-200'
             }`}>
               {task.status === 'done' ? '完了' : 
-               task.status === 'in-progress' ? '進行中' : '未着手'}
+              task.status === 'in-progress' ? '進行中' : '未着手'}
             </span>
           </div>
         )}
