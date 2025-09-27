@@ -5,11 +5,11 @@ import type { Priority, Task } from "../types/task";
 type NewTask = Omit<Task, "id" | "createdAt">;
 
 const initialTask: NewTask = {
-  text: "",
-  done: false,
+  title: "",
+  status: 'in-progress',
   priority: 1, // 「低」
   tag: "",
-  // iconも後々の追記が必須
+  icon: "",
   assign: "",
   oneLine: "",
   memo: "",
