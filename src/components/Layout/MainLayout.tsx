@@ -51,16 +51,16 @@ const MainLayout : React.FC = () =>{
     setEditingTask({
       id: 0,
       text: "",
-      done: false,
+      status: "in-progress",
       priority: 2,
       tag: "",
+      icon: "",
       assign: "",
       oneLine: "",
       memo: "",
       relatedUrl: "",
       deadline: new Date(),
       createdAt: new Date(),
-      status: "todo",
     });
   };
 
