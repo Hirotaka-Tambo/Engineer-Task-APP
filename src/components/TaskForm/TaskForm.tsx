@@ -1,50 +1,44 @@
 import React, { useState } from "react";
-import type { Priority, Task } from "../types/task";
+import type { Priority, NewTaskUI } from "../types/task";
 
-// taskの初期状態
-type NewTask = Omit<Task, "id" | "createdAt">;
-
-const initialTask: NewTask = {
+// 初期化
+const initialTask: NewTaskUI = {
   title: "",
-  status: 'in-progress',
+  taskstatus: 'in-progress',
   priority: 1, // 「低」
   tag: "",
   icon: "",
-  assign: "",
-  oneLine: "",
-  memo: "",
+  createdBy: "", //ユーザーIDを反映するのもあり
+  assignedTo: "",
   deadline: new Date(),
+  oneLine: "",
+  relatedUrl: "",
+  memo: "",
 };
 
 interface TaskFromProps {
-  onAddTask: (newTask: NewTask) => void;
+  onAddTask: (newTask: NewTaskUI) => void;
 }
 
-const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
-  const [task, setTask] = useState<NewTask>(initialTask);
 
-  // 文字列関連(text/tag/assign/oneLine/memo)
+const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
+  const [task, setTask] = useState<NewTaskUI>(initialTask);
+
+  // 入力の共通処理
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     // 文字列
-    const { name, value, type } = e.target;
-
-    // checked(done)は、HTMLInputElementにしか存在しないため、限定して記述する必要あり
-    const inputValue =
-      type === "checkbox" && e.target instanceof HTMLInputElement
-        ? e.target.checked
-        : value;
-
-    setTask((prevTask) => ({
+    const { name, value} = e.target;
+    setTask ((prevTask) => ({
       ...prevTask,
-      [name]: inputValue,
+      [name]: value,
     }));
   };
 
-  // 優先度はセレクトタグ
+  // 優先度(<select>)
   const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTask((prevTask) => ({
       ...prevTask,
@@ -52,7 +46,7 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
     }));
   };
 
-  // 締め切りの日付設定
+  // 締め切り
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask((prevTask) => ({
       ...prevTask,
@@ -62,7 +56,7 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (task.text.trim() === "") return;
+    if (task.title.trim() === "") return;
     onAddTask(task);
     setTask(initialTask); // フォームをリセット(次も入力できるように)
   };
@@ -83,9 +77,9 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
           </label>
           <input
             type="text"
-            id="text"
-            name="text"
-            value={task.text}
+            id="title"
+            name="title"
+            value={task.title}
             onChange={handleInputChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             placeholder="新しいタスクを入力..."
@@ -144,7 +138,7 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
             type="text"
             id="assign"
             name="assign"
-            value={task.assign}
+            value={task.assignedTo}
             onChange={handleInputChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             placeholder="タスク担当者名"

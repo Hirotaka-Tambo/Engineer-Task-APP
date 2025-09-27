@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TaskCard from "../components/TaskCard/TaskCard";
 import TaskModal from "../components/TaskModal/TaskModal";
 import { useTasks } from "../hooks/useTasks";
-import type { Task, ExtendedTask } from "../components/types/task";
+import type { TaskUI, ExtendedTask } from "../components/types/task";
 
 // SoloTaskのプロパティ型定義
 interface SoloTaskProps {
