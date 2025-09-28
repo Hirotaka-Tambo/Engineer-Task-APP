@@ -1,37 +1,42 @@
 import { useState, useCallback } from "react";
-import type { Task, NewTask, ExtendedTask } from "../components/types/types";
+import type { ExtendedTask, NewTaskUI, TaskStatus } from "../components/types/task";
 
 // テストのための仮データ
 
-const initialTasks: Task[] = [
+const initialTasks: ExtendedTask[] = [
   {
     id: 1,
-    text: "typesでの型定義",
-    done: false,
+    title: "typesでの型定義",
+    taskstatus: "todo",
     priority: 3,
     tag: "feature",
-    assign: "反保",
-    oneLine: "型の要素は要件定義を参照",
-    memo: "完了次第、gituhubでPRが必須",
+    icon: undefined,
+    createdBy: "田原",
+    assignedTo: "反保",
     deadline: new Date(),
     createdAt: new Date(),
+    oneLine: "型の要素は要件定義を参照",
+    relatedUrl:undefined,
+    memo: "完了次第、gituhubでPRが必須",
   },
 ];
 
 export const useTasks = () => {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<ExtendedTask[]>(initialTasks);
 
     // タスクの追加
-    const addTask = useCallback((newTask: NewTask | ExtendedTask) => {
+    const addTask = useCallback((newTask: NewTaskUI | ExtendedTask) => {
         const id = Date.now(); // 仮のIDを発行
         const createdAt = new Date();
         
         // ExtendedTaskの場合は既存のデータを使用、NewTaskの場合は新しいデータを作成
-        const taskToAdd = 'status' in newTask 
-            ? { ...newTask, id, createdAt } as Task
-            : { ...newTask, id, createdAt } as Task;
+        const taskToAdd: ExtendedTask ={
+          ...newTask,
+          id,
+          createdAt
+        };
             
-        setTasks(prevTasks => [...prevTasks, taskToAdd]);
+        setTasks((prev) => [...prev, taskToAdd]);
     }, []);
 
   // タスクの削除
@@ -40,18 +45,33 @@ export const useTasks = () => {
   }, []);
 
   // タスクの完了状態を切り替える
-  const toggleTaskDone = useCallback((id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, done: !task.done } : task
-      )
+  const toggleTaskStatus = useCallback((id: number) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== id) return task;
+        let newStatus: TaskStatus;
+        switch (task.taskstatus) {
+          case "todo":
+            newStatus = "in-progress";
+            break;
+          case "in-progress":
+            newStatus = "done";
+            break;
+          case "done":
+          default:
+            newStatus = "todo";
+            break;
+        }
+        return { ...task, taskstatus: newStatus };
+      })
     );
   }, []);
+    
 
   // タスクの更新
-  const updateTask = useCallback((updatedTask: Task) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+  const updateTask = useCallback((updatedTask: ExtendedTask) => {
+    setTasks((prev) =>
+      prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
     );
   }, []);
 
@@ -59,7 +79,7 @@ export const useTasks = () => {
     tasks,
     addTask,
     deleteTask,
-    toggleTaskDone,
+    toggleTaskStatus,
     updateTask,
   };
 };
