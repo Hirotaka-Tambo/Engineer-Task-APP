@@ -2,70 +2,66 @@ import React, { useState } from "react";
 import TaskCard from "../components/TaskCard/TaskCard";
 import TaskModal from "../components/TaskModal/TaskModal";
 import { useTasks } from "../hooks/useTasks";
-import type { TaskUI, ExtendedTask } from "../components/types/task";
+import type { ExtendedTask, NewTaskUI } from "../components/types/task";
 
-// SoloTaskのプロパティ型定義
 interface SoloTaskProps {
-  tasks: ExtendedTask[];
+  tasks: ExtendedTask[]; // id?: は外さないと TaskModal で型エラーになる
   onTaskClick?: (task: ExtendedTask) => void;
   onToggleDone?: (taskId: number) => void;
 }
 
 const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone }) => {
-    const {toggleTaskDone: localToggleTaskDone, updateTask} = useTasks();
-    
-    // 外部から渡されたonToggleDoneを使用、なければローカルのtoggleTaskDoneを使用
-    const handleToggleDone = onToggleDone || localToggleTaskDone;
+  const { toggleTaskDone: localToggleTaskDone, updateTask } = useTasks();
+  const handleToggleDone = onToggleDone || localToggleTaskDone;
 
-  // 編集中のタスクを保持
   const [editingTask, setEditingTask] = useState<ExtendedTask | null>(null);
 
-  // タスククリック時のハンドラー
   const handleTaskClick = (task: ExtendedTask) => {
     if (onTaskClick) {
       onTaskClick(task);
     } else {
-      // フォールバック: ローカルでモーダル表示
-      setEditingTask(task);
+      // createdAt と deadline が Date 型であることを保証
+      const safeTask: ExtendedTask = {
+        ...task,
+        createdAt: task.createdAt instanceof Date ? task.createdAt : new Date(task.createdAt),
+        deadline: task.deadline instanceof Date ? task.deadline : new Date(task.deadline),
+      };
+      setEditingTask(safeTask);
     }
   };
 
+  const closeModal = () => setEditingTask(null);
 
-  // モーダルを閉じる
-  const closeModal = () => {
-    setEditingTask(null);
-  };
-
-  // モーダルでタスクが更新された時のハンドラ
-  const handleUpdateTask = (updatedTask: Task) => {
-    updateTask(updatedTask);
+  const handleUpdateTask = (updatedTask: ExtendedTask| NewTaskUI) => {
+    if ("createdAt" in updatedTask) {
+      updateTask(updatedTask);
+    }
     closeModal();
   };
 
-    return (
-        <div className="container mx-auto p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {tasks.length === 0?(
-                    <p className="text-center text-gray-500 col-span-full">タスクを追加してください。</p>
-                ):(
-                    tasks.map((task) =>(
-                        <TaskCard
-                            key = {task.id}
-                            task={task}
-                            onClick={handleTaskClick}
-                            onToggleDone={handleToggleDone}
-                        />
-                    ))
-                )}
-            </div>
+  return (
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {tasks.length === 0 ? (
+          <p className="text-center text-gray-500 col-span-full">タスクを追加してください。</p>
+        ) : (
+          tasks.map((task ,index) => (
+            <TaskCard
+              key= {task.id ?? index}
+              task={task}
+              onClick={handleTaskClick}
+              onToggleDone={handleToggleDone}
+            />
+          ))
+        )}
+      </div>
 
-      {/*TaskModalの追加（フォールバック用）*/}
       {editingTask && !onTaskClick && (
         <TaskModal
           task={editingTask}
           isOpen={!!editingTask}
           onClose={closeModal}
-          onSave={handleUpdateTask}
+          onSave={handleUpdateTask} // ExtendedTask で型が一致
         />
       )}
     </div>
