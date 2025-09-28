@@ -8,7 +8,7 @@ import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
 
 const MainLayout : React.FC = () =>{
-  const { tasks, addTask, deleteTask, toggleTaskDone, updateTask} = useTasks();
+  const { tasks, addTask, deleteTask, toggleTaskStatus, updateTask} = useTasks();
 
   // テスト用の仮ユーザー
   const currentUser = "demoUser";
@@ -89,7 +89,7 @@ const MainLayout : React.FC = () =>{
     tasks,
     onTaskClick: handleTaskClick,
     deleteTask,
-    toggleTaskDone,
+    toggleTaskStatus,
     openCreateModal,
   };
 

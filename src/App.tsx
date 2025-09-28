@@ -52,7 +52,7 @@ const SoloTaskWrapper = () =>{
     <SoloTask
     tasks={ outletContext.tasks}
     onTaskClick={outletContext.onTaskClick}
-    onToggleDone={outletContext.toggleTaskDone}
+    onToggleDone={outletContext.toggleTaskStatus}
     />
   );
 

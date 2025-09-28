@@ -5,6 +5,6 @@ export type OutletContextType = {
     tasks: ExtendedTask[];
     onTaskClick: (task: ExtendedTask) => void;
     deleteTask: (id: number) => void;
-    toggleTaskDone: (id: number) => void;
+    toggleTaskStatus: (id: number) => void;
     openCreateModal: () => void;
 };
