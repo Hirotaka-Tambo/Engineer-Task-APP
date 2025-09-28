@@ -203,19 +203,19 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
            {/* タグ */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">グループ</span>
+            <span className="text-sm font-medium text-gray-600 w-24">グループ</span>
             <input
               type="text"
               value={editedTask.groupCategory}
               onChange={(e) => handleInputChange("groupCategory", e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="例: React, TypeScript"
+              placeholder="setting"
             />
           </div>
 
           {/* 締切日 */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">締切日</span>
+            <span className="text-sm font-medium text-gray-600 w-24">締切日</span>
             <input
               type="date"
               value={formatDateForInput(editedTask.deadline)}
