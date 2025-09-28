@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { ExtendedTask, NewTaskUI, TaskStatus } from "../types/task";
+import { getDeadlineStatus } from "../../utils/dateUtils";
 
 interface TaskModalProps {
   task: ExtendedTask | NewTaskUI;
@@ -9,6 +10,34 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
+  // NewTaskUI（新規）かExtendedTask（既存）かを判定
+  // TaskUIには createdAt があるが、NewTaskUI にはないことを利用
+  const isNewTask = !("createdAt" in task);
+
+  // 残り日数に応じたスタイルを取得する関数
+  const getDeadlineStyle = (deadline: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadlineDate = new Date(deadline);
+    deadlineDate.setHours(0, 0, 0, 0);
+    
+    const oneDay = 1000 * 60 * 60 * 24;
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const daysRemaining = Math.ceil(diffTime / oneDay);
+    
+    if (daysRemaining < 0) {
+      return "bg-red-100 text-red-800 border-red-300";
+    } else if (daysRemaining === 0) {
+      return "bg-red-200 text-red-900 border-red-400 font-bold";
+    } else if (daysRemaining === 1) {
+      return "bg-orange-200 text-orange-800 border-orange-300 font-semibold";
+    } else if (daysRemaining <= 3) {
+      return "bg-yellow-200 text-yellow-800 border-yellow-300";
+    } else {
+      return "bg-green-100 text-green-800 border-green-300";
+    }
+  };
+  
   const defaultNewTask: NewTaskUI = {
     title: "",
     taskstatus: "todo" as TaskStatus,
@@ -88,12 +117,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
   return (
     <div className="modal">
-      <h2>{task ? "タスク編集" : "新規タスク作成"}</h2>
 
       {/* ヘッダー */}
       <div className="flex items-center justify-between p-8 border-b border-gray-200">
         <h2 className="text-3xl font-bold text-gray-900">
-          {task ? "タスク詳細・編集" : "新規タスク作成"}
+          {isNewTask ? "新規タスク作成" : "タスク詳細・編集"}
         </h2>
         <button
           onClick={handleCancel}
@@ -126,31 +154,43 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
         <div className="space-y-6">
           {/* 残り日数 */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">残り日数</span>
-            <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
-              {Math.ceil((editedTask.deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} 日
+            <span className="text-sm font-medium text-gray-600 w-24">残り日数</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getDeadlineStyle(editedTask.deadline)}`}>
+              {getDeadlineStatus(editedTask.deadline)}
             </span>
           </div>
 
-          {/* 優先度 */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">優先度</span>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                editedTask.priority === 1
-                  ? "bg-red-100 text-green-800"
-                  : editedTask.priority === 2
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-green-100 text-red-800"
-              }`}
-            >
-              {editedTask.priority === 1 ? "低" : editedTask.priority === 2 ? "中" : "高"}
-            </span>
-          </div>
+          {/* 優先度と言語カテゴリ（同じ行に配置） */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 優先度編集 */}
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-600 w-24">優先度</span>
+              <select
+                value={editedTask.priority}
+                onChange={(e) => handleInputChange("priority", Number(e.target.value))}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value={1}>低</option>
+                <option value={2}>中</option>
+                <option value={3}>高</option>
+              </select>
+            </div>
+
+            {/* 言語カテゴリ */}
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-600 w-24">言語カテゴリ</span>
+              <input
+                type="text"
+                value={editedTask.icon}
+                onChange={(e) => handleInputChange("icon", e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="例: React, TypeScript"
+              />
+            </div>
 
           {/* 担当者 */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">担当者</span>
+            <span className="text-sm font-medium text-gray-600 w-24">担当者</span>
             <input
               type="text"
               value={editedTask.assignedTo}
@@ -162,7 +202,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
            {/* タグ */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">言語カテゴリ</span>
+            <span className="text-sm font-medium text-gray-600">グループ</span>
             <input
               type="text"
               value={editedTask.groupCategory}
@@ -185,19 +225,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
           {/* 1行メモ */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">1行メモ</span>
+            <span className="text-sm font-medium text-gray-600 w-24">1行メモ</span>
             <input
-              type="text"
-              value={editedTask.oneLine}
-              onChange={(e) => handleInputChange("oneLine", e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="簡潔なメモを入力してください"
+            type="text"
+            value={editedTask.oneLine}
+            onChange={(e) => handleInputChange("oneLine", e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            placeholder="簡潔なメモを入力してください"
             />
+            </div>
           </div>
 
           {/* 詳細メモ */}
           <div className="flex items-start space-x-4">
-            <span className="text-sm font-medium text-gray-600 mt-2">詳細メモ</span>
+            <span className="text-sm font-medium text-gray-600 mt-2 w-24">詳細メモ</span>
             <textarea
               value={editedTask.memo}
               onChange={(e) => handleInputChange("memo", e.target.value)}
@@ -209,7 +250,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
           {/* 関連URL */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-600">関連URL</span>
+            <span className="text-sm font-medium text-gray-600 w-24">関連URL</span>
             <input
               type="url"
               value={editedTask.relatedUrl || ""}
@@ -233,7 +274,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
           onClick={handleSave}
           className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700"
         >
-          {task ? "保存して閉じる" : "タスクを作成"}
+          {isNewTask ? "タスクを作成" : "保存して閉じる"}
         </button>
       </div>
 
