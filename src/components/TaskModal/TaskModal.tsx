@@ -13,7 +13,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     title: "",
     taskstatus: "todo" as TaskStatus,
     priority: 1,
-    tag: "",
+    taskType: 'group',
+    groupCategory: 'front',
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
     assignedTo: "",
@@ -164,8 +165,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             <span className="text-sm font-medium text-gray-600">言語カテゴリ</span>
             <input
               type="text"
-              value={editedTask.tag}
-              onChange={(e) => handleInputChange("tag", e.target.value)}
+              value={editedTask.groupCategory}
+              onChange={(e) => handleInputChange("groupCategory", e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="例: React, TypeScript"
             />

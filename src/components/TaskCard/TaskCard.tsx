@@ -40,7 +40,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick}) =>{
       {/* 2列目 優先度 + タグ */}
       <div className="flex items-center gap-3 mb-2">
         <PriorityBadge priority={task.priority} />
-        <span className="text-sm text-gray-600">#{task.tag}</span>
+        <span className="text-sm text-gray-600">#{task.groupCategory}</span>
         {task.icon && (
           <img src={task.icon} alt="task icon" className="w-5 h-5" />
         )}

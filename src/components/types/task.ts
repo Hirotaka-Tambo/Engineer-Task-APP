@@ -4,6 +4,12 @@ export type Priority = 1 | 2 | 3;
 // タスクの状態を表す型
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
 
+// タスクの分類を表す型
+export type TaskType = 'solo' | 'group' | 'team';
+
+// Group Task のサブカテゴリを表す型
+export type GroupCategory = 'front' | 'back' | 'setting';
+
 //タスクのUIを定義する型
 export interface TaskUI{
 
@@ -17,7 +23,8 @@ export interface TaskUI{
 
     // 2列目
     priority: Priority; // 優先度(上記で限定的に型を指定)
-    tag: string;     // fix/addなど、タスクの役割の明確化
+    taskType: TaskType;     // fromt/backなど
+    groupCategory?: GroupCategory;
     icon?: string;  // 画像ファイルは後々収集してselect/optionとして再定義。(拡張子の複数対応のためにoptional)
     
     // 3列目 ともに外部キー(user.tsから引っ張ってくる)
@@ -43,7 +50,8 @@ export interface TaskDB{
   title: string;
   taskstatus: TaskStatus;
   priority: Priority;
-  tag: string;
+  tasktype: TaskType
+  groupCategory?: GroupCategory;
   icon?: string;
   createdBy: string;
   assignedTo: string;
@@ -59,7 +67,8 @@ export const toTaskUI = (task: TaskDB): TaskUI =>({
   title: task.title,
   taskstatus: task.taskstatus,
   priority: task.priority,
-  tag: task.tag,
+  taskType: task.tasktype,
+  groupCategory:task.groupCategory,
   icon: task.icon,
   createdBy: task.createdBy,
   assignedTo: task.assignedTo,
