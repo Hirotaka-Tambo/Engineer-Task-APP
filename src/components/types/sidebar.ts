@@ -1,4 +1,7 @@
 // サイドバー関連の型定義
+
+import type { TaskFilter } from "../../hooks/useTasks";
+
 // サイドバーのメニューアイテムの基本型
 export interface SidebarItem {
   id: string;                    // 一意識別子
@@ -10,6 +13,7 @@ export interface SidebarItem {
   disabled?: boolean;            // 無効化フラグ
   badge?: string | number;       // バッジ（通知数など）
   children?: SidebarItem[];      // サブメニュー（ドロップダウン用）
+  filter?: TaskFilter;
 }
 
 // サイドバーのプロパティ型
