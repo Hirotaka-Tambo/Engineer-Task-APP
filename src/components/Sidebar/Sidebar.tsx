@@ -20,10 +20,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div
       className={`w-full md:w-[280px] bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 md:p-10 m-0 md:m-4 shadow-xl border border-white border-opacity-60 transition-all duration-300 ease-in-out ${className}`}
     >
-      {/* プロジェクト情報セクション */}
+      {/* プロジェクトの名前 */}
       <div className="mb-6">
         <div
-          className="p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium whitespace-nowrap md:transform-none bg-white bg-opacity-50 text-gray-900 font-semibold md:shadow-md md:hover:shadow-lg hover:translate-x-1"
+          className="p-4 md:p-6 my-2 rounded-xl cursor-pointer text-gray-700 font-medium whitespace-nowrap md:transform-none bg-white bg-opacity-50 text-gray-900 font-semibold md:shadow-md md:hover:shadow-lg hover:translate-x-1"
           style={{ borderLeft: `4px solid ${projectInfo.color}` }}
         >
           <div className="flex items-center gap-3">
