@@ -19,6 +19,19 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => {
     }
   };
 
+  const getPriorityBorderColor = (priority: Priority) => {
+    switch (priority) {
+      case 1: //低
+        return "border-green-500";
+      case 2: //中
+        return "border-yellow-500";
+      case 3:
+        return "border-red-500";
+      default: //高
+        return "border-gray-500";
+    }
+  };
+
   const getPriorityLabel = (priority: Priority) => {
     switch (priority) {
       case 1:
@@ -37,7 +50,7 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => {
       <div
         className={`w-3 h-3 rounded-full ${getPriorityColor(priority)}`}
       ></div>
-      <span className="text-xs text-gray-600 bg-white bg-opacity-30 px-2 py-1 rounded-lg border border-white border-opacity-40">
+      <span className={`text-xs text-gray-600 bg-white bg-opacity-30 px-2 py-1 rounded-xl border ${getPriorityBorderColor(priority)} border-opacity-60`}>
         {getPriorityLabel(priority)}
       </span>
     </div>
