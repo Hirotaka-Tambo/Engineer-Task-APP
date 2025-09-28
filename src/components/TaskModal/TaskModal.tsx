@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import type { ExtendedTask, TaskStatus } from "../types/task";
+import type { ExtendedTask, NewTaskUI, TaskStatus } from "../types/task";
 
 interface TaskModalProps {
-  task: ExtendedTask | null;
+  task: ExtendedTask | NewTaskUI;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (updatedTask: ExtendedTask) => void;
+  onSave: (updatedTask: ExtendedTask | NewTaskUI) => void;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
-  const defaultNewTask: ExtendedTask = {
+  const defaultNewTask: NewTaskUI = {
     title: "",
     taskstatus: "todo" as TaskStatus,
     priority: 1,
@@ -17,7 +17,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
     assignedTo: "",
-    createdAt: new Date(),
     deadline: new Date(),
     oneLine: "",
     relatedUrl: "",
@@ -25,9 +24,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
   };
   
   
-  const [editedTask, setEditedTask] = useState<ExtendedTask>(
-    task ? { ...task } : defaultNewTask
-  );
+  const [editedTask, setEditedTask] = useState<ExtendedTask | NewTaskUI>(task);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // タスクが切り替わったときに初期化
@@ -140,13 +137,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
                 editedTask.priority === 1
-                  ? "bg-red-100 text-red-800"
+                  ? "bg-red-100 text-green-800"
                   : editedTask.priority === 2
                   ? "bg-yellow-100 text-yellow-800"
-                  : "bg-green-100 text-green-800"
+                  : "bg-green-100 text-red-800"
               }`}
             >
-              {editedTask.priority === 1 ? "高" : editedTask.priority === 2 ? "中" : "低"}
+              {editedTask.priority === 1 ? "低" : editedTask.priority === 2 ? "中" : "高"}
             </span>
           </div>
 
