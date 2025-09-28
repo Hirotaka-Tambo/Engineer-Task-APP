@@ -3,12 +3,15 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import TaskModal from "../TaskModal/TaskModal";
 import { useTasks } from "../../hooks/useTasks";
-import type { ExtendedTask } from "../types/task";
+import type { ExtendedTask, NewTaskUI } from "../types/task";
 import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
 
 const MainLayout : React.FC = () =>{
   const { tasks, addTask, deleteTask, toggleTaskDone, updateTask} = useTasks();
+
+  // テスト用の仮ユーザー
+  const currentUser = "demoUser";
 
   // サイドバーの配列
   const sidebarItems: SidebarItem[] = [
@@ -39,7 +42,7 @@ const MainLayout : React.FC = () =>{
   ];
 
   // 編集中タスク
-  const [editingTask, setEditingTask] = useState<ExtendedTask | null>(null);
+  const [editingTask, setEditingTask] = useState<ExtendedTask | NewTaskUI | null>(null);
 
   // タスクをクリック(詳細閲覧と 編集時)
   const handleTaskClick = (task:ExtendedTask) =>{
@@ -48,20 +51,20 @@ const MainLayout : React.FC = () =>{
 
   // 新規作成用のモーダルを開く
   const openCreateModal = () => {
-    setEditingTask({
-      id: 0,
-      text: "",
-      status: "in-progress",
+    const newTask:NewTaskUI ={
+      title: "",
+      taskstatus: "todo",
       priority: 2,
       tag: "",
       icon: "",
-      assign: "",
+      createdBy: currentUser,
+      assignedTo: "",
       oneLine: "",
       memo: "",
       relatedUrl: "",
       deadline: new Date(),
-      createdAt: new Date(),
-    });
+    };
+    setEditingTask(newTask);
   };
 
   // モーダルを閉じる
@@ -70,13 +73,13 @@ const MainLayout : React.FC = () =>{
   };
 
   // モーダルを保存
-  const handleSaveTask = (updatedTask: ExtendedTask) =>{
-    if (updatedTask.id === 0) {
-      // 新規作成の場合（idが0の場合は新規作成）
-      addTask(updatedTask);
+  const handleSaveTask = (updatedTask: ExtendedTask | NewTaskUI) =>{
+    // NewTaskUIの場合は、新規作成
+    if (!("createdAt" in updatedTask)) {
+      addTask(updatedTask as NewTaskUI);
     } else {
       // 編集の場合
-      updateTask(updatedTask);
+      updateTask(updatedTask as ExtendedTask);
     }
     closeModal();
   };
@@ -95,7 +98,7 @@ const MainLayout : React.FC = () =>{
       {/*サイドバー配置*/}
       <Sidebar 
         items={sidebarItems}
-        activeItemId={useLocation().pathname}
+        activeItemId={useLocation().pathname.replace("/","")}
         onItemClick={(_item) => {
           // ナビゲーションはReact RouterのLinkで処理されるため、ここでは何もしない
         }}
@@ -105,7 +108,10 @@ const MainLayout : React.FC = () =>{
       <main className="flex-1 flex flex-col p-2 md:p-4 relative">
         {/* 上部ヘッダー */}
         <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-6 md:p-8 mb-8 flex justify-between items-center shadow-xl border border-white border-opacity-60">
-          <h1 className="text-xl md:text-3xl font-extrabold text-gray-800 m-0">Task Management</h1>
+          <h1 className="text-xl md:text-3xl font-extrabold text-gray-800 m-0">
+            Task Management
+          </h1>
+
           <div className="flex gap-4 md:gap-6">
             <button 
               onClick={openCreateModal}

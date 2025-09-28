@@ -10,11 +10,11 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority }) => {
     switch (priority) {
       case 1: //低
         return "bg-green-500";
-      case 2:
+      case 2: //中
         return "bg-yellow-500";
       case 3:
         return "bg-red-500";
-      default:
+      default: //高
         return "bg-gray-500";
     }
   };
