@@ -79,7 +79,8 @@ export type NewTaskUI = Omit<TaskUI, "createdAt">;
 
 // UI用に拡張する型(カスタム(Card状態やModal状態)可能にするためにinterfaceを採用)
 export interface ExtendedTask extends TaskUI{
-  isEditing?: boolean // モーダルでの編集機能のためのoptional
+  id? :number;
+  isEditing?: boolean; // モーダルでの編集機能のためのoptional
   isUpdatingStatus?: boolean; // カード状態でもStatusを変更できるか否か
   isUpdatingPriority?: boolean; // カード状態でも優先度を変更できる否か
 }
