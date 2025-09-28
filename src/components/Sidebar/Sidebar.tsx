@@ -12,7 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const projectInfo: ProjectInfo = {
     id: "default-project",
     name: "Project Name",
-    description: "Task Management App",
+    description: "Task Management",
     color: "#3B62FF",
   };
 
@@ -23,24 +23,19 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* プロジェクトの名前 */}
       <div className="mb-6">
         <div
-          className="p-4 md:p-6 my-2 rounded-xl cursor-pointer text-gray-700 font-medium whitespace-nowrap md:transform-none bg-white bg-opacity-50 text-gray-900 font-semibold md:shadow-md md:hover:shadow-lg hover:translate-x-1"
+          className="p-4 md:p-6 my-2 rounded-xl cursor-pointer text-gray-700 font-medium md:transform-none bg-white bg-opacity-50 text-gray-900 font-semibold md:shadow-md md:hover:shadow-lg hover:translate-x-1"
           style={{ borderLeft: `4px solid ${projectInfo.color}` }}
         >
-          <div className="flex items-center gap-3">
-            {/* プロジェクトアイコン */}
-            {projectInfo.icon && (
-              <div
-                className="w-6 h-6 flex items-center justify-center"
-                dangerouslySetInnerHTML={{ __html: projectInfo.icon }}
-              />
+          <div className="flex flex-col gap-1">
+            <div className="text-lg font-bold text-left whitespace-nowrap overflow-hidden text-ellipsis">
+              {projectInfo.name}
+            </div>
+            {projectInfo.description && (
+              <div className="text-sm text-gray-600 ml-4 text-left">
+                {projectInfo.description}
+              </div>
             )}
-            <span className="text-lg font-bold">{projectInfo.name}</span>
           </div>
-          {projectInfo.description && (
-            <p className="text-sm text-gray-600 mt-1 ml-9">
-              {projectInfo.description}
-            </p>
-          )}
         </div>
       </div>
 

@@ -130,17 +130,12 @@ const MainLayout : React.FC = () =>{
 
         {/*モーダルの配置 */}
         {editingTask && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300" onClick={closeModal} />
-            <div className="relative bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-lg border border-white border-opacity-60 w-full max-w-4xl max-h-[80vh] overflow-y-auto transform transition-all duration-300 mx-auto">
-              <TaskModal
-                task={editingTask}
-                isOpen={!!editingTask}
-                onClose={closeModal}
-                onSave={handleSaveTask}
-              />
-            </div>
-          </div>
+          <TaskModal
+            task={editingTask}
+            isOpen={!!editingTask}
+            onClose={closeModal}
+            onSave={handleSaveTask}
+          />
         )}
       </main>
     </div>

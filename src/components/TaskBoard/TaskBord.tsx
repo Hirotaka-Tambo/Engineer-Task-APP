@@ -11,7 +11,7 @@ interface TaskBoardProps {
 const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone }) => {
     const columns = [
         { key: "todo", label: "未着手" },
-        { key: "inprogress", label: "進行中" },
+        { key: "in-progress", label: "進行中" },
         { key: "done", label: "完了" },
     ] as const;
     
