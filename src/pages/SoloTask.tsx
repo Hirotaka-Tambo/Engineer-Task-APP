@@ -11,7 +11,7 @@ interface SoloTaskProps {
 }
 
 const SoloTask: React.FC<SoloTaskProps> = ({ tasks, onTaskClick, onToggleDone }) => {
-  const { toggleTaskDone: localToggleTaskDone, updateTask } = useTasks();
+  const { toggleTaskStatus: localToggleTaskDone, updateTask } = useTasks();
   const handleToggleDone = onToggleDone || localToggleTaskDone;
 
   const [editingTask, setEditingTask] = useState<ExtendedTask | null>(null);
