@@ -1,11 +1,6 @@
 import React from "react";
 import PriorityBadge from "./PriorityBadge";
-import type { Task, TaskStatus } from "../types/task";
-
-// 拡張されたTask型（types.tsの基本型に追加フィールドを加えたもの）
-export interface ExtendedTask extends Task {
-  status?: TaskStatus;
-}
+import type { ExtendedTask, TaskStatus, NewTaskUI  } from "../types/task";
 
 interface TaskCardProps {
   task: ExtendedTask;

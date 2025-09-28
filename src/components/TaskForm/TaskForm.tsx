@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import type { Priority, NewTaskUI } from "../types/task";
 
 // 初期化
-const initialTask: NewTaskUI = {
+const initialTask: Omit<NewTaskUI, "createdBy"> = {
   title: "",
   taskstatus: 'in-progress',
   priority: 1, // 「低」
   tag: "",
   icon: "",
-  createdBy: "", //ユーザーIDを反映するのもあり
+  // createdBy はユーザーIDを反映(後々のhandleSubmitで設定)
   assignedTo: "",
   deadline: new Date(),
   oneLine: "",
@@ -18,11 +18,12 @@ const initialTask: NewTaskUI = {
 
 interface TaskFromProps {
   onAddTask: (newTask: NewTaskUI) => void;
+  currentUserName: string; // ログインユーザー名を受け取る
 }
 
 
-const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
-  const [task, setTask] = useState<NewTaskUI>(initialTask);
+const TaskForm: React.FC<TaskFromProps> = ({ onAddTask ,currentUserName}) => {
+  const [task, setTask] = useState<typeof initialTask >(initialTask);
 
   // 入力の共通処理
   const handleInputChange = (
@@ -57,7 +58,11 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.title.trim() === "") return;
-    onAddTask(task);
+    const taskWithCreator: NewTaskUI ={
+      ...task,
+      createdBy: currentUserName,
+    }
+    onAddTask(taskWithCreator);
     setTask(initialTask); // フォームをリセット(次も入力できるように)
   };
 
