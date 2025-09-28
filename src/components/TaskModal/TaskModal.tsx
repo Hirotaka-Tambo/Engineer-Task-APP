@@ -42,7 +42,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     title: "",
     taskstatus: "todo" as TaskStatus,
     priority: 1,
-    tag: "",
+    taskType: 'group',
+    groupCategory: 'front',
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
     assignedTo: "",
@@ -180,13 +181,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
               <span className="text-sm font-medium text-gray-600 w-24">言語カテゴリ</span>
               <input
                 type="text"
-                value={editedTask.tag}
-                onChange={(e) => handleInputChange("tag", e.target.value)}
+                value={editedTask.icon}
+                onChange={(e) => handleInputChange("icon", e.target.value)}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="例: React, TypeScript"
               />
             </div>
-          </div>
 
           {/* 担当者 */}
           <div className="flex items-center space-x-4">
@@ -200,29 +200,39 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             />
           </div>
 
-          {/* 締切日と1行メモ（同じ行に配置） */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* 締切日 */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600 w-24">締切日</span>
-              <input
-                type="date"
-                value={formatDateForInput(editedTask.deadline)}
-                onChange={(e) => handleInputChange("deadline", parseDateFromInput(e.target.value))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+           {/* タグ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">グループ</span>
+            <input
+              type="text"
+              value={editedTask.groupCategory}
+              onChange={(e) => handleInputChange("groupCategory", e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="例: React, TypeScript"
+            />
+          </div>
 
-            {/* 1行メモ */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600 w-24">1行メモ</span>
-              <input
-                type="text"
-                value={editedTask.oneLine}
-                onChange={(e) => handleInputChange("oneLine", e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="簡潔なメモを入力してください"
-              />
+          {/* 締切日 */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600">締切日</span>
+            <input
+              type="date"
+              value={formatDateForInput(editedTask.deadline)}
+              onChange={(e) => handleInputChange("deadline", parseDateFromInput(e.target.value))}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* 1行メモ */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-600 w-24">1行メモ</span>
+            <input
+            type="text"
+            value={editedTask.oneLine}
+            onChange={(e) => handleInputChange("oneLine", e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            placeholder="簡潔なメモを入力してください"
+            />
             </div>
           </div>
 
