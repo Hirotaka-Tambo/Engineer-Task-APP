@@ -1,12 +1,12 @@
 import React from "react";
 import type { ExtendedTask } from "../components/types/task";
 
-// GroupTaskのプロパティ型定義
-interface GroupTaskProps {
+// FrontTaskのプロパティ型定義
+interface FrontTaskProps {
   onTaskClick?: (task: ExtendedTask) => void;
 }
 
-const GroupTask: React.FC<GroupTaskProps> = ({ onTaskClick: _onTaskClick }) => {
+const FrontTask: React.FC<FrontTaskProps> = ({ onTaskClick: _onTaskClick }) => {
   return (
     <div className="container mx-auto p-4">
       <div className="text-center text-gray-500">
@@ -17,4 +17,4 @@ const GroupTask: React.FC<GroupTaskProps> = ({ onTaskClick: _onTaskClick }) => {
   );
 };
 
-export default GroupTask;
+export default FrontTask;

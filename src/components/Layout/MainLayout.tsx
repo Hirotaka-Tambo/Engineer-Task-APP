@@ -68,18 +68,13 @@ const MainLayout : React.FC = () =>{
 
   // 新規作成用のモーダルを開く
   const openCreateModal = () => {
-
-    const initialType = currentFilter.type !== 'all' ? currentFilter.type: 'solo';
     const initialCategory = currentFilter.category !== 'all' ? currentFilter.category : undefined;
 
     const newTask:NewTaskUI ={
       title: "",
       taskstatus: "todo",
       priority: 2,
-
-      taskType: initialType as NewTaskUI['taskType'],
-      groupCategory: initialCategory as NewTaskUI['groupCategory'],
-      
+      taskCategory: initialCategory ? [initialCategory] : ["solo"],
       icon: "",
       createdBy: currentUser,
       assignedTo: "",
