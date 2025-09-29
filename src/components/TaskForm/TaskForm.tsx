@@ -6,8 +6,7 @@ const initialTask: Omit<NewTaskUI, "createdBy"> = {
   title: "",
   taskstatus: 'in-progress',
   priority: 1, // 「低」
-  taskType:'group',
-  groupCategory: 'front',
+  taskCategory: ['front'],
   icon: "",
   // createdBy はユーザーIDを反映(後々のhandleSubmitで設定)
   assignedTo: "",
@@ -123,9 +122,9 @@ const TaskForm: React.FC<TaskFromProps> = ({ onAddTask ,currentUserName}) => {
           </label>
           <input
             type="text"
-            id="tag"
-            name="tag"
-            value={task.groupCategory}
+            id="category"
+            name="category"
+            value={task.taskCategory}
             onChange={handleInputChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             placeholder="例: React, Javaなど"

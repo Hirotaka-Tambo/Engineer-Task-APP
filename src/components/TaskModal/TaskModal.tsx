@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { ExtendedTask, NewTaskUI, TaskStatus } from "../types/task";
+import type { ExtendedTask, NewTaskUI, TaskCategory, TaskStatus } from "../types/task";
 import { getDeadlineStatus } from "../../utils/dateUtils";
 
 interface TaskModalProps {
@@ -42,8 +42,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     title: "",
     taskstatus: "todo" as TaskStatus,
     priority: 1,
-    taskType: 'group',
-    groupCategory: 'front',
+    taskCategory: ['solo'],
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
     assignedTo: "",
@@ -179,7 +178,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
 
             {/* 言語カテゴリ */}
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-600 w-24">言語カテゴリ</span>
+              <span className="text-sm font-medium text-gray-600 w-24">言語アイコン</span>
               <input
                 type="text"
                 value={editedTask.icon}
@@ -204,13 +203,34 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
            {/* タグ */}
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-600 w-24">グループ</span>
-            <input
-              type="text"
-              value={editedTask.groupCategory}
-              onChange={(e) => handleInputChange("groupCategory", e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="setting"
+            <div className="flex gap-3 flex-wrap">
+              {["solo","front","back","setting","team"].map((category) =>(
+              <label key = {category} className="flex items-center space-x-1">
+                <input
+                type = "checkbox"
+                value = {category}
+                checked = {editedTask.taskCategory.includes(category as TaskCategory)}
+              
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setEditedTask((prev)=>{
+                    let newCategories = [...prev.taskCategory];
+                    if (checked) {
+                      if (!newCategories.includes(category as TaskCategory)) {
+                        newCategories.push(category as TaskCategory);
+                      }
+                    } else{
+                      newCategories = newCategories.filter((c) => c !== category);
+                    }
+                    return { ...prev,taskCategory: newCategories} 
+                  });
+              }}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
+            <span className="text-sm">{category}</span>
+            </label>  
+            ))}      
+            </div>
           </div>
 
           {/* 締切日 */}

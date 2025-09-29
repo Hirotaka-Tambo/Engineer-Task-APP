@@ -65,7 +65,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) =>{
       <div className="flex items-center gap-3 mb-3">
         <PriorityBadge priority={task.priority} />
         <span className="text-xs text-blue-600 bg-white bg-opacity-30 px-2 py-1 rounded-xl border border-blue-600 ">
-          #{task.groupCategory}
+          #{task.taskCategory}
         </span>
         {/* 残り日数タグ */}
         <span className={`text-xs px-2 py-1 rounded-xl border ${getDeadlineStyle(task.deadline)}`}>

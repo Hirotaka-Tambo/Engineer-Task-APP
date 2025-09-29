@@ -9,8 +9,7 @@ const initialTasks: ExtendedTask[] = [
     title: "typesでの型定義",
     taskstatus: "todo",
     priority: 3,
-    taskType: "group",
-    groupCategory: "front",
+    taskCategory: ["solo", "front"],
     icon: undefined,
     createdBy: "田原",
     assignedTo: "反保",
@@ -38,18 +37,27 @@ export const useTasks = () => {
 
   // タスクのフィルタリング処理
   const filteredTasks = tasks.filter(task => {
-      // TaskType (Solo/Group/Team) による絞り込み
-      if (currentFilter.type !== 'all' && task.taskType !== currentFilter.type) {
-          return false;
+      // Teamは全部表示
+      if (currentFilter.type === "team") {
+          return true;
       }
 
-      // GroupCategory (Front/Back) による絞り込み
-      if (currentFilter.type === 'group' && currentFilter.category !== 'all') {
-          return task.groupCategory === currentFilter.category;
+      // soloフィルターによる絞り込み
+      if(currentFilter.type === "solo"){
+        return task.taskCategory.includes("solo");
       }
-      
-      // それ以外のケースは表示
+
+      // GroupCategory (Front/Back/setting) による絞り込み
+      if (currentFilter.type === 'group') {
+          if(currentFilter.category && currentFilter.category !== "all"){
+            return task.taskCategory.includes(currentFilter.category);
+          }
+          return task.taskCategory.includes("front") ||
+                  task.taskCategory.includes("back") ||
+                  task.taskCategory.includes("setting");
+          }          
       return true;
+
   });
 
   // フィルタを更新する関数
