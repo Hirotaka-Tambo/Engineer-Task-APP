@@ -204,27 +204,38 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave}) =
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-600 w-24">グループ</span>
             <div className="flex gap-3 flex-wrap">
-              {["solo","front","back","setting","team"].map((category) =>(
-              <label key = {category} className="flex items-center space-x-1">
-                <input
-                type = "checkbox"
-                value = {category}
-                checked = {editedTask.taskCategory.includes(category as TaskCategory)}
-              
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  setEditedTask((prev)=>{
-                    const newCategories = checked 
-                    ? [...prev.taskCategory, category as TaskCategory].filter((v,i,a)=>a.indexOf(v)===i)
-                    : prev.taskCategory.filter((c) => c !== category);
-                    return { ...prev, taskCategory: newCategories };
-                  });
-              }}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <span className="text-sm">{category}</span>
-            </label>  
-            ))}      
+              {["solo","front","back","setting","team"].map((category) =>{
+                const isChecked = editedTask.taskCategory.includes(category as TaskCategory);
+                const isDisabled = !isChecked && editedTask.taskCategory.length >= 3;
+                
+                return (
+                  <label key={category} className={`flex items-center space-x-1 ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                    <input
+                      type="checkbox"
+                      value={category}
+                      checked={isChecked}
+                      disabled={isDisabled}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setEditedTask((prev)=>{
+                          let newCategories = [...prev.taskCategory];
+                          if (checked) {
+                            // 3つ未満の場合のみ追加を許可
+                            if (!newCategories.includes(category as TaskCategory) && newCategories.length < 3) {
+                              newCategories.push(category as TaskCategory);
+                            }
+                          } else{
+                            newCategories = newCategories.filter((c) => c !== category);
+                          }
+                          return { ...prev, taskCategory: newCategories} 
+                        });
+                      }}
+                      className={`h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 ${isDisabled ? 'cursor-not-allowed' : ''}`}
+                    />
+                    <span className="text-sm">{category}</span>
+                  </label>
+                );
+              })}      
             </div>
           </div>
 
