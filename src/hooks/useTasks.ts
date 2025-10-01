@@ -7,7 +7,7 @@ const initialTasks: ExtendedTask[] = [
   {
     id: 1,
     title: "typesでの型定義",
-    taskstatus: "todo",
+    taskStatus: "todo",
     priority: 3,
     taskCategory: ["solo", "front"],
     icon: undefined,
@@ -91,7 +91,7 @@ export const useTasks = () => {
       prev.map((task) => {
         if (task.id !== id) return task;
         let newStatus: TaskStatus;
-        switch (task.taskstatus) {
+        switch (task.taskStatus) {
           case "todo":
             newStatus = "in-progress";
             break;
@@ -103,7 +103,7 @@ export const useTasks = () => {
             newStatus = "todo";
             break;
         }
-        return { ...task, taskstatus: newStatus };
+        return { ...task, taskStatus: newStatus };
       })
     );
   }, []);
