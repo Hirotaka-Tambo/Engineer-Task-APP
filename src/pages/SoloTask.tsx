@@ -9,7 +9,7 @@ const SoloTask: React.FC = () => {
   
 
   useEffect(() =>{
-      setFilter({type:"back"});   
+      setFilter({type:"solo"});   
   },[setFilter]);
     
   
