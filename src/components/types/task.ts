@@ -41,41 +41,43 @@ export interface TaskUI{
 //内部での管理用にデータベース用の定義
 
 export interface TaskDB{
-  id : number // PK
-  projectCode: string; // 内部での管理用
+  id: string; // PK (uuid)
   title: string;
-  taskStatus: TaskStatus;
+  task_status: TaskStatus;
   priority: Priority;
-  taskCategory: TaskCategory[];
+  task_category: TaskCategory[];
   icon?: string;
-  createdBy: string;
-  assignedTo: string;
-  createdAt: string;    // DBからは string として返ってくる
-  deadline: string;
-  oneLine: string;
-  relatedUrl?: string;
-  memo: string;
+  created_by: string; // 作成者のユーザーID (uuid)
+  assigned_to: string; // 担当者のユーザーID (uuid)
+  deadline: string; // 締め切り日時
+  one_line: string; // 1行メモ
+  memo: string; // 詳細メモ
+  related_url?: string; // 関連URL
+  project_id: string; // 所属プロジェクト (uuid)
+  created_at: string; // 作成日時
+  updated_at: string; // 更新日時
 }
 
 // DBからUI表示のための変換関数
-export const toTaskUI = (task: TaskDB): TaskUI =>({
+// 注意: createdBy/assignedToはuuidなので、表示時にユーザー名を取得する必要があります
+export const toTaskUI = (task: TaskDB, createdByName: string, assignedToName: string): TaskUI =>({
   title: task.title,
-  taskStatus: task.taskStatus,
+  taskStatus: task.task_status,
   priority: task.priority,
-  taskCategory:task.taskCategory,
+  taskCategory: task.task_category,
   icon: task.icon,
-  createdBy: task.createdBy,
-  assignedTo: task.assignedTo,
-  createdAt: new Date(task.createdAt),
+  createdBy: createdByName,
+  assignedTo: assignedToName,
+  createdAt: new Date(task.created_at),
   deadline: new Date(task.deadline),
-  oneLine: task.oneLine,
-  relatedUrl: task.relatedUrl,
+  oneLine: task.one_line,
+  relatedUrl: task.related_url,
   memo: task.memo,
 })
 
 
 // 新規タスクの作成時にDB側で必要な型
-export type NewTaskDB = Omit<TaskDB, 'id' | 'createdAt'>;
+export type NewTaskDB = Omit<TaskDB, 'id' | 'created_at' | 'updated_at'>;
 
 // 新規タスクの作成時にUI側で必要な型
 export type NewTaskUI = Omit<TaskUI, "createdAt">;
@@ -89,6 +91,6 @@ export interface ExtendedTask extends TaskUI{
 }
 
 // データベースへ更新を接続する用の型
-export type UpdateTaskDB = Partial<Omit<TaskDB, 'id' | 'createdAt'>>; // Partialで全てを編集対象に
-export type CardUpdate = Pick<UpdateTaskDB, 'taskStatus' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
-export type ModalUpdate = Omit<UpdateTaskDB, 'createdBy' | 'createdAt'>;
+export type UpdateTaskDB = Partial<Omit<TaskDB, 'id' | 'created_at' | 'updated_at' | 'project_id'>>; // Partialで全てを編集対象に
+export type CardUpdate = Pick<UpdateTaskDB, 'task_status' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
+export type ModalUpdate = Omit<UpdateTaskDB, 'created_by'>; // 作成者は変更不可

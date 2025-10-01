@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
 
 const Login = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-      userName: "",
+      email: "",
       password: ""
     });
-    const [errors, setErrors] = useState<{userName?: string, password?: string}>({});
+    const [errors, setErrors] = useState<{email?: string, password?: string}>({});
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -20,12 +23,12 @@ const Login = () => {
     };
   
     const validateForm = () => {
-      const newErrors: {userName?: string, password?: string} = {};
+      const newErrors: {email?: string, password?: string} = {};
   
-      if (!formData.userName.trim()) {
-        newErrors.userName = "ユーザー名を入力してください";
-      } else if (formData.userName.trim().length < 3) {
-        newErrors.userName = "ユーザー名は3文字以上で入力してください";
+      if (!formData.email.trim()) {
+        newErrors.email = "メールアドレスを入力してください";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = "有効なメールアドレスを入力してください";
       }
   
       if (!formData.password) {
@@ -38,11 +41,22 @@ const Login = () => {
       return Object.keys(newErrors).length === 0;
     };
   
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
+      setErrorMessage("");
+      
       if (validateForm()) {
-        console.log("ログイン情報:", formData);
-        // TODO: API連携 & navigate('/dashboard') など
+        setLoading(true);
+        try {
+          await login(formData.email, formData.password);
+          console.log("✅ ログイン成功!");
+          navigate('/'); // メインページに遷移（/solo-taskに自動リダイレクトされる）
+        } catch (error: any) {
+          console.error("❌ ログインエラー:", error);
+          setErrorMessage(error.message || "ログインに失敗しました");
+        } finally {
+          setLoading(false);
+        }
       }
     };
   
@@ -58,25 +72,33 @@ const Login = () => {
           </h1>
   
           <form onSubmit={handleSubmit}>
-            {/* ユーザー名 */}
+            {/* エラーメッセージ */}
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* メールアドレス */}
             <div className="mb-6">
-              <label htmlFor="userName" className="block text-sm font-bold text-gray-700 mb-2">
-                ユーザー名
+              <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+                メールアドレス
               </label>
               <input
-                type="text"
-                id="userName"
-                name="userName"
-                value={formData.userName}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 rounded-lg border-2 focus:outline-none focus:ring-2 ${
-                  errors.userName 
+                  errors.email 
                     ? 'border-red-500 focus:ring-red-500' 
                     : 'border-white border-opacity-60 focus:border-blue-500'
                 }`}
-                placeholder="ユーザー名を入力"
+                placeholder="example@email.com"
+                disabled={loading}
               />
-              {errors.userName && <p className="mt-1 text-sm text-red-600">{errors.userName}</p>}
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
   
             {/* パスワード */}
@@ -97,6 +119,7 @@ const Login = () => {
                       : 'border-white border-opacity-60 focus:border-blue-500'
                   }`}
                   placeholder="パスワードを入力"
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -120,9 +143,10 @@ const Login = () => {
   
             <button
               type="submit"
-              className="w-full bg-white bg-opacity-30 hover:bg-opacity-40 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-white border-opacity-60"
+              disabled={loading}
+              className="w-full bg-white bg-opacity-30 hover:bg-opacity-40 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-white border-opacity-60 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ログイン
+              {loading ? "ログイン中..." : "ログイン"}
             </button>
           </form>
   

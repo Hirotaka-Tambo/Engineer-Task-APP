@@ -1,1 +1,188 @@
-// 管理者専用の機能(ユーザー無効化/締め切り直近の強制表示/通知の設定)
+import { supabase } from './supabaseClient';
+import type { ProjectMember, ProjectMemberWithUser, UpdateProjectMember } from '../components/types/projectMember';
+import type { Project, NewProject } from '../components/types/project';
+
+/**
+ * プロジェクトを作成
+ */
+export const createProject = async (project: NewProject, creatorUserId: string): Promise<Project> => {
+  // プロジェクトを作成
+  const { data: projectData, error: projectError } = await supabase
+    .from('project')
+    .insert(project)
+    .select()
+    .single();
+
+  if (projectError) throw projectError;
+
+  // 作成者を管理者として追加
+  const { error: memberError } = await supabase
+    .from('project_members')
+    .insert({
+      project_id: projectData.id,
+      user_id: creatorUserId,
+      role: 'admin',
+      is_active: true,
+    });
+
+  if (memberError) throw memberError;
+
+  return projectData as Project;
+};
+
+/**
+ * プロジェクトの全メンバーを取得
+ */
+export const getProjectMembers = async (projectId: string): Promise<ProjectMemberWithUser[]> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select(`
+      *,
+      user:user_id (
+        user_name,
+        email
+      )
+    `)
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+
+  return data.map((item: any) => ({
+    ...item,
+    user_name: item.user.user_name,
+    email: item.user.email,
+  })) as ProjectMemberWithUser[];
+};
+
+/**
+ * プロジェクトにメンバーを追加
+ */
+export const addProjectMember = async (
+  projectId: string,
+  userId: string,
+  role: 'admin' | 'member' = 'member'
+): Promise<ProjectMember> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .insert({
+      project_id: projectId,
+      user_id: userId,
+      role: role,
+      is_active: true,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as ProjectMember;
+};
+
+/**
+ * プロジェクトメンバーの役割を変更
+ */
+export const updateProjectMemberRole = async (
+  memberId: string,
+  updates: UpdateProjectMember
+): Promise<ProjectMember> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .update(updates)
+    .eq('id', memberId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as ProjectMember;
+};
+
+/**
+ * プロジェクトメンバーを無効化
+ */
+export const deactivateProjectMember = async (memberId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('project_members')
+    .update({ is_active: false })
+    .eq('id', memberId);
+
+  if (error) throw error;
+};
+
+/**
+ * プロジェクトメンバーを削除
+ */
+export const removeProjectMember = async (memberId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('project_members')
+    .delete()
+    .eq('id', memberId);
+
+  if (error) throw error;
+};
+
+/**
+ * ユーザーを無効化（全プロジェクトで）
+ */
+export const deactivateUser = async (userId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('user')
+    .update({ is_active: false })
+    .eq('id', userId);
+
+  if (error) throw error;
+};
+
+/**
+ * ユーザーを有効化
+ */
+export const activateUser = async (userId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('user')
+    .update({ is_active: true })
+    .eq('id', userId);
+
+  if (error) throw error;
+};
+
+/**
+ * プロジェクトの管理者を確認
+ */
+export const isProjectAdmin = async (projectId: string, userId: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select('role')
+    .eq('project_id', projectId)
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .single();
+
+  if (error) return false;
+  return data?.role === 'admin';
+};
+
+/**
+ * 全プロジェクトを取得
+ */
+export const getAllProjects = async (): Promise<Project[]> => {
+  const { data, error } = await supabase
+    .from('project')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as Project[];
+};
+
+/**
+ * ユーザーが所属するプロジェクトを取得
+ */
+export const getUserProjects = async (userId: string): Promise<Project[]> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select('project:project_id(*)')
+    .eq('user_id', userId)
+    .eq('is_active', true);
+
+  if (error) throw error;
+  return data.map((item: any) => item.project) as Project[];
+};

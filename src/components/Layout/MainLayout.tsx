@@ -1,14 +1,16 @@
 import React, { useState,useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import TaskModal from "../TaskModal/TaskModal";
 import { useTasks } from "../../hooks/useTasks";
+import { logout } from "../../services/authService";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
 import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
 
 const MainLayout : React.FC = () =>{
   const location = useLocation();
+  const navigate = useNavigate();
   const { 
     tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
 
@@ -151,6 +153,20 @@ const MainLayout : React.FC = () =>{
               className="bg-gradient-to-br from-blue-500 to-blue-800 text-white font-semibold py-3 px-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out"
             >
               + New Task
+            </button>
+            <button 
+              onClick={async () => {
+                try {
+                  await logout();
+                  console.log('✅ ログアウト成功');
+                  navigate('/login');
+                } catch (error) {
+                  console.error('❌ ログアウトエラー:', error);
+                }
+              }}
+              className="bg-gradient-to-br from-gray-500 to-gray-700 text-white font-semibold py-3 px-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out"
+            >
+              ログアウト
             </button>
           </div>
         </div>
