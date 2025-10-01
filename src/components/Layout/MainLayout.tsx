@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import TaskModal from "../TaskModal/TaskModal";
@@ -8,7 +8,9 @@ import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
 
 const MainLayout : React.FC = () =>{
-  const { tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
+  const location = useLocation();
+  const { 
+    tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
 
   // テスト用の仮ユーザー
   const currentUser = "demoUser";
@@ -26,21 +28,21 @@ const MainLayout : React.FC = () =>{
       id: "group-front", 
       label: "Front-end", 
       path: "/group-task/front",
-      filter: {type: 'group', category: 'front'},
+      filter: {type: 'front', category: 'front'},
       icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>'
     },
     { 
       id: "group-back", 
       label: "Back-end", 
       path: "/group-task/back",
-      filter: {type: 'group', category: 'back'},
+      filter: {type: 'back', category: 'back'},
       icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>'
     },
     { 
       id: "group-setting", 
       label: "Setting", 
       path: "/group-task/setting",
-      filter: {type: 'group', category: 'setting'},
+      filter: {type: 'setting', category: 'setting'},
       icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>'
     },
     { 
@@ -60,6 +62,14 @@ const MainLayout : React.FC = () =>{
 
   // 編集中タスク
   const [editingTask, setEditingTask] = useState<ExtendedTask | NewTaskUI | null>(null);
+
+  // ルート変更時に自動でフィルタを同期する
+  useEffect(() => {
+    const activeItem = sidebarItems.find((item) => item.path === location.pathname);
+    if (activeItem?.filter) {
+      setFilter(activeItem.filter);
+    }
+  }, [location.pathname]);
 
   // タスクをクリック(詳細閲覧と 編集時)
   const handleTaskClick = (task:ExtendedTask) =>{
@@ -110,6 +120,7 @@ const MainLayout : React.FC = () =>{
     deleteTask,
     toggleTaskStatus,
     openCreateModal,
+    setFilter
   };
 
   return(

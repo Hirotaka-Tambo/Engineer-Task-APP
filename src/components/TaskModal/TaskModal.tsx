@@ -9,7 +9,7 @@ interface TaskModalProps {
   onSave: (updatedTask: ExtendedTask | NewTaskUI) => void;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave}) => {
   // NewTaskUI（新規）かExtendedTask（既存）かを判定
   // TaskUIには createdAt があるが、NewTaskUI にはないことを利用
   const isNewTask = !("createdAt" in task);
@@ -45,7 +45,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     taskCategory: ['solo'],
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
-    assignedTo: "",
+    assignedTo: "", // チーム内ユーザー(のちにselectタグに変える)
     deadline: new Date(),
     oneLine: "",
     relatedUrl: "",
@@ -200,7 +200,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             />
           </div>
 
-           {/* タグ */}
+           {/* グループ */}
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-600 w-24">グループ</span>
             <div className="flex gap-3 flex-wrap">
@@ -214,15 +214,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
                 onChange={(e) => {
                   const checked = e.target.checked;
                   setEditedTask((prev)=>{
-                    let newCategories = [...prev.taskCategory];
-                    if (checked) {
-                      if (!newCategories.includes(category as TaskCategory)) {
-                        newCategories.push(category as TaskCategory);
-                      }
-                    } else{
-                      newCategories = newCategories.filter((c) => c !== category);
-                    }
-                    return { ...prev,taskCategory: newCategories} 
+                    const newCategories = checked 
+                    ? [...prev.taskCategory, category as TaskCategory].filter((v,i,a)=>a.indexOf(v)===i)
+                    : prev.taskCategory.filter((c) => c !== category);
+                    return { ...prev, taskCategory: newCategories };
                   });
               }}
               className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
