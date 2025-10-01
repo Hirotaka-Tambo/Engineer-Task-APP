@@ -1,3 +1,4 @@
+import type { TaskFilter } from "../../hooks/useTasks";
 import type { ExtendedTask } from "./task";
 
 // Mainlayout(親要素)がOutlet(子要素)に対して提供する共通レイアウト部分
@@ -7,4 +8,5 @@ export type OutletContextType = {
     deleteTask: (id: number) => void;
     toggleTaskStatus: (id: number) => void;
     openCreateModal: () => void;
+    setFilter : (filter:TaskFilter) => void;
 };

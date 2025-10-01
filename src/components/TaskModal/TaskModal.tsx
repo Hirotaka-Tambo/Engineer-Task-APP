@@ -9,7 +9,7 @@ interface TaskModalProps {
   onSave: (updatedTask: ExtendedTask | NewTaskUI) => void;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
+const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave}) => {
   // NewTaskUI（新規）かExtendedTask（既存）かを判定
   // TaskUIには createdAt があるが、NewTaskUI にはないことを利用
   const isNewTask = !("createdAt" in task);
@@ -45,7 +45,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
     taskCategory: ['solo'],
     icon: "",
     createdBy: "", // ログインユーザーから埋め込む想定
-    assignedTo: "",
+    assignedTo: "", // チーム内ユーザー(のちにselectタグに変える)
     deadline: new Date(),
     oneLine: "",
     relatedUrl: "",
@@ -200,7 +200,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
             />
           </div>
 
-           {/* タグ */}
+           {/* グループ */}
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-600 w-24">グループ</span>
             <div className="flex gap-3 flex-wrap">

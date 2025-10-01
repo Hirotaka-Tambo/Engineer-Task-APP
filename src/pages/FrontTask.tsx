@@ -1,18 +1,25 @@
-import React from "react";
-import type { ExtendedTask } from "../components/types/task";
+import {useEffect} from "react";
+import { useOutletContext } from "react-router-dom";
+import TaskBoard from "../components/TaskBoard/TaskBoard";
+import type { OutletContextType } from "../components/types/outletContext";
 
-// FrontTaskのプロパティ型定義
-interface FrontTaskProps {
-  onTaskClick?: (task: ExtendedTask) => void;
-}
 
-const FrontTask: React.FC<FrontTaskProps> = ({ onTaskClick: _onTaskClick }) => {
+const FrontTask: React.FC = () => {
+  const { tasks, onTaskClick, toggleTaskStatus,setFilter } =
+    useOutletContext<OutletContextType>();
+
+  
+  useEffect(() =>{
+          setFilter({type:"front"});   
+      },[setFilter]);
+      
   return (
     <div className="container mx-auto p-4">
-      <div className="text-center text-gray-500">
-        <p>グループタスク機能は準備中です。</p>
-        <p>後でSupabaseと連携して実装予定です。</p>
-      </div>
+      <TaskBoard
+        tasks={tasks}
+        onTaskClick={onTaskClick}
+        onToggleDone={toggleTaskStatus}
+      />
     </div>
   );
 };

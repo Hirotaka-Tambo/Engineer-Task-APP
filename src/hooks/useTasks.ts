@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { ExtendedTask, NewTaskUI, TaskStatus } from "../components/types/task";
 
 // テストのための仮データ
@@ -21,49 +21,46 @@ const initialTasks: ExtendedTask[] = [
   },
 ];
 
-export type TaskFilter ={
-  type: 'solo' | 'group' | 'team' | 'all';
+export type TaskFilter = {
+  type: 'solo' | 'front' | 'back' | 'setting' | 'team' | 'all';
   category?: 'front' | 'back' | 'setting' | 'all';
-}
+};
+
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<ExtendedTask[]>(initialTasks);
 
   // 現在のフィルタリング状態
   const [currentFilter, setCurrentFilter] = useState<TaskFilter>({ 
-      type: 'all', 
-      category: 'all'
+      type: 'all'
   }); 
 
+  // フィルタを更新する関数
+  const setFilter = useCallback((filter: TaskFilter) => {
+      setCurrentFilter(filter);
+  },[]);
+
+
   // タスクのフィルタリング処理
-  const filteredTasks = tasks.filter(task => {
-      // Teamは全部表示
-      if (currentFilter.type === "team") {
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      switch (currentFilter.type) {
+        case "team":
+          return true;
+        case "solo":
+          return task.taskCategory.includes("solo");
+        case "front":
+          return task.taskCategory.includes("front");
+        case "back":
+          return task.taskCategory.includes("back");
+        case "setting":
+          return task.taskCategory.includes("setting");
+        case "all":
+        default:
           return true;
       }
-
-      // soloフィルターによる絞り込み
-      if(currentFilter.type === "solo"){
-        return task.taskCategory.includes("solo");
-      }
-
-      // GroupCategory (Front/Back/setting) による絞り込み
-      if (currentFilter.type === 'group') {
-          if(currentFilter.category && currentFilter.category !== "all"){
-            return task.taskCategory.includes(currentFilter.category);
-          }
-          return task.taskCategory.includes("front") ||
-                  task.taskCategory.includes("back") ||
-                  task.taskCategory.includes("setting");
-          }          
-      return true;
-
   });
-
-  // フィルタを更新する関数
-  const setFilter = (filter: TaskFilter) => {
-      setCurrentFilter(filter);
-  };
+  },[tasks,currentFilter]);
 
     // タスクの追加
     const addTask = useCallback((newTask: NewTaskUI | ExtendedTask) => {
@@ -82,7 +79,7 @@ export const useTasks = () => {
 
   // タスクの削除
   const deleteTask = useCallback((id: number) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   }, []);
 
   // タスクの完了状態を切り替える
