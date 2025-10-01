@@ -9,9 +9,9 @@ interface TaskCardProps {
   onToggleDone?: (taskId: number) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) =>{
-  // 残り日数に応じたスタイルを取得する関数
-  const getDeadlineStyle = (deadline: Date) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
+  // 日付計算を1回だけ実行する共通関数
+  const getDaysRemaining = (deadline: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const deadlineDate = new Date(deadline);
@@ -19,23 +19,50 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) =>{
     
     const oneDay = 1000 * 60 * 60 * 24;
     const diffTime = deadlineDate.getTime() - today.getTime();
-    const daysRemaining = Math.ceil(diffTime / oneDay);
-    
+    return Math.ceil(diffTime / oneDay);
+  };
+
+  // 残り日数に応じたスタイルを取得する関数（タグスタイルと枠スタイルを統合）
+  const getDeadlineStyles = (daysRemaining: number) => {
     if (daysRemaining < 0) {
-      return "bg-red-100 text-red-800 border-red-300";
+      // 締め切り過ぎ
+      return {
+        tagStyle: "bg-red-100 text-red-800 border-red-300",
+        borderStyle: "border-red-400"
+      };
     } else if (daysRemaining === 0) {
-      return "bg-red-200 text-red-900 border-red-400 font-bold";
+      // 締め切り当日
+      return {
+        tagStyle: "bg-red-200 text-red-900 border-red-400 font-bold",
+        borderStyle: "border-red-400"
+      };
     } else if (daysRemaining === 1) {
-      return "bg-orange-200 text-orange-800 border-orange-300 font-semibold";
+      // 残り1日
+      return {
+        tagStyle: "bg-orange-200 text-orange-800 border-orange-300 font-semibold",
+        borderStyle: "border-orange-400"
+      };
     } else if (daysRemaining <= 3) {
-      return "bg-yellow-200 text-yellow-800 border-yellow-300";
+      // 残り2-3日
+      return {
+        tagStyle: "bg-yellow-200 text-yellow-800 border-yellow-300",
+        borderStyle: "border-yellow-400"
+      };
     } else {
-      return "bg-green-100 text-green-800 border-green-300";
+      // それ以外
+      return {
+        tagStyle: "bg-green-100 text-green-800 border-green-300",
+        borderStyle: "border-white border-opacity-60"
+      };
     }
   };
+
+  // 計算を1回だけ実行
+  const daysRemaining = getDaysRemaining(task.deadline);
+  const deadlineStyles = getDeadlineStyles(daysRemaining);
   return (
     <div 
-      className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border border-white border-opacity-60 transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col"
+      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${deadlineStyles.borderStyle}`}
       onClick={() => onClick?.(task)}
     >
       {/*1列目 タイトル+ ステータス */}
@@ -68,7 +95,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) =>{
           #{task.taskCategory}
         </span>
         {/* 残り日数タグ */}
-        <span className={`text-xs px-2 py-1 rounded-xl border ${getDeadlineStyle(task.deadline)}`}>
+        <span className={`text-xs px-2 py-1 rounded-xl border ${deadlineStyles.tagStyle}`}>
           {getDeadlineStatus(task.deadline)}
         </span>
         {task.icon && (
