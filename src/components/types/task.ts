@@ -16,7 +16,7 @@ export interface TaskUI{
     
     // 1列目
     title: string; // タスク名
-    taskstatus: TaskStatus; // 進行中/未着手/完了
+    taskStatus: TaskStatus; // 進行中/未着手/完了
 
     // 2列目
     priority: Priority; // 優先度(上記で限定的に型を指定)
@@ -44,7 +44,7 @@ export interface TaskDB{
   id : number // PK
   projectCode: string; // 内部での管理用
   title: string;
-  taskstatus: TaskStatus;
+  taskStatus: TaskStatus;
   priority: Priority;
   taskCategory: TaskCategory[];
   icon?: string;
@@ -60,7 +60,7 @@ export interface TaskDB{
 // DBからUI表示のための変換関数
 export const toTaskUI = (task: TaskDB): TaskUI =>({
   title: task.title,
-  taskstatus: task.taskstatus,
+  taskStatus: task.taskStatus,
   priority: task.priority,
   taskCategory:task.taskCategory,
   icon: task.icon,
@@ -90,5 +90,5 @@ export interface ExtendedTask extends TaskUI{
 
 // データベースへ更新を接続する用の型
 export type UpdateTaskDB = Partial<Omit<TaskDB, 'id' | 'createdAt'>>; // Partialで全てを編集対象に
-export type CardUpdate = Pick<UpdateTaskDB, 'taskstatus' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
+export type CardUpdate = Pick<UpdateTaskDB, 'taskStatus' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
 export type ModalUpdate = Omit<UpdateTaskDB, 'createdBy' | 'createdAt'>;

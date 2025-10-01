@@ -77,14 +77,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
               onToggleDone?.(task.id!);
             }}
             className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium ${
-              task.taskstatus === "todo"
+              task.taskStatus === "todo"
                 ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                : task.taskstatus === "in-progress"
+                : task.taskStatus === "in-progress"
                 ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                 : "bg-green-200 text-green-800 hover:bg-green-300"
             }`}
           >
-            {task.taskstatus === "todo" ? "未着手" : task.taskstatus === "in-progress" ? "進行中" : "完了"}
+            {task.taskStatus === "todo" ? "未着手" : task.taskStatus === "in-progress" ? "進行中" : "完了"}
           </button>
       </div>
 

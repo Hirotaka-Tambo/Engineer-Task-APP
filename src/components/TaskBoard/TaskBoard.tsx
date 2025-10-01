@@ -20,11 +20,11 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone 
         {columns.map((col) => (
             <div key={col.key} className="bg-gray-50 p-4 rounded-lg shadow">
                 <h2 className="text-lg font-semibold mb-3">{col.label}</h2>
-                {tasks.filter((task) => task.taskstatus === col.key).length === 0 ? (
+                {tasks.filter((task) => task.taskStatus === col.key).length === 0 ? (
                     <p className="text-gray-400 text-sm">タスクなし</p>
                 ) : (
                     tasks
-                    .filter((task) => task.taskstatus === col.key)
+                    .filter((task) => task.taskStatus === col.key)
                     .map((task) => (
                 <TaskCard
                 key={task.id}
