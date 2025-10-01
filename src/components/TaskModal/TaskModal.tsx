@@ -40,7 +40,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
   
   const defaultNewTask: NewTaskUI = {
     title: "",
-    taskstatus: "todo" as TaskStatus,
+    taskStatus: "todo" as TaskStatus,
     priority: 1,
     taskCategory: ['solo'],
     icon: "",

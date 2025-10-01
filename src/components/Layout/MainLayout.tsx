@@ -72,7 +72,7 @@ const MainLayout : React.FC = () =>{
 
     const newTask:NewTaskUI ={
       title: "",
-      taskstatus: "todo",
+      taskStatus: "todo",
       priority: 2,
       taskCategory: initialCategory ? [initialCategory] : ["solo"],
       icon: "",

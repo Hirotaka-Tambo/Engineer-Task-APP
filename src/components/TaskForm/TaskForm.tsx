@@ -4,7 +4,7 @@ import type { Priority, NewTaskUI } from "../types/task";
 // 初期化
 const initialTask: Omit<NewTaskUI, "createdBy"> = {
   title: "",
-  taskstatus: 'in-progress',
+  taskStatus: 'in-progress',
   priority: 1, // 「低」
   taskCategory: ['front'],
   icon: "",
