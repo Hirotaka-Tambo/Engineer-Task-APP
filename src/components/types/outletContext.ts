@@ -5,8 +5,8 @@ import type { ExtendedTask } from "./task";
 export type OutletContextType = {
     tasks: ExtendedTask[];
     onTaskClick: (task: ExtendedTask) => void;
-    deleteTask: (id: number) => void;
-    toggleTaskStatus: (id: number) => void;
+    deleteTask: (id: string) => void;
+    toggleTaskStatus: (id: string) => void;
     openCreateModal: () => void;
     setFilter : (filter:TaskFilter) => void;
 };
