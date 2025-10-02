@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import * as adminService from '../services/adminService';
 import type { NewProject } from '../components/types/project';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
     currentUserId: string;
@@ -10,22 +11,30 @@ export const RegisterPage = ({ currentUserId }: Props) => {
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-  // ランダムプロジェクトコード生成
-const generateProjectCode = () => 'PRJ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+     // ランダムプロジェクトコード生成
+    const generateProjectCode = () => 'PRJ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-const handleSubmit = async () => {
-    if (!name) return;
-    setLoading(true);
-    setError(null);
-    try {
-        const newProject: NewProject = {
-        name,
-        code: generateProjectCode(),
-    };
-    await adminService.createProject(newProject, currentUserId);
-    setName('');
-    alert('プロジェクト作成完了！');
+    const handleSubmit = async () => {
+        if (!name) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const newProject: NewProject = {
+                name,
+                code: generateProjectCode(),
+            };
+        
+        // プロジェクトの作成
+        const createdProject = await adminService.createProject(newProject, currentUserId);
+        setName('');
+
+        alert('プロジェクト作成完了!!')
+
+        // 新規プロジェクトの管理者画面への遷移
+        navigate(`/admin`);
+
     } catch (err: any) {
         setError(err.message || '作成失敗');
     } finally {

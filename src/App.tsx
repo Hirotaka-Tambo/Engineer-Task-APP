@@ -15,10 +15,9 @@ import { useAuth } from "./hooks/useAuth";
 const App = ()=>{
 
   // Supabaseの認証状態を取得
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading,role } = useAuth();
 
   console.log('App.tsx - loading:', loading, 'isAuthenticated:', isAuthenticated);
-
   // 認証状態の読み込み中は何も表示しない（またはローディング画面）
   if (loading) {
     console.log('App.tsx - ローディング中...');
@@ -56,11 +55,14 @@ const App = ()=>{
         <Route path = "group-task/back" element={<BackTask />} />
         <Route path = "group-task/setting" element={<SettingTask />} />
         <Route path = "team-task" element = {<TeamTask />} />
-        <Route path = "/admin" element = {<AdminPage />}/>
-        <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
+        <Route path="admin" element={role === "admin" ? <AdminPage /> : <Navigate to="/" />}/>
+
+        
+      </Route>
+
+      <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
         {/*user123はtest用 */}
 
-      </Route>
 
       {/*すべてのパスにマッチしない(404Found)*/}
       <Route path = "*" element={<div>404 Not Found</div>}/>
