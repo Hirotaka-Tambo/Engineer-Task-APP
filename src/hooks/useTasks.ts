@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import type { ExtendedTask, NewTaskUI, TaskStatus, NewTaskDB } from "../components/types/task";
+import { type ExtendedTask, type NewTaskUI, type TaskStatus, type NewTaskDB, toExtendedTask } from "../components/types/task";
 import { getTasksByProjectId, createTask, updateTask as updateTaskDB, deleteTask as deleteTaskDB } from "../services/taskService";
 import { getCurrentUser } from "../services/authService";
 
@@ -29,14 +29,9 @@ export const useTasks = () => {
       console.log('タスク取得成功:', tasksData.length, '件');
       console.log('取得したタスクデータ:', tasksData);
       
-      // TaskUIをExtendedTaskに変換
-      // 注意：DBのidはuuid（string）だが、ExtendedTaskのidはnumber（optional）
-      // ユニークなキーとして、タイトルとcreatedAtの組み合わせを使用
-      const extendedTasks: ExtendedTask[] = tasksData.map((task, index) => ({
-        ...task,
-        // 一時的にindexをidとして使用（Reactのkey用）
-        id: index + 1,
-      }));
+      const extendedTasks = tasksData.map((task) =>
+        toExtendedTask(task,"仮ユーザー","仮担当")
+    );
       
       setTasks(extendedTasks);
     } catch (error) {
@@ -137,10 +132,10 @@ export const useTasks = () => {
     }, [currentUserId, fetchTasks]);
 
   // タスクの削除
-  const deleteTask = useCallback(async (id: number) => {
+  const deleteTask = useCallback(async (id: string) => {
     try {
       console.log('タスク削除中...', id);
-      // idは現状numberだが、実際はstring(uuid)なので後で型を調整
+
       await deleteTaskDB(String(id));
       console.log('タスク削除成功');
       
@@ -152,7 +147,7 @@ export const useTasks = () => {
   }, [fetchTasks]);
 
   // タスクの完了状態を切り替える
-  const toggleTaskStatus = useCallback(async (id: number) => {
+  const toggleTaskStatus = useCallback(async (id: string) => {
     try {
       // 現在のタスクを見つける
       const task = tasks.find(t => t.id === id);

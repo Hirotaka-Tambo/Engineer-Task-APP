@@ -1,12 +1,57 @@
 import { supabase } from './supabaseClient';
 import type { TaskDB, NewTaskDB, UpdateTaskDB, TaskUI } from '../components/types/task';
-import { toTaskUI } from '../components/types/task';
 import { getUsersByIds } from './authService';
+
+/*
+ * 共通: TaskDB[] を TaskUI[] に変換
+ */
+
+const toTaskUI = (
+  task: TaskDB,
+  createdByName: string,
+  assignedToName: string
+): TaskUI => ({
+  title: task.title,
+  taskStatus: task.task_status,
+  priority: task.priority,
+  taskCategory: task.task_category,
+  icon: task.icon,
+  createdBy: createdByName,
+  assignedTo: assignedToName,
+  createdAt: new Date(task.created_at),
+  deadline: new Date(task.deadline),
+  oneLine: task.one_line,
+  relatedUrl: task.related_url,
+  memo: task.memo,
+});
+
+
+const fetchTasksWithUsers = async (tasks: TaskDB[]): Promise<TaskUI[]> => {
+  if (tasks.length === 0) return [];
+
+  // ユーザーIDを収集
+  const userIds = Array.from(
+    new Set(tasks.flatMap(task => [task.created_by, task.assigned_to]))
+  );
+
+  // ユーザー情報を一括取得
+  const users = await getUsersByIds(userIds);
+  const userMap = new Map(users.map(user => [user.id, user.user_name]));
+
+  // TaskUI に変換
+  return tasks.map(task =>
+    toTaskUI(
+      task,
+      userMap.get(task.created_by) || 'Unknown',
+      userMap.get(task.assigned_to) || 'Unknown'
+    )
+  );
+};
 
 /**
  * プロジェクトIDに基づいてタスクを取得
  */
-export const getTasksByProjectId = async (projectId: string): Promise<TaskUI[]> => {
+export const getTasksByProjectId = async (projectId: string): Promise<TaskDB[]> => {
   const { data, error } = await supabase
     .from('task')
     .select('*')
@@ -14,28 +59,7 @@ export const getTasksByProjectId = async (projectId: string): Promise<TaskUI[]> 
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-
-  const tasks = data as TaskDB[];
-  
-  // ユーザーIDを収集
-  const userIds = new Set<string>();
-  tasks.forEach(task => {
-    userIds.add(task.created_by);
-    userIds.add(task.assigned_to);
-  });
-
-  // ユーザー情報を一括取得
-  const users = await getUsersByIds(Array.from(userIds));
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  // TaskUIに変換
-  return tasks.map(task => 
-    toTaskUI(
-      task, 
-      userMap.get(task.created_by) || 'Unknown',
-      userMap.get(task.assigned_to) || 'Unknown'
-    )
-  );
+  return data as TaskDB[];
 };
 
 /**
@@ -51,17 +75,8 @@ export const getTaskById = async (taskId: string): Promise<TaskUI | null> => {
   if (error) throw error;
   if (!data) return null;
 
-  const task = data as TaskDB;
-  
-  // ユーザー情報を取得
-  const users = await getUsersByIds([task.created_by, task.assigned_to]);
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  return toTaskUI(
-    task,
-    userMap.get(task.created_by) || 'Unknown',
-    userMap.get(task.assigned_to) || 'Unknown'
-  );
+  const tasks = await fetchTasksWithUsers([data as TaskDB]);
+  return tasks[0] || null;
 };
 
 /**
@@ -76,28 +91,7 @@ export const getTasksByCategory = async (projectId: string, category: string): P
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-
-  const tasks = data as TaskDB[];
-  
-  // ユーザーIDを収集
-  const userIds = new Set<string>();
-  tasks.forEach(task => {
-    userIds.add(task.created_by);
-    userIds.add(task.assigned_to);
-  });
-
-  // ユーザー情報を一括取得
-  const users = await getUsersByIds(Array.from(userIds));
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  // TaskUIに変換
-  return tasks.map(task => 
-    toTaskUI(
-      task,
-      userMap.get(task.created_by) || 'Unknown',
-      userMap.get(task.assigned_to) || 'Unknown'
-    )
-  );
+  return fetchTasksWithUsers(data as TaskDB[]);
 };
 
 /**
@@ -153,28 +147,7 @@ export const getTasksByAssignedUser = async (userId: string, projectId: string):
     .order('deadline', { ascending: true });
 
   if (error) throw error;
-
-  const tasks = data as TaskDB[];
-  
-  // ユーザーIDを収集
-  const userIds = new Set<string>();
-  tasks.forEach(task => {
-    userIds.add(task.created_by);
-    userIds.add(task.assigned_to);
-  });
-
-  // ユーザー情報を一括取得
-  const users = await getUsersByIds(Array.from(userIds));
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  // TaskUIに変換
-  return tasks.map(task => 
-    toTaskUI(
-      task,
-      userMap.get(task.created_by) || 'Unknown',
-      userMap.get(task.assigned_to) || 'Unknown'
-    )
-  );
+  return fetchTasksWithUsers(data as TaskDB[]);
 };
 
 /**
@@ -189,28 +162,7 @@ export const getTasksByStatus = async (projectId: string, status: string): Promi
     .order('priority', { ascending: true });
 
   if (error) throw error;
-
-  const tasks = data as TaskDB[];
-  
-  // ユーザーIDを収集
-  const userIds = new Set<string>();
-  tasks.forEach(task => {
-    userIds.add(task.created_by);
-    userIds.add(task.assigned_to);
-  });
-
-  // ユーザー情報を一括取得
-  const users = await getUsersByIds(Array.from(userIds));
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  // TaskUIに変換
-  return tasks.map(task => 
-    toTaskUI(
-      task,
-      userMap.get(task.created_by) || 'Unknown',
-      userMap.get(task.assigned_to) || 'Unknown'
-    )
-  );
+  return fetchTasksWithUsers(data as TaskDB[]);
 };
 
 /**
@@ -231,26 +183,5 @@ export const getUpcomingTasks = async (projectId: string, daysAhead: number = 7)
     .order('deadline', { ascending: true });
 
   if (error) throw error;
-
-  const tasks = data as TaskDB[];
-  
-  // ユーザーIDを収集
-  const userIds = new Set<string>();
-  tasks.forEach(task => {
-    userIds.add(task.created_by);
-    userIds.add(task.assigned_to);
-  });
-
-  // ユーザー情報を一括取得
-  const users = await getUsersByIds(Array.from(userIds));
-  const userMap = new Map(users.map(user => [user.id, user.user_name]));
-
-  // TaskUIに変換
-  return tasks.map(task => 
-    toTaskUI(
-      task,
-      userMap.get(task.created_by) || 'Unknown',
-      userMap.get(task.assigned_to) || 'Unknown'
-    )
-  );
+  return fetchTasksWithUsers(data as TaskDB[]);
 };

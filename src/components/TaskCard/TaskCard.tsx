@@ -6,7 +6,7 @@ import { getDeadlineStatus } from "../../utils/dateUtils";
 interface TaskCardProps {
   task: ExtendedTask;
   onClick?: (task: ExtendedTask) => void;
-  onToggleDone?: (taskId: number) => void;
+  onToggleDone?: (taskId: string) => void;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
