@@ -5,7 +5,7 @@ import type { ExtendedTask } from "../types/task";
 interface TaskBoardProps {
     tasks: ExtendedTask[];
     onTaskClick?: (task: ExtendedTask) => void;
-    onToggleDone?: (taskId: number) => void;
+    onToggleDone?: (taskId: string) => void;
 }
 
 const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone }) => {
