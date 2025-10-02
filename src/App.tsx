@@ -39,6 +39,9 @@ const App = ()=>{
         element={isAuthenticated ? <Navigate to="/" /> : <Login />} 
       />
 
+      <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
+        {/*user123はtest用 */}
+
       {/*メインレイアウトの適用(認証をもとに)*/}
       <Route
         path = "/" // 認証のない場合はログインページへリダイレクト
@@ -59,9 +62,6 @@ const App = ()=>{
 
         
       </Route>
-
-      <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
-        {/*user123はtest用 */}
 
 
       {/*すべてのパスにマッチしない(404Found)*/}
