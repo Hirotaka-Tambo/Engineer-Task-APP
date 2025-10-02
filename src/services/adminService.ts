@@ -13,7 +13,7 @@ export const createProject = async (project: NewProject, creatorUserId: string):
     .select()
     .single();
 
-  if (projectError) throw projectError;
+  if (projectError || !projectData) throw projectError || new Error('プロジェクト作成を失敗しました');
 
   // 作成者を管理者として追加
   const { error: memberError } = await supabase
@@ -46,13 +46,24 @@ export const getProjectMembers = async (projectId: string): Promise<ProjectMembe
     .eq('project_id', projectId)
     .order('created_at', { ascending: true });
 
-  if (error) throw error;
+  if (error || !data) throw error || new Error('メンバー取得に失敗しました');
 
-  return data.map((item: any) => ({
-    ...item,
-    user_name: item.user.user_name,
-    email: item.user.email,
-  })) as ProjectMemberWithUser[];
+  return (data as Array<
+    { id: string;
+      project_id: string;
+      user_id: string;
+      role: 'admin' | 'member'; 
+      is_active: boolean; 
+      created_at: string;
+      updated_at: string;
+      user: { user_name: string; email: string};
+    }>).map(item => ({
+      id: item.id,
+      role: item.role,
+      is_active: item.is_active,
+      user_name: item.user.user_name,
+      email: item.user.email,
+  }))as ProjectMemberWithUser[];
 };
 
 /**
@@ -68,13 +79,13 @@ export const addProjectMember = async (
     .insert({
       project_id: projectId,
       user_id: userId,
-      role: role,
+      role,
       is_active: true,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error || !data) throw error || new Error('メンバーに追加しました');
   return data as ProjectMember;
 };
 
@@ -92,7 +103,7 @@ export const updateProjectMemberRole = async (
     .select()
     .single();
 
-  if (error) throw error;
+  if (error || !data) throw error || new Error('役割更新に失敗しました');
   return data as ProjectMember;
 };
 
