@@ -5,9 +5,9 @@ import SoloTask from "./pages/SoloTask";
 import FrontTask from "./pages/FrontTask"; 
 import BackTask from  "./pages/BackTask";
 import SettingTask from "./pages/SettingTask";
-// 後々分岐させる(front/back/settings)
 import TeamTask from "./pages/TeamTask";
 import AdminPage from "./pages/AdminPage";
+import RegisterPage from "./pages/RegisterPage";
 
 import MainLayout from "./components/Layout/MainLayout";
 import { useAuth } from "./hooks/useAuth";
@@ -56,7 +56,9 @@ const App = ()=>{
         <Route path = "group-task/back" element={<BackTask />} />
         <Route path = "group-task/setting" element={<SettingTask />} />
         <Route path = "team-task" element = {<TeamTask />} />
-        <Route path = "admin" element = {<AdminPage />}/>
+        <Route path = "/admin" element = {<AdminPage />}/>
+        <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
+        {/*user123はtest用 */}
 
       </Route>
 
