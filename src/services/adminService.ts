@@ -85,7 +85,7 @@ export const addProjectMember = async (
     .select()
     .single();
 
-  if (error || !data) throw error || new Error('メンバーに追加しました');
+  if (error || !data) throw error || new Error('メンバー追加に失敗しました');
   return data as ProjectMember;
 };
 
