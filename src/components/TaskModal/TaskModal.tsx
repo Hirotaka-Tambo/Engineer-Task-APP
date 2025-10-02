@@ -220,7 +220,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave}) =
                         setEditedTask((prev)=>{
                           let newCategories = [...prev.taskCategory];
                           if (checked) {
-                            // 3つ未満の場合のみ追加を許可
+                            // 3つ以下の場合のみ追加を許可(testのため/のちにgroupの選択のみに留める)
                             if (!newCategories.includes(category as TaskCategory) && newCategories.length < 3) {
                               newCategories.push(category as TaskCategory);
                             }

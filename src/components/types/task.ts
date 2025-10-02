@@ -9,10 +9,6 @@ export type TaskCategory = 'team' | 'front' | 'back' | 'setting' | 'solo';
 
 //タスクのUIを定義する型
 export interface TaskUI{
-
-    // TaskCard :: Figma section1 
-    // TaskModal :: Figma section2
-    // 上から表示されていく
     
     // 1列目
     title: string; // タスク名
@@ -58,9 +54,34 @@ export interface TaskDB{
   updated_at: string; // 更新日時
 }
 
+// UI/内部処理用に拡張する型(id必須/カスタム(Card状態やModal状態)可能にするためにinterfaceを採用)
+export interface ExtendedTask extends TaskUI{
+  id:string;
+  isEditing?: boolean; // モーダルでの編集機能のためのoptional
+  isUpdatingStatus?: boolean; // カード状態でもStatusを変更できるか否か
+  isUpdatingPriority?: boolean; // カード状態でも優先度を変更できる否か
+}
+
+// 新規タスクの作成時にDB側で必要な型
+export type NewTaskDB = Omit<TaskDB, 'id' | 'created_at' | 'updated_at'>;
+
+// 新規タスクの作成時にUI側で必要な型
+export type NewTaskUI = Omit<TaskUI, "createdAt">;
+
+// データベースへ更新を接続する用の型
+export type UpdateTaskDB = Partial<Omit<TaskDB, 'id' | 'created_at' | 'updated_at' | 'project_id'>>; // Partialで全てを編集対象に
+export type CardUpdate = Pick<UpdateTaskDB, 'task_status' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
+export type ModalUpdate = Omit<UpdateTaskDB, 'created_by'>; // 作成者は変更不可
+
+
 // DBからUI表示のための変換関数
 // 注意: createdBy/assignedToはuuidなので、表示時にユーザー名を取得する必要があります
-export const toTaskUI = (task: TaskDB, createdByName: string, assignedToName: string): TaskUI =>({
+export const toExtendedTask = (
+  task: TaskDB, 
+  createdByName: string, 
+  assignedToName: string
+): ExtendedTask =>({
+  id: task.id,
   title: task.title,
   taskStatus: task.task_status,
   priority: task.priority,
@@ -74,23 +95,3 @@ export const toTaskUI = (task: TaskDB, createdByName: string, assignedToName: st
   relatedUrl: task.related_url,
   memo: task.memo,
 })
-
-
-// 新規タスクの作成時にDB側で必要な型
-export type NewTaskDB = Omit<TaskDB, 'id' | 'created_at' | 'updated_at'>;
-
-// 新規タスクの作成時にUI側で必要な型
-export type NewTaskUI = Omit<TaskUI, "createdAt">;
-
-// UI用に拡張する型(カスタム(Card状態やModal状態)可能にするためにinterfaceを採用)
-export interface ExtendedTask extends TaskUI{
-  id? :number;
-  isEditing?: boolean; // モーダルでの編集機能のためのoptional
-  isUpdatingStatus?: boolean; // カード状態でもStatusを変更できるか否か
-  isUpdatingPriority?: boolean; // カード状態でも優先度を変更できる否か
-}
-
-// データベースへ更新を接続する用の型
-export type UpdateTaskDB = Partial<Omit<TaskDB, 'id' | 'created_at' | 'updated_at' | 'project_id'>>; // Partialで全てを編集対象に
-export type CardUpdate = Pick<UpdateTaskDB, 'task_status' | 'priority'>; // カード状態ではstatusとpriorityのみが編集可能に
-export type ModalUpdate = Omit<UpdateTaskDB, 'created_by'>; // 作成者は変更不可
