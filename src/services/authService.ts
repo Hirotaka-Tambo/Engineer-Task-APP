@@ -30,26 +30,53 @@ export const login = async (email: string, password: string) => {
  * 新規ユーザー登録
  */
 export const signUp = async (email: string, password: string, userName: string) => {
-  // Supabase Authでユーザー作成
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  try {
+    console.log('Supabase Authでユーザー作成開始...');
+    
+    // Supabase Authでユーザー作成
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-  if (authError) throw authError;
-  if (!authData.user) throw new Error('User creation failed');
+    if (authError) {
+      console.error('Supabase Auth エラー:', authError);
+      throw new Error(`認証エラー: ${authError.message}`);
+    }
+    
+    if (!authData.user) {
+      console.error('ユーザー作成失敗: authData.user が null');
+      throw new Error('ユーザー作成に失敗しました');
+    }
 
-  // userテーブルにユーザー情報を追加
-  const { error: userError } = await supabase.from('user').insert({
-    id: authData.user.id,
-    user_name: userName,
-    email: email,
-    is_active: true,
-  });
+    console.log('Supabase Auth 成功, user ID:', authData.user.id);
 
-  if (userError) throw userError;
+    // userテーブルにユーザー情報を追加
+    console.log('userテーブルにユーザー情報を挿入中...');
+    
+    const { error: userError } = await supabase.from('user').insert({
+      id: authData.user.id,
+      user_name: userName,
+      email: email,
+      role: 'admin', // 新規登録時は管理者として設定
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
 
-  return authData;
+    if (userError) {
+      console.error('userテーブル挿入エラー:', userError);
+      throw new Error(`ユーザー情報の保存に失敗しました: ${userError.message}`);
+    }
+
+    console.log('userテーブル挿入成功');
+    
+    return authData;
+    
+  } catch (error) {
+    console.error('signUp 全体エラー:', error);
+    throw error;
+  }
 };
 
 /**
@@ -82,7 +109,20 @@ export const getCurrentUser = async (): Promise<User | null> => {
     .eq('id', authUser.id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // userテーブルにデータがない場合のフォールバック
+    console.warn('userテーブルにデータが見つかりません、フォールバック処理を実行:', error);
+    return {
+      id: authUser.id,
+      user_name: authUser.email?.split('@')[0] || 'ユーザー',
+      email: authUser.email || '',
+      role: 'member',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as User;
+  }
+  
   return data as User;
 };
 
