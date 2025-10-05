@@ -26,6 +26,7 @@ export const AdminPage = () => {
         }
       } catch (error) {
         console.error('プロジェクト取得エラー:', error);
+        setProjectId(undefined);
       } finally {
         setLoading(false);
       }

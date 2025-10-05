@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as adminService from '../services/adminService';
+import { createProject } from '../services/adminService';
 import type { NewProject } from '../components/types/project';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ export const RegisterPage = ({ currentUserId }: Props) => {
             };
         
         // プロジェクトの作成
-        const createdProject = await adminService.createProject(newProject, currentUserId);
+        await createProject(newProject, currentUserId);
         setName('');
 
         alert('プロジェクト作成完了!!')
