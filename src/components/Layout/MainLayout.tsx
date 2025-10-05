@@ -62,6 +62,9 @@ const MainLayout : React.FC = () =>{
     },
   ];
 
+  // アクティブアイテムIDを計算
+  const activeItemId = sidebarItems.find(item => item.path === location.pathname)?.id || location.pathname.replace("/","");
+
   // 編集中タスク
   const [editingTask, setEditingTask] = useState<ExtendedTask | NewTaskUI | null>(null);
 
@@ -130,7 +133,7 @@ const MainLayout : React.FC = () =>{
       {/*サイドバー配置*/}
       <Sidebar 
         items={sidebarItems}
-        activeItemId={sidebarItems.find(item => item.path === useLocation().pathname)?.id || useLocation().pathname.replace("/","")}
+        activeItemId={activeItemId}
         onItemClick={(item) => {
           // ナビゲーションはReact RouterのLinkで処理されるため、ここでは何もしない
           if(item.filter){

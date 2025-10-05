@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
+import { getProjectByCode, addProjectMember, getUserProjects } from "../services/adminService";
 
 const Login = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
       email: "",
-      password: ""
+      password: "",
+      projectCode: ""
     });
-    const [errors, setErrors] = useState<{email?: string, password?: string}>({});
+    const [errors, setErrors] = useState<{email?: string, password?: string, projectCode?: string}>({});
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -23,7 +25,7 @@ const Login = () => {
     };
   
     const validateForm = () => {
-      const newErrors: {email?: string, password?: string} = {};
+      const newErrors: {email?: string, password?: string, projectCode?: string} = {};
   
       if (!formData.email.trim()) {
         newErrors.email = "メールアドレスを入力してください";
@@ -35,6 +37,10 @@ const Login = () => {
         newErrors.password = "パスワードを入力してください";
       } else if (formData.password.length < 6) {
         newErrors.password = "パスワードは6文字以上で入力してください";
+      }
+
+      if (!formData.projectCode.trim()) {
+        newErrors.projectCode = "プロジェクトコードを入力してください";
       }
   
       setErrors(newErrors);
@@ -48,11 +54,45 @@ const Login = () => {
       if (validateForm()) {
         setLoading(true);
         try {
-          await login(formData.email, formData.password);
+          const authUser = await login(formData.email, formData.password);
           console.log("✅ ログイン成功!");
-          navigate('/'); // メインページに遷移（/solo-taskに自動リダイレクトされる）
+          
+          // プロジェクトコードでプロジェクトを検索
+          const project = await getProjectByCode(formData.projectCode);
+          if (!project) {
+            setErrorMessage("プロジェクトコードが無効です。正しいコードを入力してください。");
+            return;
+          }
+          
+          console.log("📋 プロジェクトが見つかりました:", project.name);
+          
+          // 現在のユーザーをプロジェクトのメンバーに追加
+          if (authUser.user) {
+            // ユーザーが既にプロジェクトのメンバーかどうかを確認
+            try {
+              const userProjects = await getUserProjects(authUser.user.id);
+              const isMember = userProjects.some(p => p.id === project.id);
+              
+              if (!isMember) {
+                // メンバーでない場合のみ追加を試みる
+                await addProjectMember(project.id, authUser.user.id, 'member');
+                console.log("プロジェクトに参加しました:", project.name);
+              } else {
+                console.log("ℹ既にプロジェクトのメンバーです");
+              }
+            } catch (memberError: any) {
+              console.warn("プロジェクトメンバー処理エラー:", memberError.message);
+              setErrorMessage("プロジェクトへの参加に失敗しました。");
+              return;
+            }
+          }
+          
+          // 認証状態の更新を待ってから遷移
+          setTimeout(() => {
+            navigate('/'); // メインページに遷移（/solo-taskに自動リダイレクトされる）
+          }, 100);
         } catch (error: any) {
-          console.error("❌ ログインエラー:", error);
+          console.error("ログインエラー:", error);
           setErrorMessage(error.message || "ログインに失敗しました");
         } finally {
           setLoading(false);
@@ -102,7 +142,7 @@ const Login = () => {
             </div>
   
             {/* パスワード */}
-            <div className="mb-8">
+            <div className="mb-6">
               <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
                 パスワード
               </label>
@@ -139,6 +179,28 @@ const Login = () => {
                 </button>
               </div>
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+            </div>
+
+            {/* プロジェクトコード */}
+            <div className="mb-8">
+              <label htmlFor="projectCode" className="block text-sm font-bold text-gray-700 mb-2">
+                プロジェクトコード
+              </label>
+              <input
+                type="text"
+                id="projectCode"
+                name="projectCode"
+                value={formData.projectCode}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 rounded-lg border-2 focus:outline-none focus:ring-2 ${
+                  errors.projectCode 
+                    ? 'border-red-500 focus:ring-red-500' 
+                    : 'border-white border-opacity-60 focus:border-blue-500'
+                }`}
+                placeholder="例: PRJ-ABC123"
+                disabled={loading}
+              />
+              {errors.projectCode && <p className="mt-1 text-sm text-red-600">{errors.projectCode}</p>}
             </div>
   
             <button
