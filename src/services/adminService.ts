@@ -6,28 +6,57 @@ import type { Project, NewProject } from '../components/types/project';
  * プロジェクトを作成
  */
 export const createProject = async (project: NewProject, creatorUserId: string): Promise<Project> => {
-  // プロジェクトを作成
-  const { data: projectData, error: projectError } = await supabase
-    .from('project')
-    .insert(project)
-    .select()
-    .single();
+  try {
+    console.log('🏗️ プロジェクト作成開始...', project);
+    
+    // プロジェクトを作成
+    const { data: projectData, error: projectError } = await supabase
+      .from('project')
+      .insert({
+        ...project,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
-  if (projectError || !projectData) throw projectError || new Error('プロジェクト作成を失敗しました');
+    if (projectError) {
+      console.error('プロジェクト作成エラー:', projectError);
+      throw new Error(`プロジェクト作成に失敗しました: ${projectError.message}`);
+    }
+    
+    if (!projectData) {
+      console.error('プロジェクト作成失敗: projectData が null');
+      throw new Error('プロジェクト作成に失敗しました');
+    }
 
-  // 作成者を管理者として追加
-  const { error: memberError } = await supabase
-    .from('project_members')
-    .insert({
-      project_id: projectData.id,
-      user_id: creatorUserId,
-      role: 'admin',
-      is_active: true,
-    });
+    console.log('プロジェクト作成成功, project ID:', projectData.id);
 
-  if (memberError) throw memberError;
+    // 作成者を管理者として追加
+    console.log('プロジェクトメンバーに作成者を追加中...');
+    const { error: memberError } = await supabase
+      .from('project_members')
+      .insert({
+        project_id: projectData.id,
+        user_id: creatorUserId,
+        role: 'admin',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
 
-  return projectData as Project;
+    if (memberError) {
+      console.error('プロジェクトメンバー追加エラー:', memberError);
+      throw new Error(`プロジェクトメンバーの追加に失敗しました: ${memberError.message}`);
+    }
+
+    console.log('プロジェクトメンバー追加成功');
+    return projectData as Project;
+    
+  } catch (error) {
+    console.error('createProject 全体エラー:', error);
+    throw error;
+  }
 };
 
 /**
