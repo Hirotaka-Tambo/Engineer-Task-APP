@@ -6,6 +6,7 @@ import { getProjectByCode, addProjectMember, getUserProjects } from "../services
 const Login = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+      projectCode: "",
       email: "",
       password: "",
       projectCode: ""
@@ -32,7 +33,7 @@ const Login = () => {
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         newErrors.email = "有効なメールアドレスを入力してください";
       }
-  
+
       if (!formData.password) {
         newErrors.password = "パスワードを入力してください";
       } else if (formData.password.length < 6) {
@@ -118,6 +119,28 @@ const Login = () => {
                 {errorMessage}
               </div>
             )}
+
+            {/* プロジェクトコード */}
+            <div className="mb-6">
+              <label htmlFor="projectCode" className="block text-sm font-bold text-gray-700 mb-2">
+                プロジェクトコード
+              </label>
+              <input
+                type="text"
+                id="projectCode"
+                name="projectCode"
+                value={formData.projectCode}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 rounded-lg border-2 focus:outline-none focus:ring-2 ${
+                  errors.projectCode 
+                    ? 'border-red-500 focus:ring-red-500' 
+                    : 'border-white border-opacity-60 focus:border-blue-500'
+                }`}
+                placeholder="例: PRJ-89P9VK"
+                disabled={loading}
+              />
+              {errors.projectCode && <p className="mt-1 text-sm text-red-600">{errors.projectCode}</p>}
+            </div>
 
             {/* メールアドレス */}
             <div className="mb-6">

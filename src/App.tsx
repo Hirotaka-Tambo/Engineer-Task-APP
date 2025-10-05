@@ -35,8 +35,11 @@ const App = ()=>{
         element={isAuthenticated ? <Navigate to="/" /> : <Login />} 
       />
 
-      <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
-        {/*user123はtest用 */}
+      {/* ユーザー登録ページ：認証済みの場合はメインページにリダイレクト */}
+      <Route 
+        path="/register" 
+        element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />} 
+      />
 
       {/*メインレイアウトの適用(認証をもとに)*/}
       <Route
