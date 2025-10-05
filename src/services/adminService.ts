@@ -63,8 +63,6 @@ export const createProject = async (project: NewProject, creatorUserId: string):
  * プロジェクトの全メンバーを取得
  */
 export const getProjectMembers = async (projectId: string): Promise<ProjectMemberWithUser[]> => {
-  console.log('getProjectMembers 開始:', projectId);
-  
   // まずproject_membersを取得
   const { data: membersData, error: membersError } = await supabase
     .from('project_members')
@@ -78,11 +76,8 @@ export const getProjectMembers = async (projectId: string): Promise<ProjectMembe
   }
 
   if (!membersData || membersData.length === 0) {
-    console.log('メンバーが見つかりません');
     return [];
   }
-
-  console.log('project_members取得成功:', membersData.length, '件');
 
   // 各メンバーのユーザー情報を取得
   const userIds = membersData.map(member => member.user_id);
@@ -96,8 +91,6 @@ export const getProjectMembers = async (projectId: string): Promise<ProjectMembe
     throw usersError;
   }
 
-  console.log('users取得成功:', usersData?.length || 0, '件');
-
   // データを結合
   const result = membersData.map(member => {
     const user = usersData?.find(u => u.id === member.user_id);
@@ -110,7 +103,6 @@ export const getProjectMembers = async (projectId: string): Promise<ProjectMembe
     } as ProjectMemberWithUser;
   });
 
-  console.log('getProjectMembers 成功:', result);
   return result;
 };
 
@@ -236,31 +228,18 @@ export const getAllProjects = async (): Promise<Project[]> => {
  * ユーザーが所属するプロジェクトを取得
  */
 export const getUserProjects = async (userId: string): Promise<Project[]> => {
-  console.log('getUserProjects 開始:');
-  console.log('  - ユーザーID:', userId);
-  
-  // まず現在の認証状態を確認
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log('  - 認証ユーザーID:', user?.id);
-  console.log('  - 認証状態一致:', user?.id === userId);
-  
   const { data, error } = await supabase
     .from('project_members')
     .select('project:project_id(*)')
     .eq('user_id', userId)
     .eq('is_active', true);
 
-  console.log('  - クエリ結果:', data);
-  console.log('  - エラー:', error);
-  
   if (error) {
     console.error('getUserProjects エラー:', error);
     throw error;
   }
   
-  const projects = data.map((item: any) => item.project) as Project[];
-  console.log('✅ getUserProjects 成功:', projects);
-  return projects;
+  return data.map((item: any) => item.project) as Project[];
 };
 
 /**

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import * as adminService from '../services/adminService';
-import { signUp } from '../services/authService';
+import { createProject } from '../services/adminService';
 import type { NewProject } from '../components/types/project';
 import { useNavigate } from 'react-router-dom';
 
@@ -104,18 +103,15 @@ export const RegisterPage = () => {
                 code: generateProjectCode(),
             };
         
-                const createdProject = await adminService.createProject(newProject, authData.user.id);
-                
-                console.log("登録&プロジェクト作成成功!");
-                console.log("作成されたプロジェクト:", createdProject);
-                
-                // 成功データを設定してモーダルを表示
-                setSuccessData({
-                    projectCode: createdProject.code,
-                    email: formData.email,
-                    password: formData.password
-                });
-                setShowSuccessModal(true);
+        // プロジェクトの作成
+        await createProject(newProject, currentUserId);
+        setName('');
+
+        alert('プロジェクト作成完了!!')
+
+        // 新規プロジェクトの管理者画面への遷移
+        navigate(`/admin`);
+
     } catch (err: any) {
                 console.error("登録エラー:", err);
                 setError(err.message || "登録に失敗しました");
