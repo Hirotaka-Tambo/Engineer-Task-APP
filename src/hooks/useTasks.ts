@@ -2,9 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { type ExtendedTask, type NewTaskUI, type TaskStatus, type NewTaskDB, toExtendedTask } from "../components/types/task";
 import { getTasksByProjectId, createTask, updateTask as updateTaskDB, deleteTask as deleteTaskDB } from "../services/taskService";
 import { getCurrentUser } from "../services/authService";
-
-// テストプロジェクトID（開発用）
-const TEST_PROJECT_ID = "2dcafdb0-9a52-4294-85a0-792407b4a2ef";
+import { getUserProjects } from "../services/adminService";
 
 export type TaskFilter = {
   type: 'solo' | 'front' | 'back' | 'setting' | 'team' | 'all';
@@ -15,6 +13,7 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<ExtendedTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
   // 現在のフィルタリング状態
   const [currentFilter, setCurrentFilter] = useState<TaskFilter>({ 
@@ -23,9 +22,14 @@ export const useTasks = () => {
 
   // タスク一覧を取得する関数
   const fetchTasks = useCallback(async () => {
+    if (!currentProjectId) {
+      console.log('プロジェクトIDが設定されていません');
+      return;
+    }
+    
     try {
-      console.log('タスク取得中...');
-      const tasksData = await getTasksByProjectId(TEST_PROJECT_ID);
+      console.log('タスク取得中... プロジェクトID:', currentProjectId);
+      const tasksData = await getTasksByProjectId(currentProjectId);
       console.log('タスク取得成功:', tasksData.length, '件');
       console.log('取得したタスクデータ:', tasksData);
       
@@ -37,7 +41,7 @@ export const useTasks = () => {
     } catch (error) {
       console.error('タスク取得エラー:', error);
     }
-  }, []);
+  }, [currentProjectId]);
 
   // 初回マウント時：ユーザー情報とタスクを取得
   useEffect(() => {
@@ -49,12 +53,22 @@ export const useTasks = () => {
         if (user) {
           setCurrentUserId(user.id);
           console.log('ユーザーID取得:', user.id);
+          
+          // ユーザーが所属するプロジェクトを取得
+          const userProjects = await getUserProjects(user.id);
+          console.log('ユーザーのプロジェクト:', userProjects);
+          
+          if (userProjects.length > 0) {
+            // 最初のプロジェクトを使用
+            const firstProject = userProjects[0];
+            setCurrentProjectId(firstProject.id);
+            console.log('使用するプロジェクト:', firstProject.name, 'ID:', firstProject.id);
+          } else {
+            console.warn('ユーザーはどのプロジェクトにも所属していません');
+          }
         } else {
           console.warn('ユーザー情報が取得できませんでした');
         }
-
-        // タスク一覧を取得
-        await fetchTasks();
         console.log('useTasks初期化完了');
       } catch (error) {
         console.error('初期化エラー:', error);
@@ -67,6 +81,13 @@ export const useTasks = () => {
     initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 依存配列を空にして初回のみ実行
+
+  // プロジェクトIDが設定されたらタスクを取得
+  useEffect(() => {
+    if (currentProjectId) {
+      fetchTasks();
+    }
+  }, [currentProjectId, fetchTasks]);
 
   // フィルタを更新する関数
   const setFilter = useCallback((filter: TaskFilter) => {
@@ -103,7 +124,15 @@ export const useTasks = () => {
       }
 
       try {
-        console.log('タスク作成中...', newTask);
+        console.log('タスク作成処理開始:');
+        console.log('  - 現在のユーザーID:', currentUserId);
+        console.log('  - 現在のプロジェクトID:', currentProjectId);
+        console.log('  - タスクタイトル:', newTask.title);
+        
+        if (!currentProjectId) {
+          console.error('プロジェクトIDが設定されていません');
+          return;
+        }
         
         // NewTaskDBに変換
         const taskToCreate: NewTaskDB = {
@@ -118,9 +147,13 @@ export const useTasks = () => {
           one_line: newTask.oneLine,
           memo: newTask.memo,
           related_url: newTask.relatedUrl,
-          project_id: TEST_PROJECT_ID,
+          project_id: currentProjectId,
         };
 
+        console.log('📋 作成するタスクデータ:');
+        console.log('  - created_by:', taskToCreate.created_by);
+        console.log('  - assigned_to:', taskToCreate.assigned_to);
+        console.log('  - project_id:', taskToCreate.project_id);
         await createTask(taskToCreate);
         console.log('タスク作成成功');
         
@@ -129,7 +162,7 @@ export const useTasks = () => {
       } catch (error) {
         console.error('タスク作成エラー:', error);
       }
-    }, [currentUserId, fetchTasks]);
+    }, [currentUserId, currentProjectId, fetchTasks]);
 
   // タスクの削除
   const deleteTask = useCallback(async (id: string) => {

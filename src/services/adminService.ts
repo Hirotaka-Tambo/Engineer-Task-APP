@@ -63,36 +63,55 @@ export const createProject = async (project: NewProject, creatorUserId: string):
  * プロジェクトの全メンバーを取得
  */
 export const getProjectMembers = async (projectId: string): Promise<ProjectMemberWithUser[]> => {
-  const { data, error } = await supabase
+  console.log('getProjectMembers 開始:', projectId);
+  
+  // まずproject_membersを取得
+  const { data: membersData, error: membersError } = await supabase
     .from('project_members')
-    .select(`
-      *,
-      user:user_id (
-        user_name,
-        email
-      )
-    `)
+    .select('*')
     .eq('project_id', projectId)
     .order('created_at', { ascending: true });
 
-  if (error || !data) throw error || new Error('メンバー取得に失敗しました');
+  if (membersError) {
+    console.error('project_members取得エラー:', membersError);
+    throw membersError;
+  }
 
-  return (data as Array<
-    { id: string;
-      project_id: string;
-      user_id: string;
-      role: 'admin' | 'member'; 
-      is_active: boolean; 
-      created_at: string;
-      updated_at: string;
-      user: { user_name: string; email: string};
-    }>).map(item => ({
-      id: item.id,
-      role: item.role,
-      is_active: item.is_active,
-      user_name: item.user.user_name,
-      email: item.user.email,
-  }))as ProjectMemberWithUser[];
+  if (!membersData || membersData.length === 0) {
+    console.log('メンバーが見つかりません');
+    return [];
+  }
+
+  console.log('project_members取得成功:', membersData.length, '件');
+
+  // 各メンバーのユーザー情報を取得
+  const userIds = membersData.map(member => member.user_id);
+  const { data: usersData, error: usersError } = await supabase
+    .from('users')
+    .select('id, user_name, email')
+    .in('id', userIds);
+
+  if (usersError) {
+    console.error('users取得エラー:', usersError);
+    throw usersError;
+  }
+
+  console.log('users取得成功:', usersData?.length || 0, '件');
+
+  // データを結合
+  const result = membersData.map(member => {
+    const user = usersData?.find(u => u.id === member.user_id);
+    return {
+      id: member.id,
+      role: member.role,
+      is_active: member.is_active,
+      user_name: user?.user_name || '不明',
+      email: user?.email || '不明',
+    } as ProjectMemberWithUser;
+  });
+
+  console.log('getProjectMembers 成功:', result);
+  return result;
 };
 
 /**
@@ -165,7 +184,7 @@ export const removeProjectMember = async (memberId: string): Promise<void> => {
  */
 export const deactivateUser = async (userId: string): Promise<void> => {
   const { error } = await supabase
-    .from('user')
+    .from('users')
     .update({ is_active: false })
     .eq('id', userId);
 
@@ -177,7 +196,7 @@ export const deactivateUser = async (userId: string): Promise<void> => {
  */
 export const activateUser = async (userId: string): Promise<void> => {
   const { error } = await supabase
-    .from('user')
+    .from('users')
     .update({ is_active: true })
     .eq('id', userId);
 
@@ -217,12 +236,49 @@ export const getAllProjects = async (): Promise<Project[]> => {
  * ユーザーが所属するプロジェクトを取得
  */
 export const getUserProjects = async (userId: string): Promise<Project[]> => {
+  console.log('getUserProjects 開始:');
+  console.log('  - ユーザーID:', userId);
+  
+  // まず現在の認証状態を確認
+  const { data: { user } } = await supabase.auth.getUser();
+  console.log('  - 認証ユーザーID:', user?.id);
+  console.log('  - 認証状態一致:', user?.id === userId);
+  
   const { data, error } = await supabase
     .from('project_members')
     .select('project:project_id(*)')
     .eq('user_id', userId)
     .eq('is_active', true);
 
-  if (error) throw error;
-  return data.map((item: any) => item.project) as Project[];
+  console.log('  - クエリ結果:', data);
+  console.log('  - エラー:', error);
+  
+  if (error) {
+    console.error('getUserProjects エラー:', error);
+    throw error;
+  }
+  
+  const projects = data.map((item: any) => item.project) as Project[];
+  console.log('✅ getUserProjects 成功:', projects);
+  return projects;
 };
+
+/**
+ * プロジェクトコードでプロジェクトを検索
+ */
+export const getProjectByCode = async (projectCode: string): Promise<Project | null> => {
+  const { data, error } = await supabase
+    .from('project')
+    .select('*')
+    .eq('code', projectCode)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return null; // プロジェクトが見つからない
+    }
+    throw error;
+  }
+  return data as Project;
+};
+

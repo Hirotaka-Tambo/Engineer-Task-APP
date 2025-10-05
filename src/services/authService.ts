@@ -49,7 +49,14 @@ export const signUp = async (email: string, password: string, userName: string) 
       throw new Error('ユーザー作成に失敗しました');
     }
 
-    console.log('Supabase Auth 成功, user ID:', authData.user.id);
+  // usersテーブルにユーザー情報を追加
+  const { error: userError } = await supabase.from('users').insert({
+    id: authData.user.id,
+    user_name: userName,
+    email: email,
+    role: 'member',
+    is_active: true,
+  });
 
     // userテーブルにユーザー情報を追加
     console.log('userテーブルにユーザー情報を挿入中...');
@@ -97,14 +104,14 @@ export const getCurrentAuthUser = async () => {
 };
 
 /**
- * 現在ログイン中のユーザー情報を取得（userテーブル）
+ * 現在ログイン中のユーザー情報を取得（usersテーブル）
  */
 export const getCurrentUser = async (): Promise<User | null> => {
   const authUser = await getCurrentAuthUser();
   if (!authUser) return null;
 
   const { data, error } = await supabase
-    .from('user')
+    .from('users')
     .select('*')
     .eq('id', authUser.id)
     .single();
@@ -131,7 +138,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
  */
 export const getUserById = async (userId: string): Promise<User | null> => {
   const { data, error } = await supabase
-    .from('user')
+    .from('users')
     .select('*')
     .eq('id', userId)
     .single();
@@ -145,7 +152,7 @@ export const getUserById = async (userId: string): Promise<User | null> => {
  */
 export const getUsersByIds = async (userIds: string[]): Promise<User[]> => {
   const { data, error } = await supabase
-    .from('user')
+    .from('users')
     .select('*')
     .in('id', userIds);
 
@@ -159,12 +166,12 @@ export const getUsersByIds = async (userIds: string[]): Promise<User[]> => {
 export const getUsersByProjectId = async (projectId: string): Promise<User[]> => {
   const { data, error } = await supabase
     .from('project_members')
-    .select('user_id, user:user_id(*)')
+    .select('user_id, users:user_id(*)')
     .eq('project_id', projectId)
     .eq('is_active', true);
 
   if (error) throw error;
-  return data.map((item: any) => item.user) as User[];
+  return data.map((item: any) => item.users) as User[];
 };
 
 /**

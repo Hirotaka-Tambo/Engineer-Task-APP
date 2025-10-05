@@ -1,19 +1,44 @@
 import { useState, useEffect } from 'react';
 import { useAdmin } from '../hooks/useAdmin';
-import { useParams } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { getUserProjects } from '../services/adminService';
 
 export const AdminPage = () => {
-  const {projectId} = useParams<{projectId: string}>();
+  const { user } = useAuth();
+  const [projectId, setProjectId] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
   
-  const { members, fetchProjectMembers, addMember, updateMemberRole, removeMember, loading, error } = useAdmin(projectId);
+  const { members, fetchProjectMembers, addMember, updateMemberRole, removeMember, loading: adminLoading, error } = useAdmin(projectId);
   const [newUserId, setNewUserId] = useState('');
   const [newRole, setNewRole] = useState<'admin' | 'member'>('member');
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
+    const loadUserProject = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const projects = await getUserProjects(user.id);
+        if (projects.length > 0) {
+          setProjectId(projects[0].id);
+        } else {
+          setProjectId(undefined);
+        }
+      } catch (error) {
+        console.error('プロジェクト取得エラー:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserProject();
+  }, [user?.id]);
+
+  useEffect(() => {
     if (projectId) fetchProjectMembers();
   }, [projectId, fetchProjectMembers]);
 
+  if (loading) return <p className="p-4">読み込み中...</p>;
   if (!projectId) return <p className="p-4 text-red-500">プロジェクトが選択されていません</p>;
 
   if(error) return <p className='text-red-500'>{error}</p>
@@ -88,7 +113,7 @@ export const AdminPage = () => {
           </tr>
         </thead>
         <tbody>
-          {members.length > 0 ? (
+          {members && members.length > 0 ? (
             members.map(member => (
               <tr key={member.id}>
                 <td className="border px-2 py-1">{member.user_name || '-'}</td>
@@ -121,7 +146,7 @@ export const AdminPage = () => {
         </tbody>
       </table>
 
-      {loading && <p>読み込み中...</p>}
+      {adminLoading && <p>読み込み中...</p>}
     </div>
   );
 };
