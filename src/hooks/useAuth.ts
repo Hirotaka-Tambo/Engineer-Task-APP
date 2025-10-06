@@ -32,9 +32,9 @@ export const useAuth = () => {
       }
       
       try {
-        // タイムアウト（3秒）- バランスの取れた設定
+        // タイムアウト（5秒）- 適切なタイムアウト時間に短縮
         const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('タイムアウト: 3秒経過')), 3000)
+          setTimeout(() => reject(new Error('タイムアウト: 5秒経過')), 5000)
         );
 
         const fetchPromise = supabase
@@ -48,22 +48,38 @@ export const useAuth = () => {
 
         if (!isMounted) return null;
 
-        if (error || !data) {
+        if (error) {
+          // PGRST116エラー（データが見つからない）の場合は特別処理
+          if (error.code === 'PGRST116') {
+            console.warn('ユーザーデータが見つかりません。新規登録の可能性があります。');
+            return null; // nullを返してエラーを投げない
+          }
           console.error('usersテーブル取得失敗:', error);
           throw new Error('ユーザー情報の取得に失敗しました。再度ログインしてください。');
+        }
+        
+        if (!data) {
+          console.warn('ユーザーデータが空です。');
+          return null;
         }
 
         // キャッシュに保存
         userCache[userId] = { data: data as User, timestamp: Date.now() };
         
         return data as User;
-      } catch (err) {
+      } catch (err: any) {
+        // PGRST116エラー（データが見つからない）の場合はリトライしない
+        if (err.message?.includes('ユーザーデータが見つかりません')) {
+          console.log('ユーザーデータが見つからないため、リトライをスキップします');
+          return null;
+        }
+        
         console.error(`fetchUserData エラー (試行 ${retryCount + 1}/${maxRetries + 1}):`, err);
         
         // リトライ機能
         if (retryCount < maxRetries && isMounted) {
           console.log(`リトライ中... (${retryCount + 1}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 500)); // 0.5秒待機（短縮）
+          await new Promise(resolve => setTimeout(resolve, 500)); // 500ms待機に短縮
           return fetchUserData(userId, _email, retryCount + 1);
         }
         
@@ -83,12 +99,20 @@ export const useAuth = () => {
         return;
       }
 
+
       if (session?.user) {
         try {
           const userData = await fetchUserData(session.user.id, session.user.email);
           if (!isMounted) return;
-          setUser(userData);
-          console.log('ユーザーデータ設定完了');
+          
+          if (userData) {
+            setUser(userData);
+            console.log('ユーザーデータ設定完了');
+          } else {
+            // ユーザーデータが見つからない場合（新規登録直後など）
+            console.log('ユーザーデータが見つかりません。セッションは維持します。');
+            setUser(null);
+          }
         } catch (error) {
           console.error('認証状態変更時のfetchUserDataエラー:', error);
           // エラーが発生してもローディング状態は解除

@@ -7,7 +7,7 @@ import BackTask from  "./pages/BackTask";
 import SettingTask from "./pages/SettingTask";
 import TeamTask from "./pages/TeamTask";
 import AdminPage from "./pages/AdminPage";
-import RegisterPage from "./pages/RegisterPage";
+import RegisterPage from "./pages/Register";
 
 import MainLayout from "./components/Layout/MainLayout";
 import { useAuth } from "./hooks/useAuth";
@@ -15,7 +15,7 @@ import { useAuth } from "./hooks/useAuth";
 const App = ()=>{
 
   // Supabaseの認証状態を取得
-  const { isAuthenticated, loading,role } = useAuth();
+  const { isAuthenticated, loading, role } = useAuth();
 
   console.log('App.tsx - loading:', loading, 'isAuthenticated:', isAuthenticated);
   if (loading) {
@@ -35,8 +35,10 @@ const App = ()=>{
         element={isAuthenticated ? <Navigate to="/" /> : <Login />} 
       />
 
-      <Route path = "register" element={<RegisterPage currentUserId="user123"/>}/>
-        {/*user123はtest用 */}
+      <Route 
+        path = "register" 
+        element={<RegisterPage />}
+      />
 
       {/*メインレイアウトの適用(認証をもとに)*/}
       <Route
