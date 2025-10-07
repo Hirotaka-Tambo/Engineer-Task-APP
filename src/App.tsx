@@ -6,7 +6,7 @@ import FrontTask from "./pages/FrontTask";
 import BackTask from  "./pages/BackTask";
 import SettingTask from "./pages/SettingTask";
 import TeamTask from "./pages/TeamTask";
-import AdminPage from "./pages/AdminPage";
+import Admin from "./pages/Admin";
 import RegisterPage from "./pages/Register";
 
 import MainLayout from "./components/Layout/MainLayout";
@@ -56,7 +56,7 @@ const App = ()=>{
         <Route path = "group-task/back" element={<BackTask />} />
         <Route path = "group-task/setting" element={<SettingTask />} />
         <Route path = "team-task" element = {<TeamTask />} />
-        <Route path="admin" element={role === "admin" ? <AdminPage /> : <Navigate to="/" />}/>
+        <Route path="admin" element={role === "admin" ? <Admin /> : <Navigate to="/" />}/>
 
         
       </Route>

@@ -9,4 +9,5 @@ export type OutletContextType = {
     toggleTaskStatus: (id: string) => void;
     openCreateModal: () => void;
     setFilter : (filter:TaskFilter) => void;
+    onShowConfirmModal: (task: ExtendedTask) => void;
 };

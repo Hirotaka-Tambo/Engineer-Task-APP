@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`w-full md:w-[280px] bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 md:p-10 m-0 md:m-4 shadow-xl border border-white border-opacity-60 transition-all duration-300 ease-in-out ${className}`}
+      className={`w-full md:w-[280px] bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 md:p-10 m-0 md:m-4 shadow-xl border border-white border-opacity-60 transition-all duration-300 ease-in-out flex flex-col ${className}`}
     >
       {/* プロジェクトの名前 */}
       <div className="mb-6">
@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* メニューアイテムセクション */}
-      <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible">
+      <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible flex-1">
         {items.map((item) => (
           <SidebarItem
             key={item.id}
@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
         ))}
       </div>
+
     </div>
   );
 };

@@ -7,9 +7,11 @@ interface TaskCardProps {
   task: ExtendedTask;
   onClick?: (task: ExtendedTask) => void;
   onToggleDone?: (taskId: string) => void;
+  onDeleteTask?: (taskId: string) => void;
+  onShowConfirmModal?: (task: ExtendedTask) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone, onDeleteTask, onShowConfirmModal}) => {
   // 日付計算を1回だけ実行する共通関数
   const getDaysRemaining = (deadline: Date) => {
     const today = new Date();
@@ -60,9 +62,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
   // 計算を1回だけ実行
   const daysRemaining = getDaysRemaining(task.deadline);
   const deadlineStyles = getDeadlineStyles(daysRemaining);
+  
+  // 完了タスクの場合は期限による枠線スタイルを適用しない
+  const borderStyle = task.taskStatus === 'done' 
+    ? 'border-white border-opacity-60' 
+    : deadlineStyles.borderStyle;
+    
   return (
     <div 
-      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${deadlineStyles.borderStyle}`}
+      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
       onClick={() => onClick?.(task)}
     >
       {/*1列目 タイトル+ ステータス */}
@@ -74,7 +82,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleDone?.(task.id!);
+              if (task.taskStatus === "done") {
+                onShowConfirmModal?.(task);
+              } else {
+                onToggleDone?.(task.id!);
+              }
             }}
             className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium ${
               task.taskStatus === "todo"
@@ -94,10 +106,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone}) => {
         <span className="text-xs text-blue-600 bg-white bg-opacity-30 px-2 py-1 rounded-xl border border-blue-600 ">
           #{task.taskCategory}
         </span>
-        {/* 残り日数タグ */}
-        <span className={`text-xs px-2 py-1 rounded-xl border ${deadlineStyles.tagStyle}`}>
-          {getDeadlineStatus(task.deadline)}
-        </span>
+        {/* 残り日数タグ（完了タスク以外で表示） */}
+        {task.taskStatus !== 'done' && (
+          <span className={`text-xs px-2 py-1 rounded-xl border ${deadlineStyles.tagStyle}`}>
+            {getDeadlineStatus(task.deadline)}
+          </span>
+        )}
         {task.icon && (
           <img src={task.icon} alt="task icon" className="w-5 h-5" />
         )}
