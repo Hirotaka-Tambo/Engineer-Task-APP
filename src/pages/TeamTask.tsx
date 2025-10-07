@@ -5,7 +5,7 @@ import type { OutletContextType } from "../components/types/outletContext";
 
 
 const TeamTask: React.FC = () => {
-  const { tasks, onTaskClick, toggleTaskStatus, setFilter } =
+  const { tasks, onTaskClick, toggleTaskStatus, setFilter, deleteTask, onShowConfirmModal } =
     useOutletContext<OutletContextType>();
 
   useEffect(() =>{
@@ -18,6 +18,8 @@ const TeamTask: React.FC = () => {
         tasks={tasks}
         onTaskClick={onTaskClick}
         onToggleDone={toggleTaskStatus}
+        onDeleteTask={deleteTask}
+        onShowConfirmModal={onShowConfirmModal}
       />
     </div>
   );

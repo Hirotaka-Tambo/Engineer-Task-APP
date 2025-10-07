@@ -4,7 +4,7 @@ import TaskBoard from "../components/TaskBoard/TaskBoard";
 import type { OutletContextType } from "../components/types/outletContext";
 
 const SoloTask: React.FC = () => {
-  const { tasks, onTaskClick, toggleTaskStatus, setFilter } =
+  const { tasks, onTaskClick, toggleTaskStatus, setFilter, deleteTask, onShowConfirmModal } =
     useOutletContext<OutletContextType>();
   
 
@@ -19,6 +19,8 @@ const SoloTask: React.FC = () => {
         tasks={tasks}
         onTaskClick={onTaskClick}
         onToggleDone={toggleTaskStatus}
+        onDeleteTask={deleteTask}
+        onShowConfirmModal={onShowConfirmModal}
       />
     </div>
   );

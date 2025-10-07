@@ -2,6 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
 import TaskModal from "../TaskModal/TaskModal";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import { useTasks } from "../../hooks/useTasks";
 import { logout } from "../../services/authService";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
@@ -67,6 +68,9 @@ const MainLayout : React.FC = () =>{
 
   // 編集中タスク
   const [editingTask, setEditingTask] = useState<ExtendedTask | NewTaskUI | null>(null);
+  
+  // 確認モーダル用のタスク
+  const [confirmTask, setConfirmTask] = useState<ExtendedTask | null>(null);
 
   // ルート変更時に自動でフィルタを同期する
   useEffect(() => {
@@ -106,6 +110,29 @@ const MainLayout : React.FC = () =>{
     setEditingTask(null);
   };
 
+  // 確認モーダルを表示
+  const showConfirmModal = (task: ExtendedTask) => {
+    setConfirmTask(task);
+  };
+
+  // 確認モーダルを閉じる
+  const closeConfirmModal = () => {
+    setConfirmTask(null);
+  };
+
+  // 確認モーダルでのアクション処理
+  const handleConfirmAction = (action: 'revert' | 'delete') => {
+    if (!confirmTask) return;
+    
+    if (action === 'revert') {
+      toggleTaskStatus(confirmTask.id!);
+    } else if (action === 'delete') {
+      deleteTask(confirmTask.id!);
+    }
+    
+    closeConfirmModal();
+  };
+
   // モーダルを保存
   const handleSaveTask = (updatedTask: ExtendedTask | NewTaskUI) =>{
     // NewTaskUIの場合は、新規作成
@@ -125,7 +152,8 @@ const MainLayout : React.FC = () =>{
     deleteTask,
     toggleTaskStatus,
     openCreateModal,
-    setFilter
+    setFilter,
+    onShowConfirmModal: showConfirmModal
   };
 
   return(
@@ -145,32 +173,42 @@ const MainLayout : React.FC = () =>{
       {/*メインコンテンツ配置 */}
       <main className="flex-1 flex flex-col p-2 md:p-4 relative">
         {/* 上部ヘッダー */}
-        <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-6 md:p-8 mb-8 flex justify-between items-center shadow-xl border border-white border-opacity-60">
-          <h1 className="text-xl md:text-3xl font-extrabold text-gray-800 m-0">
-            Task Management
-          </h1>
-
-          <div className="flex gap-4 md:gap-6">
-            <button 
-              onClick={openCreateModal}
-              className="bg-gradient-to-br from-blue-500 to-blue-800 text-white font-semibold py-3 px-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out"
-            >
-              + New Task
-            </button>
-            <button 
-              onClick={async () => {
-                try {
-                  await logout();
-                  console.log('✅ ログアウト成功');
-                  navigate('/login');
-                } catch (error) {
-                  console.error('❌ ログアウトエラー:', error);
-                }
-              }}
-              className="bg-gradient-to-br from-gray-500 to-gray-700 text-white font-semibold py-3 px-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out"
-            >
-              ログアウト
-            </button>
+        <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60">
+          <div className="flex items-center">
+            <h1 className="text-3xl font-bold text-gray-800 m-0">Task Management</h1>
+            <div className="flex-1 flex justify-center" style={{ marginLeft: '360px' }}>
+              <div className="text-lg font-semibold text-gray-700">
+                進捗: {tasks.length > 0 ? Math.round((tasks.filter(task => task.taskStatus === 'done').length / tasks.length) * 100) : 0}%
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={openCreateModal}
+                className="bg-gradient-to-br from-blue-500 to-blue-700 text-white font-semibold py-3 px-4 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                NewTask
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await logout();
+                    console.log('ログアウト成功');
+                    navigate('/login');
+                  } catch (error) {
+                    console.error('ログアウトエラー:', error);
+                  }
+                }}
+                className="bg-gradient-to-br from-gray-500 to-gray-700 text-white font-semibold py-3 px-4 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -179,6 +217,7 @@ const MainLayout : React.FC = () =>{
           <Outlet context={outletContext} />
         </div>
 
+
         {/*モーダルの配置 */}
         {editingTask && (
           <TaskModal
@@ -186,6 +225,16 @@ const MainLayout : React.FC = () =>{
             isOpen={!!editingTask}
             onClose={closeModal}
             onSave={handleSaveTask}
+          />
+        )}
+
+        {/*確認モーダルの配置 */}
+        {confirmTask && (
+          <ConfirmModal
+            task={confirmTask}
+            isOpen={!!confirmTask}
+            onClose={closeConfirmModal}
+            onConfirm={handleConfirmAction}
           />
         )}
       </main>
