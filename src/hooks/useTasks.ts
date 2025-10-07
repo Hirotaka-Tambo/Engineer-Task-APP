@@ -55,16 +55,35 @@ export const useTasks = () => {
           console.log('ユーザーID取得:', user.id);
           
           // ユーザーが所属するプロジェクトを取得
-          const userProjects = await getUserProjects(user.id);
-          console.log('ユーザーのプロジェクト:', userProjects);
-          
-          if (userProjects.length > 0) {
-            // 最初のプロジェクトを使用
-            const firstProject = userProjects[0];
-            setCurrentProjectId(firstProject.id);
-            console.log('使用するプロジェクト:', firstProject.name, 'ID:', firstProject.id);
-          } else {
-            console.warn('ユーザーはどのプロジェクトにも所属していません');
+          try {
+            const userProjects = await getUserProjects(user.id);
+            console.log('ユーザーのプロジェクト:', userProjects);
+            
+            if (userProjects.length > 0) {
+              // 最初のプロジェクトを使用
+              const firstProject = userProjects[0];
+              setCurrentProjectId(firstProject.id);
+              console.log('使用するプロジェクト:', firstProject.name, 'ID:', firstProject.id);
+            } else {
+              console.warn('ユーザーはどのプロジェクトにも所属していません');
+              // デフォルトプロジェクトに追加を試行
+              try {
+                const { addUserToDefaultProject } = await import('../services/authService');
+                await addUserToDefaultProject(user.id);
+                console.log('デフォルトプロジェクトへの追加を試行しました');
+                // 再取得を試行
+                const retryProjects = await getUserProjects(user.id);
+                if (retryProjects.length > 0) {
+                  setCurrentProjectId(retryProjects[0].id);
+                  console.log('デフォルトプロジェクトを設定しました:', retryProjects[0].name);
+                }
+              } catch (defaultProjectError) {
+                console.error('デフォルトプロジェクトへの追加に失敗:', defaultProjectError);
+              }
+            }
+          } catch (projectError) {
+            console.error('プロジェクト取得エラー:', projectError);
+            // プロジェクト取得に失敗した場合でもアプリを継続
           }
         } else {
           console.warn('ユーザー情報が取得できませんでした');

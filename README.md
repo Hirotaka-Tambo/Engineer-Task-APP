@@ -4,6 +4,22 @@
 UIは **Notion** を参考にし、タスクの登録・管理・カレンダー表示・モーダルでの詳細編集をサポートします。  
 バックエンドは **Supabase** を利用し、ログイン認証とDB管理を行います。
 
+## 技術スタック
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Real-time)
+- **State Management**: React Hooks + Context API
+- **Build Tool**: Vite
+- **Linting**: ESLint
+
+### プロジェクト体制
+- **開発メンバー**: 2人
+- **開発者**: Hirotaka-Tambo, Kamon-Tahara-504
+
+### プロジェクト工程
+- **開発開始日**: 2025/ 9/21
+- **リリース予定日**: 未定
+
 ---
 
 ## 📂 機能一覧
@@ -39,16 +55,17 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 - **黄:** 締切8日以上
 
 ### ログイン/ログアウト機能
-- プロジェクトコード
-- ユーザーID
-- パスワード
-- 未登録プロジェクト → 右下に新規登録リンク
+- メールアドレスとパスワードでの認証
+- 新規ユーザー登録機能
+- 自動デフォルトプロジェクト割り当て
+- プロジェクトメンバーシップの自動管理
+- セッション管理と自動ログイン
 
 ---
 
 ## 🗄️ Supabase (DB)
 
-### user テーブル
+### users テーブル
 | カラム名      | 型                | Nullable | 説明 |
 |--------------|-------------------|----------|------
 | id           | uuid (Primary Key)| No       | ユーザーID 
@@ -101,7 +118,10 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ### 認証
 - Supabase Auth
-- 「Googleで続ける」などの外部認証を想定
+- メールアドレス・パスワード認証
+- 自動セッション管理
+- RLS（Row Level Security）対応
+- プロジェクトメンバーシップの自動管理
 
 ---
 
@@ -148,21 +168,30 @@ src/
 │  ├─ AdminPage.tsx          # 管理者向けページ
 │  ├─ BackTask.tsx           # バックエンドタスク管理ページ
 │  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
+│  ├─ BackTask.tsx           # バックエンドタスク管理ページ
+│  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
 │  ├─ Login.tsx              # ログインページ
-│  ├─ RegisterPage.tsx       # ユーザー登録ページ
+│  ├─ Register.tsx           # ユーザー登録ページ
 │  ├─ SettingTask.tsx        # タスク設定ページ
 │  ├─ SoloTask.tsx           # 個人タスク管理ページ
 │  └─ TeamTask.tsx           # チームタスク管理ページ
 │
 ├─ services/                # API通信および外部サービス関連
 │  ├─ adminService.ts        # 管理者機能関連のサービス
+│  ├─ adminService.ts        # 管理者機能関連のサービス
 │  ├─ authService.ts         # 認証関連のサービス
+│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
+│  └─ taskService.ts         # タスク関連のサービス
 │  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
 │  └─ taskService.ts         # タスク関連のサービス
 │
 ├─ hooks/                   # カスタムフック
 │  ├─ useAdmin.ts            # 管理者機能用のカスタムフック
 │  ├─ useAuth.ts             # 認証関連のカスタムフック
+│  ├─ useLogin.ts            # ログイン処理用のカスタムフック
+│  ├─ useLoginValidation.ts  # ログインフォームバリデーション用のカスタムフック
+│  ├─ useRegister.ts         # 新規登録処理用のカスタムフック
+│  ├─ useRegisterValidation.ts # 新規登録フォームバリデーション用のカスタムフック
 │  └─ useTasks.ts            # タスクデータ取得用のカスタムフック
 │
 ├─ utils/                   # 共通ユーティリティ関数
@@ -173,7 +202,9 @@ src/
 │
 ├─ App.tsx                  # アプリケーションのルートコンポーネント
 ├─ index.css                # グローバルCSS
+├─ index.css                # グローバルCSS
 ├─ main.tsx                 # アプリケーションのエントリーポイント
+├─ tailwind.css             # Tailwind CSS設定
 ├─ tailwind.css             # Tailwind CSS設定
 └─ vite-env.d.ts            # Vite環境の型定義
 ```
