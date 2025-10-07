@@ -41,14 +41,15 @@ export const login = async (email: string, password: string) => {
  * 新規ユーザー登録
  */
 export const signUp = async (email: string, password: string, userName: string) => {
-  // Supabase Authでユーザー作成
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+    
+    // Supabase Authでユーザー作成
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-  if (authError) throw authError;
-  if (!authData.user) throw new Error('User creation failed');
+    if (authError) throw authError;
+    if (!authData.user) throw new Error('User creation failed');
 
   // usersテーブルにユーザー情報を追加
   const { data: userData, error: userError } = await supabase.from('users').insert({
@@ -117,7 +118,20 @@ export const getCurrentUser = async (): Promise<User | null> => {
     .eq('id', authUser.id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // userテーブルにデータがない場合のフォールバック
+    console.warn('userテーブルにデータが見つかりません、フォールバック処理を実行:', error);
+    return {
+      id: authUser.id,
+      user_name: authUser.email?.split('@')[0] || 'ユーザー',
+      email: authUser.email || '',
+      role: 'member',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as User;
+  }
+  
   return data as User;
 };
 

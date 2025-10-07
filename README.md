@@ -168,6 +168,8 @@ src/
 │  ├─ AdminPage.tsx          # 管理者向けページ
 │  ├─ BackTask.tsx           # バックエンドタスク管理ページ
 │  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
+│  ├─ BackTask.tsx           # バックエンドタスク管理ページ
+│  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
 │  ├─ Login.tsx              # ログインページ
 │  ├─ Register.tsx           # ユーザー登録ページ
 │  ├─ SettingTask.tsx        # タスク設定ページ
@@ -176,7 +178,10 @@ src/
 │
 ├─ services/                # API通信および外部サービス関連
 │  ├─ adminService.ts        # 管理者機能関連のサービス
+│  ├─ adminService.ts        # 管理者機能関連のサービス
 │  ├─ authService.ts         # 認証関連のサービス
+│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
+│  └─ taskService.ts         # タスク関連のサービス
 │  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
 │  └─ taskService.ts         # タスク関連のサービス
 │
@@ -197,7 +202,9 @@ src/
 │
 ├─ App.tsx                  # アプリケーションのルートコンポーネント
 ├─ index.css                # グローバルCSS
+├─ index.css                # グローバルCSS
 ├─ main.tsx                 # アプリケーションのエントリーポイント
+├─ tailwind.css             # Tailwind CSS設定
 ├─ tailwind.css             # Tailwind CSS設定
 └─ vite-env.d.ts            # Vite環境の型定義
 ```
