@@ -34,7 +34,7 @@ export const useAuth = () => {
       try {
         // タイムアウト（5秒）- 適切なタイムアウト時間に短縮
         const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('タイムアウト: 5秒経過')), 5000)
+          setTimeout(() => reject(new Error('タイムアウト: 10秒経過')), 10000)
         );
 
         const fetchPromise = supabase
