@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useLoginValidation, type LoginFormData } from "../hooks/useLoginValidation";
 import { useLogin } from "../hooks/useLogin";
+import { login } from "../services/authService";
+import { ProjectCreationModal } from "../components/ProjectCreation/ProjectCreationModal";
 
 const Login = () => {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -9,9 +11,10 @@ const Login = () => {
     projectCode: ""
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showProjectCreationModal, setShowProjectCreationModal] = useState(false);
 
   const { errors, validateForm, clearFieldError } = useLoginValidation();
-  const { loading, errorMessage, handleLogin, handleRegisterClick } = useLogin();
+  const { loading, errorMessage, handleLogin, handleRegisterClick, setLoading, setErrorMessage } = useLogin();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,6 +26,42 @@ const Login = () => {
     e.preventDefault();
     if (validateForm(formData)) {
       await handleLogin(formData);
+    }
+  };
+
+  const handleProjectCreationSuccess = async () => {
+    // プロジェクト作成成功後、メインページに遷移
+    // 既にログイン済みなので、直接遷移する
+    console.log("プロジェクト作成成功、メインページに遷移します");
+    window.location.href = '/';
+  };
+
+  const handleShowProjectCreation = async () => {
+    // まずログインが必要かチェック
+    if (!formData.email || !formData.password) {
+      // ログイン情報が入力されていない場合はエラーメッセージを表示
+      alert('プロジェクト作成にはログイン情報が必要です。メールアドレスとパスワードを入力してください。');
+      return;
+    }
+    
+    // バリデーション
+    if (!validateForm(formData)) {
+      return;
+    }
+    
+    // まずログインを試行
+    try {
+      setLoading(true);
+      await login(formData.email, formData.password);
+      console.log("プロジェクト作成用ログイン成功!");
+      
+      // ログイン成功後にプロジェクト作成モーダルを表示
+      setShowProjectCreationModal(true);
+    } catch (error: any) {
+      console.error("プロジェクト作成用ログインエラー:", error);
+      setErrorMessage(error.message || "ログインに失敗しました");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,6 +162,18 @@ const Login = () => {
               disabled={loading}
             />
             {errors.projectCode && <p className="mt-1 text-sm text-red-600">{errors.projectCode}</p>}
+            
+            {/* プロジェクト作成ボタン */}
+            <div className="mt-3 text-center">
+              <button
+                type="button"
+                onClick={handleShowProjectCreation}
+                className="text-sm text-blue-600 hover:text-blue-800 underline"
+                disabled={loading}
+              >
+                プロジェクトをお持ちでない方はこちら
+              </button>
+            </div>
           </div>
 
           <button
@@ -154,6 +205,14 @@ const Login = () => {
           </p>
         </div>
       </div>
+
+      {/* プロジェクト作成モーダル */}
+      <ProjectCreationModal
+        isOpen={showProjectCreationModal}
+        onClose={() => setShowProjectCreationModal(false)}
+        onSuccess={handleProjectCreationSuccess}
+        creatorUserId="" // ログイン前なので空文字（useProjectCreationでセッションから取得）
+      />
     </div>
   );
 };

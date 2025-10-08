@@ -9,6 +9,20 @@ export const createProject = async (project: NewProject, creatorUserId: string):
   try {
     console.log('🏗️ プロジェクト作成開始...', project);
     
+    // 認証状態を確認
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('セッション取得エラー:', sessionError);
+      throw new Error('認証セッションの取得に失敗しました');
+    }
+    
+    if (!session) {
+      console.error('認証セッションが存在しません');
+      throw new Error('ログインが必要です');
+    }
+    
+    console.log('認証セッション確認完了:', session.user.id);
+    
     // プロジェクトを作成
     const { data: projectData, error: projectError } = await supabase
       .from('project')
