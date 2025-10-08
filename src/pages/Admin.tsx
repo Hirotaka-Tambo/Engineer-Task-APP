@@ -10,6 +10,7 @@ export const Admin = () => {
   // プロジェクトIDの取得とメンバー管理を統合
   const { 
     userProjectId, 
+    userProject,
     projectLoading, 
     members, 
     fetchProjectMembers, 
@@ -51,7 +52,7 @@ export const Admin = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">プロジェクト管理</h1>
-              <p className="text-sm text-gray-500 mt-1">プロジェクトID: {userProjectId}</p>
+              <p className="text-sm text-gray-500 mt-1">プロジェクトコード: {userProject?.code || 'N/A'}</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">

@@ -10,6 +10,7 @@ export const useAdmin = (projectId?: string, userId?: string) => {
     const [loading, setLoading] = useState(false); // メンバー操作中のローディング状態
     const [error, setError] = useState<string | null>(null); // エラーメッセージ
     const [userProjectId, setUserProjectId] = useState<string | undefined>(undefined); // ユーザーのプロジェクトID（自動取得）
+    const [userProject, setUserProject] = useState<Project | undefined>(undefined); // ユーザーのプロジェクト情報
     const [projectLoading, setProjectLoading] = useState(true); // プロジェクトID取得中のローディング状態
 
     /**
@@ -29,6 +30,7 @@ export const useAdmin = (projectId?: string, userId?: string) => {
                 const userProjects = await adminService.getUserProjects(userId);
                 if (userProjects.length > 0) {
                     setUserProjectId(userProjects[0].id);
+                    setUserProject(userProjects[0]); // プロジェクト情報も保存
                 } else {
                     setUserProjectId(undefined);
                     setError('プロジェクトが見つかりません');
@@ -132,6 +134,7 @@ return {
     loading,            // メンバー操作中のローディング状態
     error,              // エラーメッセージ
     userProjectId,      // ユーザーのプロジェクトID（自動取得）
+    userProject,        // ユーザーのプロジェクト情報
     projectLoading,     // プロジェクトID取得中のローディング状態
     
     // メソッド
