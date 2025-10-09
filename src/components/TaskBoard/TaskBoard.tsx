@@ -53,7 +53,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
             const deadlineCounts = getDeadlineCounts(statusTasks);
             
             return (
-            <div key={col.key} className="bg-gray-50 p-4 rounded-lg shadow">
+            <div key={col.key} className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
                 <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-semibold">
                         {col.label}
@@ -72,7 +72,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
                                         <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                                             <span className="text-xs text-white font-bold">{deadlineCounts.safe}</span>
                                         </div>
-                                        <span className="text-xs text-gray-600">安全</span>
+                                        <span className="text-xs text-gray-700 font-bold">安全</span>
                                     </div>
                                     {(deadlineCounts.warning > 0 || deadlineCounts.urgent > 0) && (
                                         <div className="w-px h-4 bg-gray-300"></div>
@@ -87,7 +87,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
                                         <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
                                             <span className="text-xs text-white font-bold">{deadlineCounts.warning}</span>
                                         </div>
-                                        <span className="text-xs text-gray-600">注意</span>
+                                        <span className="text-xs text-gray-700 font-bold">注意</span>
                                     </div>
                                     {deadlineCounts.urgent > 0 && (
                                         <div className="w-px h-4 bg-gray-300"></div>
@@ -101,7 +101,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
                                     <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                                         <span className="text-xs text-white font-bold">{deadlineCounts.urgent}</span>
                                     </div>
-                                    <span className="text-xs text-gray-600">緊急</span>
+                                        <span className="text-xs text-gray-700 font-bold">緊急</span>
                                 </div>
                             )}
                         </div>

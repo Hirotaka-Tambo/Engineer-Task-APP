@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={`w-full md:w-[280px] bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 md:p-10 m-0 md:m-4 shadow-xl border border-white border-opacity-60 transition-all duration-300 ease-in-out flex flex-col ${className}`}
+      style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}
     >
       {/* プロジェクトの名前 */}
       <div className="mb-6">

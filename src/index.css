@@ -10,6 +10,21 @@
     padding: 0;
 }
 
+/* ズーム時の白フラッシュ防止 */
+* {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+}
+
+/* ガラスモーフィズム要素の最適化 */
+.glass-effect {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
 h1 {
     color: #333;
     text-align: center;

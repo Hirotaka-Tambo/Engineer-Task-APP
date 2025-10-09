@@ -173,7 +173,7 @@ const MainLayout : React.FC = () =>{
       {/*メインコンテンツ配置 */}
       <main className="flex-1 flex flex-col p-2 md:p-4 relative">
         {/* 上部ヘッダー */}
-        <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60">
+        <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
           <div className="flex items-center">
             <h1 className="text-3xl font-bold text-gray-800 m-0">Task Management</h1>
             <div className="flex-1 flex justify-center" style={{ marginLeft: '360px' }}>
