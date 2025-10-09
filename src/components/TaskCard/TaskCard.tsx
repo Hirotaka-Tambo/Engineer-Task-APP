@@ -73,11 +73,23 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone, onDele
       className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
       onClick={() => onClick?.(task)}
     >
-      {/*1列目 タイトル+ ステータス */}
+      {/*1列目 タイトル+ アイコン + ステータス */}
       <div className="flex justify-between items-center mb-4">
-          <h3 className="font-semibold text-lg">
-            {task.title}
-          </h3>
+          <div className="flex items-center gap-2">
+            {task.icon && (
+              <img
+                src={`/icons/${task.icon}.svg`}
+                alt={task.icon}
+                className="w-5 h-5"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
+            <h3 className="font-semibold text-lg">
+              {task.title}
+            </h3>
+          </div>
 
           <button
             onClick={(e) => {
@@ -111,9 +123,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone, onDele
           <span className={`text-xs px-2 py-1 rounded-xl border ${deadlineStyles.tagStyle}`}>
             {getDeadlineStatus(task.deadline)}
           </span>
-        )}
-        {task.icon && (
-          <img src={task.icon} alt="task icon" className="w-5 h-5" />
         )}
       </div>
 

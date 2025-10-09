@@ -14,7 +14,7 @@ const SoloTask: React.FC = () => {
     
   
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-full">
       <TaskBoard
         tasks={tasks}
         onTaskClick={onTaskClick}

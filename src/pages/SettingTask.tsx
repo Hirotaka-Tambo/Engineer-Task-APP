@@ -9,7 +9,7 @@ const SettingTask: React.FC = () => {
     useOutletContext<OutletContextType>();
     
     return (
-    <div className="container mx-auto p-4">
+    <div className="w-full">
         <TaskBoard
         tasks={tasks}
         onTaskClick={onTaskClick}

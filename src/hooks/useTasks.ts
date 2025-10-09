@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { type ExtendedTask, type NewTaskUI, type TaskStatus, type NewTaskDB, toExtendedTask } from "../components/types/task";
 import { getTasksByProjectId, createTask, updateTask as updateTaskDB, deleteTask as deleteTaskDB } from "../services/taskService";
-import { getCurrentUser } from "../services/authService";
+import { getCurrentUser, getUserIdByUserName } from "../services/authService";
 import { getUserProjects } from "../services/adminService";
 
 export type TaskFilter = {
@@ -153,6 +153,15 @@ export const useTasks = () => {
           return;
         }
         
+        // 担当者のユーザーIDを取得
+        let assignedToUserId = currentUserId; // デフォルトは現在のユーザー
+        if (newTask.assignedTo && newTask.assignedTo !== '') {
+          const userId = await getUserIdByUserName(newTask.assignedTo, currentProjectId);
+          if (userId) {
+            assignedToUserId = userId;
+          }
+        }
+
         // NewTaskDBに変換
         const taskToCreate: NewTaskDB = {
           title: newTask.title,
@@ -161,7 +170,7 @@ export const useTasks = () => {
           task_category: newTask.taskCategory,
           icon: newTask.icon,
           created_by: currentUserId,
-          assigned_to: currentUserId, // とりあえず自分をアサイン
+          assigned_to: assignedToUserId,
           deadline: newTask.deadline.toISOString(),
           one_line: newTask.oneLine,
           memo: newTask.memo,
@@ -169,9 +178,10 @@ export const useTasks = () => {
           project_id: currentProjectId,
         };
 
-        console.log('📋 作成するタスクデータ:');
+        console.log('作成するタスクデータ:');
         console.log('  - created_by:', taskToCreate.created_by);
         console.log('  - assigned_to:', taskToCreate.assigned_to);
+        console.log('  - assigned_to_username:', newTask.assignedTo);
         console.log('  - project_id:', taskToCreate.project_id);
         await createTask(taskToCreate);
         console.log('タスク作成成功');
