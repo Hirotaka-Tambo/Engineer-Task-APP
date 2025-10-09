@@ -61,10 +61,56 @@ export const useLogin = () => {
     navigate('/register');
   };
 
+  /**
+   * プロジェクト作成後のログイン処理
+   * @param formData ログインフォームデータ
+   * @param projectCode 作成されたプロジェクトコード
+   */
+  const handleProjectCreation = async (formData: LoginFormData, projectCode: string) => {
+    setErrorMessage('');
+    setLoading(true);
+
+    try {
+      // ログイン処理
+      const authUser = await login(formData.email, formData.password);
+      console.log("ログイン成功!");
+
+      // 作成されたプロジェクトを取得
+      const project = await getProjectByCode(projectCode);
+      if (!project) {
+        setErrorMessage("プロジェクトの作成に失敗しました。再度お試しください。");
+        return;
+      }
+
+      console.log("プロジェクトが見つかりました:", project.name);
+
+      // プロジェクトメンバーシップの処理
+      const userProjects = await getUserProjects(authUser.user.id);
+      const isAlreadyMember = userProjects.some(p => p.id === project.id);
+
+      if (!isAlreadyMember) {
+        // 作成者を管理者として追加
+        await addProjectMember(project.id, authUser.user.id, 'admin');
+        console.log("プロジェクト管理者として追加されました");
+      }
+
+      // ログイン成功、メインページにリダイレクト
+      navigate('/');
+    } catch (error) {
+      console.error('プロジェクト作成後のログインエラー:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'ログインに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     errorMessage,
+    setLoading,
+    setErrorMessage,
     handleLogin,
-    handleRegisterClick
+    handleRegisterClick,
+    handleProjectCreation,
   };
 };
