@@ -6,11 +6,26 @@ interface TaskBoardProps {
     tasks: ExtendedTask[];
     onTaskClick?: (task: ExtendedTask) => void;
     onToggleDone?: (taskId: string) => void;
-    onDeleteTask?: (taskId: string) => void;
     onShowConfirmModal?: (task: ExtendedTask) => void;
+    // レイアウト調整オプション
+    columnGap?: number; // カラム間のギャップ (デフォルト: 6 = 24px)
+    taskSpacing?: number; // タスクカード間のスペース (デフォルト: 3 = 12px)
+    columnPadding?: number; // カラムの内側パディング (デフォルト: 4 = 16px)
+    cardHorizontalPadding?: number; // タスクカードの左右パディング (デフォルト: 5 = 20px)
+    cardVerticalPadding?: number; // タスクカードの上下パディング (デフォルト: 4 = 16px)
 }
 
-const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone, onDeleteTask, onShowConfirmModal }) => {
+const TaskBoard: React.FC<TaskBoardProps> = ({ 
+    tasks, 
+    onTaskClick, 
+    onToggleDone, 
+    onShowConfirmModal,
+    columnGap = 6,
+    taskSpacing = 3,
+    columnPadding = 4,
+    cardHorizontalPadding = 5,
+    cardVerticalPadding = 4,
+}) => {
     const columns = [
         { key: "todo", label: "未着手" },
         { key: "in-progress", label: "進行中" },
@@ -47,14 +62,27 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
     };
     
     return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 items-start">
+    <div 
+        className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 items-start min-w-0"
+        style={{ gap: `${columnGap * 4}px` }}
+    >
         {columns.map((col) => {
             const statusTasks = tasks.filter((task) => task.taskStatus === col.key);
             const deadlineCounts = getDeadlineCounts(statusTasks);
             
             return (
-            <div key={col.key} className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
-                <div className="flex justify-between items-center mb-3">
+            <div 
+                key={col.key} 
+                className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 h-[calc(100vh-200px)] flex flex-col min-w-0" 
+                style={{ 
+                    padding: `${columnPadding * 4}px`,
+                    willChange: 'transform', 
+                    transform: 'translate3d(0, 0, 0)', 
+                    backfaceVisibility: 'hidden' 
+                }}
+            >
+                {/* ヘッダー部分 - 固定 */}
+                <div className="flex justify-between items-center mb-3 flex-shrink-0">
                     <h2 className="text-lg font-semibold">
                         {col.label}
                         <span className="ml-2 text-sm font-normal text-gray-500">
@@ -107,22 +135,34 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ tasks, onTaskClick, onToggleDone,
                         </div>
                     )}
                 </div>
-                {statusTasks.length === 0 ? (
-                    <p className="text-gray-400 text-sm">タスクなし</p>
-                ) : (
-                    <div className="space-y-3">
-                        {statusTasks.map((task) => (
-                    <TaskCard
-                    key={task.id}
-                    task={task}
-                    onClick={onTaskClick}
-                    onToggleDone={onToggleDone}
-                    onDeleteTask={onDeleteTask}
-                    onShowConfirmModal={onShowConfirmModal}
-                    />
-                ))}
-                    </div>
-            )}
+                
+                {/* タスクエリア - スクロール可能 */}
+                <div className="flex-1 overflow-y-auto">
+                    {statusTasks.length === 0 ? (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-gray-400 text-sm">タスクなし</p>
+                        </div>
+                    ) : (
+                        <div 
+                            className="pt-2 flex flex-col items-center" 
+                            style={{ 
+                                gap: `${taskSpacing * 4}px`
+                            }}
+                        >
+                            {statusTasks.map((task) => (
+                        <TaskCard
+                        key={task.id}
+                        task={task}
+                        onClick={onTaskClick}
+                        onToggleDone={onToggleDone}
+                        onShowConfirmModal={onShowConfirmModal}
+                        horizontalPadding={cardHorizontalPadding}
+                        verticalPadding={cardVerticalPadding}
+                        />
+                    ))}
+                        </div>
+                )}
+                </div>
         </div>
         );
         })}

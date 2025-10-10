@@ -25,8 +25,39 @@
     -webkit-transform: translate3d(0, 0, 0);
 }
 
-h1 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
+/* タスクボードのスクロールバースタイル */
+.overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.overflow-y-auto:hover {
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(255, 255, 255, 0.1);
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.overflow-y-auto:hover::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.overflow-y-auto:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
 }

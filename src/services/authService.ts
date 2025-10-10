@@ -72,20 +72,10 @@ export const signUp = async (email: string, password: string, userName: string) 
 
   console.log('ユーザー登録完了:', userData);
   
-  // デフォルトプロジェクトにユーザーを追加
-  try {
-    await addUserToDefaultProject(authData.user.id);
-    console.log('デフォルトプロジェクトへの追加完了');
-  } catch (projectError) {
-    console.warn('デフォルトプロジェクトへの追加に失敗しました:', projectError);
-    // プロジェクト追加の失敗は致命的ではないので、エラーを投げない
-    // ユーザーは後でログイン時にプロジェクトに追加される可能性がある
-  }
+  // 登録成功後は自動ログイン状態を維持
+  // プロジェクト選択ページで初回プロジェクトを選択してもらう
   
-  // 登録後はログアウトして、ログインページでログインしてもらう
-  await supabase.auth.signOut();
-  
-  return { success: true, userData };
+  return { success: true, userData, userId: authData.user.id };
 };
 
 /**

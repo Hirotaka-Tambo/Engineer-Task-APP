@@ -15,11 +15,11 @@ export const useRegister = () => {
     try {
       await signUp(formData.email, formData.password, formData.userName);
       
-      // 登録成功時の処理
-      alert("アカウントが作成されました！ログインページでログインしてください。");
+      // 登録成功時の処理（自動ログイン状態でプロジェクト選択ページへ）
+      console.log("アカウント作成成功！プロジェクト選択ページへ遷移します");
       
-      // ログインページに遷移
-      navigate("/login");
+      // プロジェクト選択ページに遷移
+      navigate("/project-selection");
       
     } catch (error: any) {
       console.error("登録エラー:", error);

@@ -7,11 +7,20 @@ interface TaskCardProps {
   task: ExtendedTask;
   onClick?: (task: ExtendedTask) => void;
   onToggleDone?: (taskId: string) => void;
-  onDeleteTask?: (taskId: string) => void;
   onShowConfirmModal?: (task: ExtendedTask) => void;
+  // レイアウト調整オプション
+  horizontalPadding?: number; // 左右パディング (デフォルト: 5 = 20px)
+  verticalPadding?: number; // 上下パディング (デフォルト: 4 = 16px)
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone, onDeleteTask, onShowConfirmModal}) => {
+const TaskCard: React.FC<TaskCardProps> = ({ 
+  task, 
+  onClick, 
+  onToggleDone, 
+  onShowConfirmModal,
+  horizontalPadding = 5,
+  verticalPadding = 4,
+}) => {
   // 日付計算を1回だけ実行する共通関数
   const getDaysRemaining = (deadline: Date) => {
     const today = new Date();
@@ -70,7 +79,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onClick, onToggleDone, onDele
     
   return (
     <div 
-      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
+      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
+      style={{
+        paddingLeft: `${horizontalPadding * 4}px`,
+        paddingRight: `${horizontalPadding * 4}px`,
+        paddingTop: `${verticalPadding * 4}px`,
+        paddingBottom: `${verticalPadding * 4}px`,
+      }}
       onClick={() => onClick?.(task)}
     >
       {/*1列目 タイトル+ アイコン + ステータス */}

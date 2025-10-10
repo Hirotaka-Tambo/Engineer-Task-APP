@@ -5,7 +5,7 @@ import type { OutletContextType } from "../components/types/outletContext";
 
 
 const FrontTask: React.FC = () => {
-  const { tasks, onTaskClick, toggleTaskStatus, setFilter, deleteTask, onShowConfirmModal } =
+  const { tasks, onTaskClick, toggleTaskStatus, setFilter, onShowConfirmModal } =
     useOutletContext<OutletContextType>();
 
   
@@ -19,7 +19,6 @@ const FrontTask: React.FC = () => {
         tasks={tasks}
         onTaskClick={onTaskClick}
         onToggleDone={toggleTaskStatus}
-        onDeleteTask={deleteTask}
         onShowConfirmModal={onShowConfirmModal}
       />
     </div>
