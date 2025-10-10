@@ -3,13 +3,11 @@ import { useState } from 'react';
 export interface LoginFormData {
   email: string;
   password: string;
-  projectCode: string;
 }
 
 export interface LoginFormErrors {
   email?: string;
   password?: string;
-  projectCode?: string;
 }
 
 export const useLoginValidation = () => {
@@ -30,11 +28,6 @@ export const useLoginValidation = () => {
       newErrors.password = "パスワードを入力してください";
     } else if (formData.password.length < 6) {
       newErrors.password = "パスワードは6文字以上で入力してください";
-    }
-
-    // プロジェクトコードのバリデーション
-    if (!formData.projectCode.trim()) {
-      newErrors.projectCode = "プロジェクトコードを入力してください";
     }
 
     setErrors(newErrors);

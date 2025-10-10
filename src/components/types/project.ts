@@ -6,6 +6,7 @@ export interface Project {
   code: string; // チーム用プロジェクトコード
   created_at: string; // 作成日時
   updated_at: string; // 更新日時
+  memberCount?: number; // メンバー数（動的に追加される場合がある）
 }
 
 // 新規プロジェクト作成時の型

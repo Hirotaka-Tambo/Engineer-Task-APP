@@ -5,6 +5,7 @@ import TaskModal from "../TaskModal/TaskModal";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import { useTasks } from "../../hooks/useTasks";
 import { logout } from "../../services/authService";
+import { useProject } from "../../contexts/ProjectContext";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
 import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
@@ -12,6 +13,7 @@ import type { OutletContextType } from "../types/outletContext";
 const MainLayout : React.FC = () =>{
   const location = useLocation();
   const navigate = useNavigate();
+  const { selectedProject, clearSelectedProject } = useProject();
   const { 
     tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
 
@@ -174,14 +176,36 @@ const MainLayout : React.FC = () =>{
       <main className="flex-1 flex flex-col p-2 md:p-4 relative">
         {/* 上部ヘッダー */}
         <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
-          <div className="flex items-center">
-            <h1 className="text-3xl font-bold text-gray-800 m-0">Task Management</h1>
-            <div className="flex-1 flex justify-center" style={{ marginLeft: '360px' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 m-0">Task Management</h1>
+              {selectedProject && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-gray-600">プロジェクト:</span>
+                  <span className="text-sm font-semibold text-blue-700">{selectedProject.name}</span>
+                  <span className="text-xs text-gray-500 font-mono">({selectedProject.code})</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 flex justify-center mx-8">
               <div className="text-lg font-semibold text-gray-700">
                 進捗: {tasks.length > 0 ? Math.round((tasks.filter(task => task.taskStatus === 'done').length / tasks.length) * 100) : 0}%
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  clearSelectedProject();
+                  navigate('/project-selection');
+                }}
+                className="bg-gradient-to-br from-purple-500 to-purple-700 text-white font-semibold py-3 px-4 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
+                title="プロジェクト切り替え"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                切替
+              </button>
               <button
                 onClick={openCreateModal}
                 className="bg-gradient-to-br from-blue-500 to-blue-700 text-white font-semibold py-3 px-4 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
@@ -196,6 +220,7 @@ const MainLayout : React.FC = () =>{
                   try {
                     await logout();
                     console.log('ログアウト成功');
+                    clearSelectedProject();
                     navigate('/login');
                   } catch (error) {
                     console.error('ログアウトエラー:', error);

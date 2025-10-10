@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { type ExtendedTask, type NewTaskUI, type TaskStatus, type NewTaskDB, toExtendedTask } from "../components/types/task";
 import { getTasksByProjectId, createTask, updateTask as updateTaskDB, deleteTask as deleteTaskDB } from "../services/taskService";
 import { getCurrentUser, getUserIdByUserName } from "../services/authService";
-import { getUserProjects } from "../services/adminService";
+import { useProject } from "../contexts/ProjectContext";
 
 export type TaskFilter = {
   type: 'solo' | 'front' | 'back' | 'setting' | 'team' | 'all';
@@ -10,10 +10,10 @@ export type TaskFilter = {
 };
 
 export const useTasks = () => {
+  const { selectedProjectId } = useProject();
   const [tasks, setTasks] = useState<ExtendedTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
   // 現在のフィルタリング状態
   const [currentFilter, setCurrentFilter] = useState<TaskFilter>({ 
@@ -22,14 +22,15 @@ export const useTasks = () => {
 
   // タスク一覧を取得する関数
   const fetchTasks = useCallback(async () => {
-    if (!currentProjectId) {
+    if (!selectedProjectId) {
       console.log('プロジェクトIDが設定されていません');
+      setTasks([]);
       return;
     }
     
     try {
-      console.log('タスク取得中... プロジェクトID:', currentProjectId);
-      const tasksData = await getTasksByProjectId(currentProjectId);
+      console.log('タスク取得中... プロジェクトID:', selectedProjectId);
+      const tasksData = await getTasksByProjectId(selectedProjectId);
       console.log('タスク取得成功:', tasksData.length, '件');
       console.log('取得したタスクデータ:', tasksData);
       
@@ -40,10 +41,11 @@ export const useTasks = () => {
       setTasks(extendedTasks);
     } catch (error) {
       console.error('タスク取得エラー:', error);
+      setTasks([]);
     }
-  }, [currentProjectId]);
+  }, [selectedProjectId]);
 
-  // 初回マウント時：ユーザー情報とタスクを取得
+  // 初回マウント時：ユーザー情報を取得
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -53,38 +55,6 @@ export const useTasks = () => {
         if (user) {
           setCurrentUserId(user.id);
           console.log('ユーザーID取得:', user.id);
-          
-          // ユーザーが所属するプロジェクトを取得
-          try {
-            const userProjects = await getUserProjects(user.id);
-            console.log('ユーザーのプロジェクト:', userProjects);
-            
-            if (userProjects.length > 0) {
-              // 最初のプロジェクトを使用
-              const firstProject = userProjects[0];
-              setCurrentProjectId(firstProject.id);
-              console.log('使用するプロジェクト:', firstProject.name, 'ID:', firstProject.id);
-            } else {
-              console.warn('ユーザーはどのプロジェクトにも所属していません');
-              // デフォルトプロジェクトに追加を試行
-              try {
-                const { addUserToDefaultProject } = await import('../services/authService');
-                await addUserToDefaultProject(user.id);
-                console.log('デフォルトプロジェクトへの追加を試行しました');
-                // 再取得を試行
-                const retryProjects = await getUserProjects(user.id);
-                if (retryProjects.length > 0) {
-                  setCurrentProjectId(retryProjects[0].id);
-                  console.log('デフォルトプロジェクトを設定しました:', retryProjects[0].name);
-                }
-              } catch (defaultProjectError) {
-                console.error('デフォルトプロジェクトへの追加に失敗:', defaultProjectError);
-              }
-            }
-          } catch (projectError) {
-            console.error('プロジェクト取得エラー:', projectError);
-            // プロジェクト取得に失敗した場合でもアプリを継続
-          }
         } else {
           console.warn('ユーザー情報が取得できませんでした');
         }
@@ -98,15 +68,14 @@ export const useTasks = () => {
     };
 
     initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 依存配列を空にして初回のみ実行
+  }, []);
 
-  // プロジェクトIDが設定されたらタスクを取得
+  // 選択されたプロジェクトIDが変更されたらタスクを取得
   useEffect(() => {
-    if (currentProjectId) {
+    if (selectedProjectId) {
       fetchTasks();
     }
-  }, [currentProjectId, fetchTasks]);
+  }, [selectedProjectId, fetchTasks]);
 
   // フィルタを更新する関数
   const setFilter = useCallback((filter: TaskFilter) => {
@@ -145,10 +114,10 @@ export const useTasks = () => {
       try {
         console.log('タスク作成処理開始:');
         console.log('  - 現在のユーザーID:', currentUserId);
-        console.log('  - 現在のプロジェクトID:', currentProjectId);
+        console.log('  - 選択されたプロジェクトID:', selectedProjectId);
         console.log('  - タスクタイトル:', newTask.title);
         
-        if (!currentProjectId) {
+        if (!selectedProjectId) {
           console.error('プロジェクトIDが設定されていません');
           return;
         }
@@ -156,7 +125,7 @@ export const useTasks = () => {
         // 担当者のユーザーIDを取得
         let assignedToUserId = currentUserId; // デフォルトは現在のユーザー
         if (newTask.assignedTo && newTask.assignedTo !== '') {
-          const userId = await getUserIdByUserName(newTask.assignedTo, currentProjectId);
+          const userId = await getUserIdByUserName(newTask.assignedTo, selectedProjectId);
           if (userId) {
             assignedToUserId = userId;
           }
@@ -175,7 +144,7 @@ export const useTasks = () => {
           one_line: newTask.oneLine,
           memo: newTask.memo,
           related_url: newTask.relatedUrl,
-          project_id: currentProjectId,
+          project_id: selectedProjectId,
         };
 
         console.log('作成するタスクデータ:');
@@ -191,7 +160,7 @@ export const useTasks = () => {
       } catch (error) {
         console.error('タスク作成エラー:', error);
       }
-    }, [currentUserId, currentProjectId, fetchTasks]);
+    }, [currentUserId, selectedProjectId, fetchTasks]);
 
   // タスクの削除
   const deleteTask = useCallback(async (id: string) => {
