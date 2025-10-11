@@ -159,7 +159,7 @@ const MainLayout : React.FC = () =>{
   };
 
   return(
-    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] p-2 md:p-4">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] p-2 md:pl-2 md:pr-4 md:py-4">
       {/*サイドバー配置*/}
       <Sidebar 
         items={sidebarItems}
@@ -173,7 +173,7 @@ const MainLayout : React.FC = () =>{
       />
 
       {/*メインコンテンツ配置 */}
-      <main className="flex-1 flex flex-col p-2 md:p-4 relative">
+      <main className="flex-1 flex flex-col p-2 md:pl-0 md:pr-4 md:py-4 relative">
         {/* 上部ヘッダー */}
         <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
           <div className="flex items-center justify-between">
@@ -199,12 +199,12 @@ const MainLayout : React.FC = () =>{
                   navigate('/project-selection');
                 }}
                 className="bg-gradient-to-br from-purple-500 to-purple-700 text-white font-semibold py-3 px-4 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
-                title="プロジェクト切り替え"
+                title="Switch Project"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
-                切替
+                Switch Project
               </button>
               <button
                 onClick={openCreateModal}

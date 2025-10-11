@@ -45,7 +45,7 @@ export const Admin = () => {
   if (error) return <p className='text-red-500'>{error}</p>;
 
   return (
-    <div className="h-full w-full bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 p-6 m-4" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
+    <div className="h-full w-full bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 p-6" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
       {/* ヘッダーセクション */}
       <div className="mb-8">
         <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 p-6" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>

@@ -22,8 +22,8 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
     onShowConfirmModal,
     columnGap = 6,
     taskSpacing = 3,
-    columnPadding = 4,
-    cardHorizontalPadding = 5,
+    columnPadding = 3,
+    cardHorizontalPadding = 4,
     cardVerticalPadding = 4,
 }) => {
     const columns = [
@@ -73,7 +73,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
             return (
             <div 
                 key={col.key} 
-                className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 h-[calc(100vh-200px)] flex flex-col min-w-0" 
+                className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 h-[calc(100vh-210px)] flex flex-col min-w-0" 
                 style={{ 
                     padding: `${columnPadding * 4}px`,
                     willChange: 'transform', 
@@ -103,7 +103,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                                         <span className="text-xs text-gray-700 font-bold">安全</span>
                                     </div>
                                     {(deadlineCounts.warning > 0 || deadlineCounts.urgent > 0) && (
-                                        <div className="w-px h-4 bg-gray-300"></div>
+                                        <div className="w-px h-4 bg-white"></div>
                                     )}
                                 </>
                             )}
@@ -118,7 +118,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                                         <span className="text-xs text-gray-700 font-bold">注意</span>
                                     </div>
                                     {deadlineCounts.urgent > 0 && (
-                                        <div className="w-px h-4 bg-gray-300"></div>
+                                        <div className="w-px h-4 bg-white"></div>
                                     )}
                                 </>
                             )}
