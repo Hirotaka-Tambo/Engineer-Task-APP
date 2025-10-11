@@ -34,7 +34,7 @@ export const getDeadlineStatus = (deadline : Date):string =>{
     const daysRemaining = Math.ceil(diffTime / oneDay); // 切り上げ
     
     if(daysRemaining < 0){
-        return "締め切りを過ぎています";
+        return "期限切れ";
     }else if(daysRemaining === 0){
         return "本日締め切り!!";
     }else if(daysRemaining === 1){

@@ -29,11 +29,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
   // アクティブ状態に応じたスタイルクラスを生成
   const getItemClasses = () => {
-    const baseClasses = 'p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium whitespace-nowrap md:transform-none';
+    const baseClasses = 'p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium';
     const activeClasses = isActive 
       ? 'bg-blue-600 text-white font-semibold shadow-md' 
       : 'hover:bg-white hover:bg-opacity-50 hover:text-gray-900 hover:font-semibold';
-    const disabledClasses = item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:translate-x-1';
+    const disabledClasses = item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:translate-x-2';
     
     return `${baseClasses} ${activeClasses} ${disabledClasses} ${className}`;
   };
