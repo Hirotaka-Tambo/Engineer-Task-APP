@@ -20,9 +20,9 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
     onTaskClick, 
     onToggleDone, 
     onShowConfirmModal,
-    columnGap = 6,
+    columnGap = 4,
     taskSpacing = 3,
-    columnPadding = 3,
+    columnPadding = 4,
     cardHorizontalPadding = 4,
     cardVerticalPadding = 4,
 }) => {
@@ -73,7 +73,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
             return (
             <div 
                 key={col.key} 
-                className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 h-[calc(100vh-210px)] flex flex-col min-w-0" 
+                className="bg-white bg-opacity-30 backdrop-blur-xl rounded-2xl shadow-xl border border-white border-opacity-60 h-[calc(100vh-210px)] flex flex-col min-w-0" 
                 style={{ 
                     padding: `${columnPadding * 4}px`,
                     willChange: 'transform', 
@@ -85,7 +85,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                 <div className="flex justify-between items-center mb-3 flex-shrink-0">
                     <h2 className="text-lg font-semibold">
                         {col.label}
-                        <span className="ml-2 text-sm font-normal text-gray-500">
+                        <span className="ml-2 text-sm font-normal text-gray-600">
                             ({statusTasks.length})
                         </span>
                     </h2>
@@ -140,7 +140,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                 <div className="flex-1 overflow-y-auto">
                     {statusTasks.length === 0 ? (
                         <div className="flex items-center justify-center h-full">
-                            <p className="text-gray-400 text-sm">タスクなし</p>
+                            <p className="text-gray-600 text-sm">タスクなし</p>
                         </div>
                     ) : (
                         <div 

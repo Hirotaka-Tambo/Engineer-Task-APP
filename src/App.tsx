@@ -54,7 +54,7 @@ const ProtectedRoutes = () => {
 const App = ()=>{
 
   // Supabaseの認証状態を取得
-  const { isAuthenticated, loading, role } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   console.log('App.tsx - loading:', loading, 'isAuthenticated:', isAuthenticated);
   if (loading) {
@@ -102,7 +102,7 @@ const App = ()=>{
         <Route path = "group-task/back" element={<BackTask />} />
         <Route path = "group-task/setting" element={<SettingTask />} />
         <Route path = "team-task" element = {<TeamTask />} />
-        <Route path="admin" element={role === "admin" ? <Admin /> : <Navigate to="/" />}/>
+        <Route path="admin" element={<Admin />}/>
 
         
       </Route>

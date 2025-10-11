@@ -79,7 +79,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     
   return (
     <div 
-      className={`bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
+      className={`bg-white bg-opacity-80 backdrop-blur-xl rounded-2xl shadow-lg border transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 hover:shadow-xl w-full flex flex-col ${borderStyle}`}
       style={{
         paddingLeft: `${horizontalPadding * 4}px`,
         paddingRight: `${horizontalPadding * 4}px`,

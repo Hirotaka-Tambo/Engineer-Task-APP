@@ -6,6 +6,7 @@ import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import { useTasks } from "../../hooks/useTasks";
 import { logout } from "../../services/authService";
 import { useProject } from "../../contexts/ProjectContext";
+import { useAuth } from "../../hooks/useAuth";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
 import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
@@ -14,11 +15,10 @@ const MainLayout : React.FC = () =>{
   const location = useLocation();
   const navigate = useNavigate();
   const { selectedProject, clearSelectedProject } = useProject();
+  const { user, role } = useAuth();
   const { 
     tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
 
-  // テスト用の仮ユーザー
-  const currentUser = "demoUser";
 
   // サイドバーの配列
   const sidebarItems: SidebarItem[] = [
@@ -61,6 +61,8 @@ const MainLayout : React.FC = () =>{
       id: "admin", 
       label: "Admin", 
       path: "/admin",
+      disabled: role !== "admin",
+      disabledReason: "管理者権限が必要です",
       icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>'
     },
   ];
@@ -97,7 +99,7 @@ const MainLayout : React.FC = () =>{
       priority: 2,
       taskCategory: initialCategory ? [initialCategory] : ["solo"],
       icon: "",
-      createdBy: currentUser,
+      createdBy: user?.user_name || "",
       assignedTo: "",
       oneLine: "",
       memo: "",
@@ -175,7 +177,7 @@ const MainLayout : React.FC = () =>{
       {/*メインコンテンツ配置 */}
       <main className="flex-1 flex flex-col p-2 md:pl-0 md:pr-4 md:py-4 relative">
         {/* 上部ヘッダー */}
-        <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
+        <div className="bg-white bg-opacity-30 backdrop-blur-xl rounded-2xl p-4 md:p-6 mb-8 shadow-xl border border-white border-opacity-60" style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 m-0">Task Management</h1>

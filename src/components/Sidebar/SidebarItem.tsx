@@ -29,11 +29,13 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
   // アクティブ状態に応じたスタイルクラスを生成
   const getItemClasses = () => {
-    const baseClasses = 'p-4 md:p-6 my-2 rounded-xl cursor-pointer transition-all duration-300 ease-in-out text-gray-700 font-medium';
+    const baseClasses = 'p-4 md:p-6 my-2 rounded-xl transition-all duration-300 ease-in-out text-gray-700 font-medium';
     const activeClasses = isActive 
-      ? 'bg-blue-600 text-white font-semibold shadow-md' 
-      : 'hover:bg-white hover:bg-opacity-50 hover:text-gray-900 hover:font-semibold';
-    const disabledClasses = item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:translate-x-2';
+      ? 'bg-blue-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] translate-x-2 cursor-pointer' 
+      : 'hover:bg-white hover:bg-opacity-30 hover:text-gray-900 hover:font-semibold hover:translate-x-2 cursor-pointer';
+    const disabledClasses = item.disabled 
+      ? 'opacity-40 cursor-not-allowed bg-gray-100 bg-opacity-20 text-gray-400' 
+      : '';
     
     return `${baseClasses} ${activeClasses} ${disabledClasses} ${className}`;
   };
@@ -77,7 +79,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   // case:02 pathなし/無効の場合はdivを使用
   return (
     <div
-      className={getItemClasses()}
+      className={`${getItemClasses()} relative group`}
       onClick={handleClick}
       role="button"
       tabIndex={item.disabled ? -1 : 0}
@@ -85,6 +87,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       aria-current={isActive ? "page" : undefined}
     >
       {content}
+      
+      {/* ツールチップ表示 */}
+      {item.disabled && item.disabledReason && (
+        <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]">
+          {item.disabledReason}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+        </div>
+      )}
     </div>
   );
 };
