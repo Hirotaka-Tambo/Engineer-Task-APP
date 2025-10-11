@@ -83,7 +83,7 @@ const ProjectSelection: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] flex items-center justify-center p-4">
-      <div className="bg-white bg-opacity-50 backdrop-blur-xl rounded-2xl p-8 w-full max-w-4xl shadow-lg border border-white border-opacity-60">
+      <div className="bg-white bg-opacity-30 backdrop-blur-xl rounded-2xl p-8 w-full max-w-4xl shadow-lg border border-white border-opacity-60">
         {/* ヘッダー */}
         <div className="flex justify-between items-center mb-8">
           <div>
