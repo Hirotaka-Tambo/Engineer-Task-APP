@@ -25,7 +25,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             タスクの状態変更確認
           </h3>
           <p className="text-sm text-gray-600">
-            タスクは全体進捗度に反映されています！本当にタスクの状態を変更しますか?
+            タスクは全体進捗度に反映されています！<br></br>本当にタスクを削除しますか?
           </p>
         </div>
 
