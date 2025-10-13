@@ -153,58 +153,6 @@ export const getUsersByIds = async (userIds: string[]): Promise<User[]> => {
 };
 
 /**
- * プロジェクトに所属する全ユーザーを取得
- */
-export const getUsersByProjectId = async (projectId: string): Promise<User[]> => {
-  try {
-    // 1. プロジェクトメンバーのuser_idを取得
-    const { data: membersData, error: membersError } = await supabase
-      .from('project_members')
-      .select('user_id')
-      .eq('project_id', projectId)
-      .eq('is_active', true);
-
-    if (membersError) {
-      throw membersError;
-    }
-
-    if (!membersData || membersData.length === 0) {
-      return [];
-    }
-
-    // 2. user_idを使ってユーザー詳細を取得
-    const userIds = membersData.map(member => member.user_id);
-    const { data: usersData, error: usersError } = await supabase
-      .from('users')
-      .select('id, user_name, email, project_id, role, is_active, created_at, updated_at')
-      .in('id', userIds);
-
-    if (usersError) {
-      throw usersError;
-    }
-    
-    return usersData as User[];
-  } catch (error) {
-    console.error('getUsersByProjectId エラー:', error);
-    throw error;
-  }
-};
-
-/**
- * ユーザー名からユーザーIDを取得
- */
-export const getUserIdByUserName = async (userName: string, projectId: string): Promise<string | null> => {
-  try {
-    const users = await getUsersByProjectId(projectId);
-    const user = users.find(u => u.user_name === userName);
-    return user ? user.id : null;
-  } catch (error) {
-    console.error('ユーザーID取得エラー:', error);
-    return null;
-  }
-};
-
-/**
  * ユーザーがプロジェクトに所属していることを確認し、必要に応じてデフォルトプロジェクトに追加
  */
 export const ensureUserHasProject = async (userId: string) => {

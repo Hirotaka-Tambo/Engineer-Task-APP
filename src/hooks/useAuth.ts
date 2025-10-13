@@ -89,6 +89,9 @@ export const useAuth = () => {
 
     // 認証状態変更の監視（初回チェックも含む）
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth Event:',event);
+      console.log('Session User:', session?.user);
+
       if (!isMounted) return;
       
       console.log('認証状態変更イベント:', event);

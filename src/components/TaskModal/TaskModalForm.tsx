@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { ExtendedTask, NewTaskUI, TaskCategory } from "../types/task";
 import { getDeadlineStatus } from "../../utils/dateUtils";
 import IconSelector from "../IconSelector/IconSelector";
-import { getUsersByProjectId } from "../../services/authService";
+import { getUsersByProjectId } from "../../services/userService";
 import type { User } from "../types/user";
 
 interface TaskModalFormProps {
@@ -148,7 +148,7 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
           </div>
 
            {/* プロパティ */}
-           <div className="space-y-6">
+            <div className="space-y-6">
 
             {/* グループ・担当者・1行メモ（カード型レイアウト） */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-3">

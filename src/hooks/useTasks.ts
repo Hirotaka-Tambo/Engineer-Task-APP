@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { type ExtendedTask, type NewTaskUI, type TaskStatus, type NewTaskDB, toExtendedTask } from "../components/types/task";
 import { getTasksByProjectId, createTask, updateTask as updateTaskDB, deleteTask as deleteTaskDB } from "../services/taskService";
-import { getCurrentUser, getUserIdByUserName } from "../services/authService";
+import { getCurrentUser } from "../services/authService";
+import {getUserIdByUserName, getUsersByProjectId} from "../services/userService"
 import { useProject } from "../contexts/ProjectContext";
 
 export type TaskFilter = {
@@ -34,9 +35,18 @@ export const useTasks = () => {
       console.log('タスク取得成功:', tasksData.length, '件');
       console.log('取得したタスクデータ:', tasksData);
       
-      const extendedTasks = tasksData.map((task) =>
-        toExtendedTask(task,"仮ユーザー","仮担当")
-    );
+      const users = await getUsersByProjectId(selectedProjectId);
+      const extendedTasks = tasksData.map((task) =>{
+        const createdByUser = users.find(u => u.id === task.created_by);
+        const assignedToUser = users.find(u => u.id === task.assigned_to);
+
+        return toExtendedTask(
+          task,
+          createdByUser?.user_name ?? "不明",
+          assignedToUser?.user_name ?? "未担当"
+        );
+      });
+      setTasks(extendedTasks);
       
       setTasks(extendedTasks);
     } catch (error) {

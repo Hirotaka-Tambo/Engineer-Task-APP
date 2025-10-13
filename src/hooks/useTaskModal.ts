@@ -20,7 +20,7 @@ export const useTaskModal = ({ task, onClose, onSave }: UseTaskModalProps) => {
     taskCategory: ['solo'],
     icon: "",
     createdBy: "",     // ログインユーザーから埋め込む想定
-    assignedTo: "",    // チーム内ユーザー（のちにselectタグに変更予定）
+    assignedTo: "",    // チーム内ユーザー
     deadline: new Date(),
     oneLine: "",
     memo: "",
@@ -96,7 +96,6 @@ export const useTaskModal = ({ task, onClose, onSave }: UseTaskModalProps) => {
       setErrors((prev)=>({...prev, title:"タイトルは必須です"}));
       return;
     }
-
     onSave(editedTask);
   };
 
