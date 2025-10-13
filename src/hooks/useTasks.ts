@@ -229,6 +229,13 @@ export const useTasks = () => {
     try {
       console.log('タスク更新中...', updatedTask.id);
       
+      // assignedToName → assignedToId に変換
+      let assignedToId: string | undefined;
+      if (updatedTask.assignedTo) {
+        const userId = await getUserIdByUserName(updatedTask.assignedTo, selectedProjectId!);
+        if (userId) assignedToId = userId;
+    }
+
       // ExtendedTaskからUpdateTaskDBに変換
       const updates = {
         title: updatedTask.title,
@@ -240,6 +247,7 @@ export const useTasks = () => {
         one_line: updatedTask.oneLine,
         memo: updatedTask.memo,
         related_url: updatedTask.relatedUrl,
+        ...(assignedToId && { assigned_to: assignedToId })
       };
 
       await updateTaskDB(String(updatedTask.id), updates);
@@ -250,7 +258,7 @@ export const useTasks = () => {
     } catch (error) {
       console.error('タスク更新エラー:', error);
     }
-  }, [fetchTasks]);
+  }, [selectedProjectId,fetchTasks]);
 
   return {
     tasks: filteredTasks,
