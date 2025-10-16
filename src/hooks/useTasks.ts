@@ -15,6 +15,7 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<ExtendedTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
   // 現在のフィルタリング状態
   const [currentFilter, setCurrentFilter] = useState<TaskFilter>({ 
@@ -64,7 +65,9 @@ export const useTasks = () => {
         const user = await getCurrentUser();
         if (user) {
           setCurrentUserId(user.id);
+          setCurrentUserName(user.user_name);
           console.log('ユーザーID取得:', user.id);
+          console.log('ユーザー名取得:', user.user_name);
         } else {
           console.warn('ユーザー情報が取得できませんでした');
         }
@@ -98,9 +101,11 @@ export const useTasks = () => {
     return tasks.filter((task) => {
       switch (currentFilter.type) {
         case "team":
-          return true;
+          return task.taskCategory.includes("team");
         case "solo":
-          return task.taskCategory.includes("solo");
+          // soloが含まれていて、かつ現在のユーザーが担当者
+          return task.taskCategory.includes("solo") && 
+                 task.assignedTo === currentUserName;
         case "front":
           return task.taskCategory.includes("front");
         case "back":
@@ -112,7 +117,7 @@ export const useTasks = () => {
           return true;
       }
   });
-  },[tasks,currentFilter]);
+  },[tasks, currentFilter, currentUserName]);
 
     // タスクの追加
     const addTask = useCallback(async (newTask: NewTaskUI | ExtendedTask) => {
