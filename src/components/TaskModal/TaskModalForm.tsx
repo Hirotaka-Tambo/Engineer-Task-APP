@@ -33,6 +33,20 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
   // プロジェクトのユーザー一覧を管理
   const [projectUsers, setProjectUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  
+  // バリデーションエラーの表示状態
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+
+  // 保存ボタンのハンドラー
+  const handleSave = () => {
+    // バリデーションチェック
+    if (editedTask.taskCategory.length === 0 || editedTask.assignedTo === "") {
+      setShowValidationErrors(true);
+      return;
+    }
+    // バリデーションOKなら保存
+    onSave();
+  };
 
   // モーダルが開いている時にbodyのスクロールを無効にする
   useEffect(() => {
@@ -140,8 +154,8 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
 
             {/* 保存ボタン */}
             <button
-              onClick={onSave}
-              className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded text-xs font-medium hover:from-blue-600 hover:to-blue-700 shadow-sm transition-all"
+              onClick={handleSave}
+              className="px-4 py-1.5 rounded text-xs font-medium shadow-sm transition-all bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
             >
               {isNewTask ? "タスクを作成" : "保存して閉じる"}
             </button>
@@ -153,7 +167,11 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
             {/* グループ・担当者・1行メモ（カード型レイアウト） */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-3">
               {/* グループカード */}
-              <div className="bg-gray-50 rounded-xl p-3 border border-gray-200 hover:border-green-300 transition-colors">
+              <div className={`bg-gray-50 rounded-xl p-3 border transition-colors ${
+                showValidationErrors && editedTask.taskCategory.length === 0 
+                  ? "border-red-300 bg-red-50" 
+                  : "border-gray-200 hover:border-green-300"
+              }`}>
                 <div className="flex items-center space-x-2 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-sm font-semibold text-gray-700">グループ</span>
@@ -188,7 +206,11 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
               </div>
 
               {/* 担当者カード */}
-              <div className="bg-gray-50 rounded-xl p-3 border border-gray-200 hover:border-blue-300 transition-colors">
+              <div className={`bg-gray-50 rounded-xl p-3 border transition-colors ${
+                showValidationErrors && editedTask.assignedTo === "" 
+                  ? "border-red-300 bg-red-50" 
+                  : "border-gray-200 hover:border-blue-300"
+              }`}>
                 <div className="flex items-center space-x-2 mb-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="text-sm font-semibold text-gray-700">担当者</span>
@@ -200,6 +222,7 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
                   disabled={usersLoading}
                 >
                   <option value="">担当者を選択</option>
+                  <option value="未定">未定</option>
                   {projectUsers.map((user) => (
                     <option key={user.id} value={user.user_name}>
                       {user.user_name}
