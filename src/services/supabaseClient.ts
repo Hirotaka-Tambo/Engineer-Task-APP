@@ -19,7 +19,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     headers: {
-      'X-Client-Info': 'task-management-app',
+      'X-Client-Info': 'nexst-task',
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }

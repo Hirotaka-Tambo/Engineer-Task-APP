@@ -127,7 +127,7 @@ const Login = () => {
 
         <div className="mt-8 text-center">
           <p className="text-xs text-gray-500 bg-white bg-opacity-20 px-3 py-2 rounded-lg border border-white border-opacity-30">
-            © 2024 Nexst Task. 毎日を everyday に.
+            © 2025 Nexst Task. 毎日を everyday に.
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-# Task Management App (Notion-like Sidebar)
+# Nexst Task
 
 本アプリは、個人・グループ・チーム単位でのタスク管理を行うWebアプリです。  
 UIは **Notion** を参考にし、タスクの登録・管理・カレンダー表示・モーダルでの詳細編集をサポートします。  
@@ -17,7 +17,8 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 - **開発者**: Hirotaka-Tambo, Kamon-Tahara-504
 
 ### プロジェクト工程
-- **開発開始日**: 2025/ 9/21
+- **開発開始日**: 2025 / 9/21
+- **github pages**: 2025 / 10/17
 - **リリース予定日**: 未定
 
 ---
@@ -125,88 +126,110 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 📁 ディレクトリ構成 (React)
+## 📁 ディレクトリ構成
+
 ```
-src/
+Engineer-Task-APP/
 │
-├─ components/              # 共通コンポーネント
-│  ├─ Calender/             
-│  │   └─ CalenderView.tsx   # カレンダー表示コンポーネント
-│  │
-│  ├─ Layout/              
-│  │   └─ MainLayout.tsx     # メインレイアウトコンポーネント
-│  │
-│  ├─ Sidebar/              
-│  │   ├─ Sidebar.tsx        # サイドバーのメインコンポーネント
-│  │   └─ SidebarItem.tsx    # サイドバーの各項目
-│  │
-│  ├─ TaskBoard/              
-│  │   └─ TaskBoard.tsx      # タスクボード表示コンポーネント
-│  │
-│  ├─ TaskCard/              
-│  │   ├─ TaskCard.tsx       # タスク表示用カード
-│  │   └─ PriorityBadge.tsx  # 優先度を色で示すバッジ
-│  │
-│  ├─ TaskModal/             
-│  │   └─ TaskModal.tsx      # タスクの詳細表示・編集用モーダル
-│  │
-│  ├─ TaskForm/              
-│  │   └─ TaskForm.tsx       # タスクの入力・編集フォーム
-│  │
-│  ├─ Tabs/                  
-│  │   └─ Tabs.tsx           # タブ切り替えコンポーネント
-│  │
-│  └─ types/                 # 型定義ファイル
-│      ├─ outletContext.ts   # アウトレットコンテキストの型定義
-│      ├─ project.ts         # プロジェクト関連の型定義
-│      ├─ projectMember.ts   # プロジェクトメンバー関連の型定義
-│      ├─ sidebar.ts         # サイドバー関連の型定義
-│      ├─ task.ts            # タスク関連の型定義
-│      └─ user.ts            # ユーザー関連の型定義
+├─ public/                  # 静的ファイル
+│  └─ icons/                # アイコンファイル（43種類の技術スタックアイコン）
+│      ├─ angular.svg
+│      ├─ react.svg
+│      ├─ typescript.svg
+│      └─ ... (その他のアイコン)
 │
-├─ pages/                   # ページコンポーネント
-│  ├─ AdminPage.tsx          # 管理者向けページ
-│  ├─ BackTask.tsx           # バックエンドタスク管理ページ
-│  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
-│  ├─ BackTask.tsx           # バックエンドタスク管理ページ
-│  ├─ FrontTask.tsx          # フロントエンドタスク管理ページ
-│  ├─ Login.tsx              # ログインページ
-│  ├─ Register.tsx           # ユーザー登録ページ
-│  ├─ SettingTask.tsx        # タスク設定ページ
-│  ├─ SoloTask.tsx           # 個人タスク管理ページ
-│  └─ TeamTask.tsx           # チームタスク管理ページ
+├─ src/
+│  │
+│  ├─ components/           # 共通コンポーネント
+│  │  ├─ ConfirmModal/
+│  │  │   └─ ConfirmModal.tsx         # 確認ダイアログコンポーネント
+│  │  │
+│  │  ├─ IconSelector/
+│  │  │   └─ IconSelector.tsx         # アイコン選択コンポーネント
+│  │  │
+│  │  ├─ Layout/
+│  │  │   └─ MainLayout.tsx           # メインレイアウトコンポーネント
+│  │  │
+│  │  ├─ ProjectCreation/
+│  │  │   └─ ProjectCreationModal.tsx # プロジェクト作成モーダル
+│  │  │
+│  │  ├─ Sidebar/
+│  │  │   ├─ Sidebar.tsx              # サイドバーのメインコンポーネント
+│  │  │   └─ SidebarItem.tsx          # サイドバーの各項目
+│  │  │
+│  │  ├─ TaskBoard/
+│  │  │   └─ TaskBoard.tsx            # タスクボード表示コンポーネント
+│  │  │
+│  │  ├─ TaskCard/
+│  │  │   ├─ TaskCard.tsx             # タスク表示用カード
+│  │  │   └─ PriorityBadge.tsx        # 優先度を色で示すバッジ
+│  │  │
+│  │  ├─ TaskModal/
+│  │  │   ├─ TaskModal.tsx            # タスクの詳細表示・編集用モーダル
+│  │  │   └─ TaskModalForm.tsx        # タスクフォームコンポーネント
+│  │  │
+│  │  └─ types/                       # 型定義ファイル
+│  │      ├─ outletContext.ts         # アウトレットコンテキストの型定義
+│  │      ├─ project.ts               # プロジェクト関連の型定義
+│  │      ├─ projectMember.ts         # プロジェクトメンバー関連の型定義
+│  │      ├─ sidebar.ts               # サイドバー関連の型定義
+│  │      ├─ task.ts                  # タスク関連の型定義
+│  │      └─ user.ts                  # ユーザー関連の型定義
+│  │
+│  ├─ contexts/                       # Reactコンテキスト
+│  │  └─ ProjectContext.tsx           # プロジェクトコンテキスト
+│  │
+│  ├─ pages/                          # ページコンポーネント
+│  │  ├─ Admin.tsx                    # 管理者向けページ
+│  │  ├─ BackTask.tsx                 # バックエンドタスク管理ページ
+│  │  ├─ FrontTask.tsx                # フロントエンドタスク管理ページ
+│  │  ├─ Login.tsx                    # ログインページ
+│  │  ├─ ProjectSelection.tsx         # プロジェクト選択ページ
+│  │  ├─ Register.tsx                 # ユーザー登録ページ
+│  │  ├─ SettingTask.tsx              # タスク設定ページ
+│  │  ├─ SoloTask.tsx                 # 個人タスク管理ページ
+│  │  └─ TeamTask.tsx                 # チームタスク管理ページ
+│  │
+│  ├─ services/                       # API通信および外部サービス関連
+│  │  ├─ adminService.ts              # 管理者機能関連のサービス
+│  │  ├─ authService.ts               # 認証関連のサービス
+│  │  ├─ supabaseClient.ts            # Supabaseクライアントの初期化
+│  │  ├─ taskService.ts               # タスク関連のサービス
+│  │  └─ userService.ts               # ユーザー関連のサービス
+│  │
+│  ├─ hooks/                          # カスタムフック
+│  │  ├─ useAdmin.ts                  # 管理者機能用のカスタムフック
+│  │  ├─ useAdminActions.ts           # 管理者アクション用のカスタムフック
+│  │  ├─ useAuth.ts                   # 認証関連のカスタムフック
+│  │  ├─ useDropdownMenu.ts           # ドロップダウンメニュー用のカスタムフック
+│  │  ├─ useLogin.ts                  # ログイン処理用のカスタムフック
+│  │  ├─ useLoginValidation.ts        # ログインフォームバリデーション用のカスタムフック
+│  │  ├─ useProjectCreation.ts        # プロジェクト作成用のカスタムフック
+│  │  ├─ useProjectSelection.ts       # プロジェクト選択用のカスタムフック
+│  │  ├─ useRegister.ts               # 新規登録処理用のカスタムフック
+│  │  ├─ useRegisterValidation.ts     # 新規登録フォームバリデーション用のカスタムフック
+│  │  ├─ useTaskModal.ts              # タスクモーダル用のカスタムフック
+│  │  └─ useTasks.ts                  # タスクデータ取得用のカスタムフック
+│  │
+│  ├─ utils/                          # 共通ユーティリティ関数
+│  │  └─ dateUtils.ts                 # 日付操作関連のヘルパー関数
+│  │
+│  ├─ App.tsx                         # アプリケーションのルートコンポーネント
+│  ├─ index.css                       # グローバルCSS
+│  ├─ main.tsx                        # アプリケーションのエントリーポイント
+│  ├─ tailwind.css                    # Tailwind CSS設定
+│  └─ vite-env.d.ts                   # Vite環境の型定義
 │
-├─ services/                # API通信および外部サービス関連
-│  ├─ adminService.ts        # 管理者機能関連のサービス
-│  ├─ adminService.ts        # 管理者機能関連のサービス
-│  ├─ authService.ts         # 認証関連のサービス
-│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
-│  └─ taskService.ts         # タスク関連のサービス
-│  ├─ supabaseClient.ts      # Supabaseクライアントの初期化
-│  └─ taskService.ts         # タスク関連のサービス
+├─ .github/
+│  └─ workflows/
+│      └─ deploy.yml                  # GitHub Pages自動デプロイ設定
 │
-├─ hooks/                   # カスタムフック
-│  ├─ useAdmin.ts            # 管理者機能用のカスタムフック
-│  ├─ useAuth.ts             # 認証関連のカスタムフック
-│  ├─ useLogin.ts            # ログイン処理用のカスタムフック
-│  ├─ useLoginValidation.ts  # ログインフォームバリデーション用のカスタムフック
-│  ├─ useRegister.ts         # 新規登録処理用のカスタムフック
-│  ├─ useRegisterValidation.ts # 新規登録フォームバリデーション用のカスタムフック
-│  └─ useTasks.ts            # タスクデータ取得用のカスタムフック
-│
-├─ utils/                   # 共通ユーティリティ関数
-│  └─ dateUtils.ts           # 日付操作関連のヘルパー関数
-│
-├─ assets/                  # 静的アセット
-│  └─ react.svg             # Reactロゴ
-│
-├─ App.tsx                  # アプリケーションのルートコンポーネント
-├─ index.css                # グローバルCSS
-├─ index.css                # グローバルCSS
-├─ main.tsx                 # アプリケーションのエントリーポイント
-├─ tailwind.css             # Tailwind CSS設定
-├─ tailwind.css             # Tailwind CSS設定
-└─ vite-env.d.ts            # Vite環境の型定義
+├─ index.html                         # エントリーポイントHTML
+├─ package.json                       # 依存関係管理
+├─ vite.config.ts                     # Vite設定
+├─ tailwind.config.js                 # Tailwind CSS設定
+├─ tsconfig.json                      # TypeScript設定
+└─ README.md                          # プロジェクトドキュメント
 ```
 
 
