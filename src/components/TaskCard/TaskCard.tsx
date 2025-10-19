@@ -1,6 +1,7 @@
 import React from "react";
 import PriorityBadge from "./PriorityBadge";
 import type { ExtendedTask } from "../types/task";
+import { TaskCategoryLabel } from "./TaskCategoryLabel";
 import { getDeadlineStatus } from "../../utils/dateUtils";
 
 interface TaskCardProps {
@@ -130,9 +131,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
       {/* 2列目 優先度 + タグ */}
       <div className="flex items-center gap-3 mb-3">
         <PriorityBadge priority={task.priority} />
-        <span className="text-xs text-blue-600 bg-white bg-opacity-30 px-2 py-1 rounded-xl border border-blue-600 ">
-          #{task.taskCategory}
-        </span>
+        <TaskCategoryLabel categories={task.taskCategory} />
         {/* 残り日数タグ（完了タスク以外で表示） */}
         {task.taskStatus !== 'done' && (
           <span className={`text-xs px-2 py-1 rounded-xl border ${deadlineStyles.tagStyle}`}>
