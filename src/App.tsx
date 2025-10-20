@@ -1,4 +1,4 @@
-import {HashRouter as Router,Routes, Route, Navigate} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 
 import Login from "./pages/Login";
 import SoloTask from "./pages/SoloTask";
@@ -67,7 +67,6 @@ const App = ()=>{
 
   // ルート
   return(
-    <Router>
     <ProjectProvider>
       <Routes>
         {/* ログインページ：認証済みの場合はプロジェクト選択ページにリダイレクト */}
@@ -114,7 +113,6 @@ const App = ()=>{
 
       </Routes>
     </ProjectProvider>
-    </Router>
   );
 
   
