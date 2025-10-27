@@ -29,7 +29,9 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         const project = JSON.parse(storedProjectData) as Project;
         setSelectedProjectId(storedProjectId);
         setSelectedProjectState(project);
-        console.log('プロジェクト情報を復元しました:', project.name);
+        if (!import.meta.env.PROD) {
+          console.log('プロジェクト情報を復元しました');
+        }
       } catch (error) {
         console.error('プロジェクト情報の復元に失敗しました:', error);
         localStorage.removeItem(PROJECT_STORAGE_KEY);
@@ -39,13 +41,13 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, []);
 
   const setSelectedProject = (projectId: string, project: Project) => {
-    console.log('setSelectedProject 呼び出し:', { projectId, projectName: project.name });
+    if (!import.meta.env.PROD) {
+      console.log('プロジェクトを選択しました:', project.name);
+    }
     setSelectedProjectId(projectId);
     setSelectedProjectState(project);
     localStorage.setItem(PROJECT_STORAGE_KEY, projectId);
     localStorage.setItem(PROJECT_DATA_STORAGE_KEY, JSON.stringify(project));
-    console.log('プロジェクトを選択しました:', project.name);
-    console.log('ローカルストレージに保存:', { projectId, projectData: project });
   };
 
   const clearSelectedProject = () => {
@@ -53,7 +55,6 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     setSelectedProjectState(null);
     localStorage.removeItem(PROJECT_STORAGE_KEY);
     localStorage.removeItem(PROJECT_DATA_STORAGE_KEY);
-    console.log('プロジェクト選択をクリアしました');
   };
 
   return (

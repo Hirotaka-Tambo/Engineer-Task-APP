@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import type { SidebarItem as SidebarItemType } from "../types/sidebar";
+import { sanitizeSvgIcon } from "../../utils/svgUtils";
 
 // サイドバーアイテムのプロパティ型定義
 interface SidebarItemProps {
@@ -43,11 +44,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   // コンテンツ(サイドバー)全体をラップするコンポーネント
   const content = (
     <div className='flex items-center gap-3'>
-      {/*アイコンの表示*/}
-      {item.icon && (
+      {/*アイコンの表示 - セキュリティ強化版*/}
+      {item.icon && sanitizeSvgIcon(item.icon) && (
         <div
           className="w-5 h-5 flex items-center justify-center"
-          dangerouslySetInnerHTML={{ __html: item.icon }}
+          dangerouslySetInnerHTML={{ __html: sanitizeSvgIcon(item.icon)! }}
         />
       )}
 

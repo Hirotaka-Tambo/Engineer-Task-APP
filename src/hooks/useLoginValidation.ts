@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateEmail, validatePasswordStrength, containsXSSPattern, containsSQLInjectionPattern } from '../utils/validationUtils';
 
 export interface LoginFormData {
   email: string;
@@ -16,18 +17,21 @@ export const useLoginValidation = () => {
   const validateForm = (formData: LoginFormData): boolean => {
     const newErrors: LoginFormErrors = {};
 
-    // メールアドレスのバリデーション
-    if (!formData.email.trim()) {
-      newErrors.email = "メールアドレスを入力してください";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "有効なメールアドレスを入力してください";
+    // メールアドレスのバリデーション（セキュリティ強化版）
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid && emailValidation.message) {
+      newErrors.email = emailValidation.message;
     }
 
-    // パスワードのバリデーション
-    if (!formData.password) {
-      newErrors.password = "パスワードを入力してください";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "パスワードは6文字以上で入力してください";
+    // セキュリティパターンチェック
+    if (containsXSSPattern(formData.email) || containsSQLInjectionPattern(formData.email)) {
+      newErrors.email = "不正な文字が含まれています";
+    }
+
+    // パスワードのバリデーション（セキュリティ強化版）
+    const passwordValidation = validatePasswordStrength(formData.password, 6);
+    if (!passwordValidation.isValid && passwordValidation.message) {
+      newErrors.password = passwordValidation.message;
     }
 
     setErrors(newErrors);
