@@ -5,7 +5,9 @@ import type { User } from '../components/types/user';
  * メールアドレスとパスワードでログイン
  */
 export const login = async (email: string, password: string) => {
-  console.log('ログイン試行:', email);
+  if (!import.meta.env.PROD) {
+    console.log('ログイン試行:', email);
+  }
   
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -18,7 +20,9 @@ export const login = async (email: string, password: string) => {
       throw error;
     }
     
-    console.log('ログイン成功:', data);
+    if (!import.meta.env.PROD) {
+      console.log('ログイン成功');
+    }
     
     // ログイン成功後、プロジェクトメンバーシップをチェック
     if (data.user) {
@@ -70,7 +74,9 @@ export const signUp = async (email: string, password: string, userName: string) 
     throw new Error('ユーザーデータの挿入に失敗しました');
   }
 
-  console.log('ユーザー登録完了:', userData);
+  if (!import.meta.env.PROD) {
+    console.log('ユーザー登録完了');
+  }
   
   // 登録成功後は自動ログイン状態を維持
   // プロジェクト選択ページで初回プロジェクトを選択してもらう
@@ -156,7 +162,9 @@ export const getUsersByIds = async (userIds: string[]): Promise<User[]> => {
  * ユーザーがプロジェクトに所属していることを確認し、必要に応じてデフォルトプロジェクトに追加
  */
 export const ensureUserHasProject = async (userId: string) => {
-  console.log('プロジェクトメンバーシップ確認開始:', userId);
+  if (!import.meta.env.PROD) {
+    console.log('プロジェクトメンバーシップ確認開始');
+  }
   
   // ユーザーが所属するプロジェクトをチェック
   const { data: userProjects, error } = await supabase
@@ -171,7 +179,9 @@ export const ensureUserHasProject = async (userId: string) => {
   }
 
   if (!userProjects || userProjects.length === 0) {
-    console.log('ユーザーはプロジェクトに所属していません。デフォルトプロジェクトに追加します。');
+    if (!import.meta.env.PROD) {
+      console.log('ユーザーはプロジェクトに所属していません。デフォルトプロジェクトに追加します。');
+    }
     try {
       await addUserToDefaultProject(userId);
     } catch (projectError) {
@@ -179,7 +189,7 @@ export const ensureUserHasProject = async (userId: string) => {
       // RLSポリシーの問題でプロジェクトに追加できない場合は、警告のみ
       console.warn('プロジェクトへの追加ができません。管理者に連絡してください。');
     }
-  } else {
+  } else if (!import.meta.env.PROD) {
     console.log('ユーザーは既にプロジェクトに所属しています:', userProjects.length, '個のプロジェクト');
   }
 };
@@ -188,7 +198,9 @@ export const ensureUserHasProject = async (userId: string) => {
  * デフォルトプロジェクトにユーザーを追加
  */
 export const addUserToDefaultProject = async (userId: string) => {
-  console.log('デフォルトプロジェクトへの追加を開始:', userId);
+  if (!import.meta.env.PROD) {
+    console.log('デフォルトプロジェクトへの追加を開始');
+  }
   
   // 既存のデフォルトプロジェクトを検索
   const { data: existingProject, error: searchError } = await supabase
@@ -206,9 +218,13 @@ export const addUserToDefaultProject = async (userId: string) => {
 
   if (existingProject) {
     defaultProject = existingProject;
-    console.log('既存のデフォルトプロジェクトを使用:', defaultProject.id);
+    if (!import.meta.env.PROD) {
+      console.log('既存のデフォルトプロジェクトを使用');
+    }
   } else {
-    console.log('デフォルトプロジェクトが存在しません。作成を試行します...');
+    if (!import.meta.env.PROD) {
+      console.log('デフォルトプロジェクトが存在しません。作成を試行します...');
+    }
     
     // RLSポリシーの問題を回避するため、まず既存のプロジェクトを確認
     const { data: allProjects, error: allProjectsError } = await supabase
@@ -224,7 +240,9 @@ export const addUserToDefaultProject = async (userId: string) => {
     if (allProjects && allProjects.length > 0) {
       // 既存のプロジェクトがある場合は、最初のプロジェクトを使用
       defaultProject = allProjects[0];
-      console.log('既存のプロジェクトを使用:', defaultProject.name, defaultProject.id);
+      if (!import.meta.env.PROD) {
+        console.log('既存のプロジェクトを使用:', defaultProject.name);
+      }
     } else {
       // プロジェクトが全く存在しない場合は、RLSポリシーの問題の可能性が高い
       console.warn('プロジェクトテーブルにアクセスできません。RLSポリシーを確認してください。');
@@ -245,14 +263,18 @@ export const addUserToDefaultProject = async (userId: string) => {
   if (memberError) {
     // 既にメンバーとして存在する場合はエラーを無視
     if (memberError.code === '23505') { // 重複キーエラー
-      console.log('ユーザーは既にプロジェクトメンバーです');
+      if (!import.meta.env.PROD) {
+        console.log('ユーザーは既にプロジェクトメンバーです');
+      }
       return;
     }
     console.error('プロジェクトメンバー追加エラー:', memberError);
     throw memberError;
   }
 
-  console.log('ユーザーをデフォルトプロジェクトに追加完了:', defaultProject.name);
+  if (!import.meta.env.PROD) {
+    console.log('ユーザーをデフォルトプロジェクトに追加完了:', defaultProject.name);
+  }
 };
 
 /**

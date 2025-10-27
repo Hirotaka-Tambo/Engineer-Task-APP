@@ -6,7 +6,15 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   build:{
-    outDir:'docs'
+    outDir:'docs',
+    // 本番ビルド時にconsole.logとconsole.warnを削除
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   css: {
     postcss: './postcss.config.js',

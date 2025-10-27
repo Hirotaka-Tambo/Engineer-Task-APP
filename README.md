@@ -232,73 +232,49 @@ Engineer-Task-APP/
 └─ README.md                          # プロジェクトドキュメント
 ```
 
+## 🔒 セキュリティ
 
-# React + TypeScript + Vite
+### 実装済みセキュリティ対策
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+#### 1. XSS（Cross-Site Scripting）対策
+- **DOMPurify**を使用したSVGサニタイゼーション
+- 本番環境での`console.log`削除
+- Content Security Policy（CSP）の実装
 
-Currently, two official plugins are available:
+#### 2. 認証・認可
+- Supabase RLS（Row Level Security）によるデータアクセス制御
+- セッション管理とトークン自動リフレッシュ
+- プロジェクト単位のアクセス制御
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+#### 3. セキュリティヘッダー
+```html
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: DENY
+- X-XSS-Protection: 1; mode=block
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: geolocation=(), microphone=(), camera=()
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+#### 4. 環境変数管理
+- GitHub Secretsを使用した本番環境変数の保護
+- `.env`ファイルの`.gitignore`への追加
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### セキュリティベストプラクティス
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+#### 開発環境
+```bash
+# .env.local ファイルを作成
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
+
+#### 本番環境（GitHub Pages）
+GitHub Repository Settings > Secrets and variables > Actions に以下を設定：
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+### 注意事項
+⚠️ **重要**: SupabaseのAnon Keyは公開されても問題ないように設計されていますが、RLS（Row Level Security）ポリシーを適切に設定することが重要です。
+
+---
+
