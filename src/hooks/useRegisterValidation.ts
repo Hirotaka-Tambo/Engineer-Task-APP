@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validatePasswordStrength, validateEmail } from '../utils/validationUtils';
 
 export interface RegisterFormData {
   userName: string;
@@ -27,18 +28,16 @@ export const useRegisterValidation = () => {
       newErrors.userName = "ユーザー名は2文字以上で入力してください";
     }
 
-    // メールアドレスのバリデーション
-    if (!formData.email.trim()) {
-      newErrors.email = "メールアドレスを入力してください";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "正しいメールアドレスを入力してください";
+    // メールアドレスのバリデーション（強化版）
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) {
+      newErrors.email = emailValidation.message || "正しいメールアドレスを入力してください";
     }
 
-    // パスワードのバリデーション
-    if (!formData.password) {
-      newErrors.password = "パスワードを入力してください";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "パスワードは6文字以上で入力してください";
+    // パスワードのバリデーション（強化版）
+    const passwordValidation = validatePasswordStrength(formData.password, 8, true);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.message || "パスワードが要件を満たしていません";
     }
 
     // パスワード確認のバリデーション

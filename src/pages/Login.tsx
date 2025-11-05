@@ -28,9 +28,14 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4] flex items-center justify-center p-4">
       <div className="bg-white bg-opacity-30 backdrop-blur-xl rounded-2xl p-8 w-full max-w-md shadow-lg border border-white border-opacity-60">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
           Nexst Task
         </h1>
+        
+        {/* 区切り線 */}
+        <div className="mb-8 relative flex items-center">
+          <div className="flex-1 border-t border-white border-opacity-40"></div>
+        </div>
 
         <form onSubmit={handleSubmit}>
           {/* エラーメッセージ */}
@@ -105,7 +110,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white bg-opacity-30 hover:bg-opacity-40 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-white border-opacity-60 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 bg-opacity-80 hover:bg-opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "ログイン中..." : "ログイン"}
           </button>
@@ -118,9 +123,16 @@ const Login = () => {
           <div className="flex-1 border-t border-white border-opacity-40"></div>
         </div>
 
+        {/* 新規登録の紹介文 */}
+        <div className="mb-4 text-center">
+          <p className="text-sm text-gray-700">
+            アカウントをお持ちでない方は、新規登録してください
+          </p>
+        </div>
+
         <button
           onClick={handleRegisterClick}
-          className="w-full bg-blue-600 bg-opacity-80 hover:bg-opacity-90 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-white bg-opacity-30 hover:bg-opacity-40 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-white border-opacity-60"
         >
           新規登録はこちら
         </button>
