@@ -138,36 +138,142 @@ export const validateEmail = (email: string): { isValid: boolean; message?: stri
 };
 
 /**
- * パスワードの強度検証
+ * パスワードの強度レベル
+ */
+export type PasswordStrength = 'weak' | 'medium' | 'strong' | 'very-strong';
+
+/**
+ * パスワードの強度を判定
+ * @param password - 検証するパスワード
+ * @returns パスワードの強度レベル
+ */
+export const getPasswordStrength = (password: string): PasswordStrength => {
+  if (!password) return 'weak';
+
+  let score = 0;
+  
+  // 長さによるスコア
+  if (password.length >= 8) score += 1;
+  if (password.length >= 12) score += 1;
+  if (password.length >= 16) score += 1;
+  
+  // 大文字を含む
+  if (/[A-Z]/.test(password)) score += 1;
+  
+  // 小文字を含む
+  if (/[a-z]/.test(password)) score += 1;
+  
+  // 数字を含む
+  if (/\d/.test(password)) score += 1;
+  
+  // 特殊文字を含む
+  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score += 1;
+  
+  // 複数の特殊文字を含む
+  if ((password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length >= 2) score += 1;
+
+  if (score <= 2) return 'weak';
+  if (score <= 4) return 'medium';
+  if (score <= 6) return 'strong';
+  return 'very-strong';
+};
+
+/**
+ * パスワードの強度検証（強化版）
  * @param password - 検証するパスワード
  * @param minLength - 最小文字数（デフォルト: 8）
+ * @param requireStrong - 強力なパスワードを必須にするか（デフォルト: true）
  * @returns 検証結果
  */
 export const validatePasswordStrength = (
   password: string,
-  minLength: number = 8
-): { isValid: boolean; message?: string } => {
+  minLength: number = 8,
+  requireStrong: boolean = true
+): { 
+  isValid: boolean; 
+  message?: string; 
+  strength?: PasswordStrength;
+  requirements?: {
+    length: boolean;
+    hasUpperCase: boolean;
+    hasLowerCase: boolean;
+    hasNumbers: boolean;
+    hasSpecialChars: boolean;
+  };
+} => {
   if (!password) {
     return { isValid: false, message: 'パスワードが必要です' };
   }
 
+  // 長さチェック
   if (password.length < minLength) {
-    return { isValid: false, message: `パスワードは${minLength}文字以上必要です` };
-  }
-
-  // 強力なパスワードの推奨（オプション）
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumbers = /\d/.test(password);
-
-  if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
     return { 
-      isValid: true, 
-      message: 'より強力なパスワードにするには、大文字・小文字・数字を含めてください' 
+      isValid: false, 
+      message: `パスワードは${minLength}文字以上必要です`,
+      strength: 'weak'
     };
   }
 
-  return { isValid: true };
+  // 各要件をチェック
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+  const requirements = {
+    length: password.length >= minLength,
+    hasUpperCase,
+    hasLowerCase,
+    hasNumbers,
+    hasSpecialChars
+  };
+
+  // 強度を判定
+  const strength = getPasswordStrength(password);
+
+  // 強力なパスワードを必須にする場合
+  if (requireStrong) {
+    const missingRequirements: string[] = [];
+    
+    if (!hasUpperCase) missingRequirements.push('大文字');
+    if (!hasLowerCase) missingRequirements.push('小文字');
+    if (!hasNumbers) missingRequirements.push('数字');
+    if (!hasSpecialChars) missingRequirements.push('特殊文字');
+
+    if (missingRequirements.length > 0) {
+      return {
+        isValid: false,
+        message: `パスワードには以下の文字を含める必要があります: ${missingRequirements.join('、')}`,
+        strength,
+        requirements
+      };
+    }
+
+    // 強度が弱い場合は追加の警告
+    if (strength === 'weak' || strength === 'medium') {
+      return {
+        isValid: false,
+        message: 'パスワードの強度が不十分です。より長いパスワードや、より多くの種類の文字を使用してください。',
+        strength,
+        requirements
+      };
+    }
+  }
+
+  // 推奨事項がある場合のメッセージ
+  let message: string | undefined;
+  if (strength === 'medium') {
+    message = 'パスワードの強度を向上させるには、特殊文字を追加したり、長さを増やすことをお勧めします。';
+  } else if (strength === 'strong' || strength === 'very-strong') {
+    message = undefined; // 強力なパスワードにはメッセージ不要
+  }
+
+  return {
+    isValid: true,
+    message,
+    strength,
+    requirements
+  };
 };
 
 /**
