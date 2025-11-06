@@ -128,19 +128,50 @@ export const addProjectMember = async (
   userId: string,
   role: 'admin' | 'member' = 'member'
 ): Promise<ProjectMember> => {
-  const { data, error } = await supabase
-    .from('project_members')
-    .insert({
-      project_id: projectId,
-      user_id: userId,
-      role,
-      is_active: true,
-    })
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('project_members')
+      .insert({
+        project_id: projectId,
+        user_id: userId,
+        role,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
-  if (error || !data) throw error || new Error('メンバー追加に失敗しました');
-  return data as ProjectMember;
+    if (error) {
+      // 重複キーエラー（既にメンバーとして存在する場合）の処理
+      if (error.code === '23505') {
+        console.log('ユーザーは既にプロジェクトメンバーです');
+        // 既存のメンバー情報を取得
+        const { data: existingMember, error: fetchError } = await supabase
+          .from('project_members')
+          .select('*')
+          .eq('project_id', projectId)
+          .eq('user_id', userId)
+          .single();
+        
+        if (fetchError || !existingMember) {
+          throw new Error('メンバー情報の取得に失敗しました');
+        }
+        return existingMember as ProjectMember;
+      }
+      console.error('プロジェクトメンバー追加エラー:', error);
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error('メンバー追加に失敗しました');
+    }
+
+    return data as ProjectMember;
+  } catch (err) {
+    console.error('addProjectMember エラー:', err);
+    throw err;
+  }
 };
 
 /**
