@@ -7,7 +7,7 @@ import { useTasks } from "../../hooks/useTasks";
 import { logout } from "../../services/authService";
 import { useProject } from "../../contexts/ProjectContext";
 import { useAuth } from "../../hooks/useAuth";
-import { isProjectAdmin } from "../../services/adminService";
+import { useProjectRole } from "../../hooks/useProjectRole";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
 import type { SidebarItem } from "../types/sidebar";
 import type { OutletContextType } from "../types/outletContext";
@@ -19,34 +19,8 @@ const MainLayout : React.FC = () =>{
   const { user } = useAuth();
   const { 
     tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
-
-  // プロジェクト管理者フラグ（プロジェクトメンバーテーブルのロールから取得）
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [adminCheckLoading, setAdminCheckLoading] = useState<boolean>(true);
-
-  // 選択されているプロジェクトでユーザーが管理者かをチェック
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!selectedProjectId || !user?.id) {
-        setIsAdmin(false);
-        setAdminCheckLoading(false);
-        return;
-      }
-
-      try {
-        setAdminCheckLoading(true);
-        const adminStatus = await isProjectAdmin(selectedProjectId, user.id);
-        setIsAdmin(adminStatus);
-      } catch (error) {
-        console.error('管理者権限チェックエラー:', error);
-        setIsAdmin(false);
-      } finally {
-        setAdminCheckLoading(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [selectedProjectId, user?.id]);
+  const { role: projectRole, loading: projectRoleLoading } = useProjectRole();
+  const isAdmin = projectRole === 'admin';
 
   // サイドバーの配列（isAdminとadminCheckLoadingに依存）
   const sidebarItems: SidebarItem[] = useMemo(() => [
@@ -89,11 +63,11 @@ const MainLayout : React.FC = () =>{
       id: "admin", 
       label: "Admin", 
       path: "/admin",
-      disabled: !isAdmin || adminCheckLoading,
-      disabledReason: "管理者権限が必要です",
+      disabled: projectRoleLoading || !isAdmin,
+      disabledReason: projectRoleLoading ? "権限を確認しています" : "管理者権限が必要です",
       icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>'
     },
-  ], [isAdmin, adminCheckLoading]);
+  ], [isAdmin, projectRoleLoading]);
 
   // アクティブアイテムIDを計算
   const activeItemId = sidebarItems.find(item => item.path === location.pathname)?.id || location.pathname.replace("/","");

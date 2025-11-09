@@ -2,6 +2,7 @@ import React from "react";
 import SidebarItem from "./SidebarItem";
 import type { SidebarProps } from "../types/sidebar";
 import { useAuth } from "../../hooks/useAuth";
+import { useProjectRole } from "../../hooks/useProjectRole";
 
 const Sidebar: React.FC<SidebarProps> = ({
   items,
@@ -10,6 +11,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   className = ''
 }) => {
   const { user } = useAuth();
+  const { role: projectRole, loading: projectRoleLoading } = useProjectRole();
 
   return (
     // 外側のコンテナ - 元の位置に戻す
@@ -39,9 +41,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                           {user.user_name}
                         </div>
                         {/* ロールバッジ */}
-                        {user.role && (
+                        {(projectRoleLoading || projectRole) && (
                           <span className="px-2 py-1 text-xs font-semibold text-white bg-white bg-opacity-20 backdrop-blur-sm rounded-full border border-white border-opacity-30 flex-shrink-0">
-                            {user.role === 'admin' ? '管理者' : 'メンバー'}
+                            {projectRoleLoading
+                              ? '判定中...'
+                              : projectRole === 'admin'
+                                ? '管理者'
+                                : 'メンバー'}
                           </span>
                         )}
                       </div>

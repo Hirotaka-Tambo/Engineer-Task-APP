@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAdmin } from '../hooks/useAdmin';
 import { useAuth } from '../hooks/useAuth';
 import { useDropdownMenu } from '../hooks/useDropdownMenu';
 import { useAdminActions } from '../hooks/useAdminActions';
+import { useProject } from '../contexts/ProjectContext';
 
 export const Admin = () => {
   const { user } = useAuth();
+  const { selectedProjectId, selectedProject } = useProject();
   
   // プロジェクトIDの取得とメンバー管理を統合
   const { 
@@ -18,7 +20,14 @@ export const Admin = () => {
     removeMember, 
     loading: adminLoading, 
     error 
-  } = useAdmin(undefined, user?.id);
+  } = useAdmin(selectedProjectId ?? undefined, user?.id);
+
+  const activeProject = useMemo(() => {
+    if (selectedProjectId && selectedProject) {
+      return selectedProject;
+    }
+    return userProject;
+  }, [selectedProjectId, selectedProject, userProject]);
   
   // ドロップダウンメニュー管理
   const { openDropdownId, toggleDropdown, closeDropdown } = useDropdownMenu();
@@ -32,8 +41,10 @@ export const Admin = () => {
 
   // プロジェクトIDが変更されたらメンバーを取得
   useEffect(() => {
-    if (userProjectId) fetchProjectMembers();
-  }, [userProjectId, fetchProjectMembers]);
+    if (selectedProjectId || userProjectId) {
+      fetchProjectMembers();
+    }
+  }, [selectedProjectId, userProjectId, fetchProjectMembers]);
 
   // ローディング中
   if (projectLoading) return <p className="p-4">読み込み中...</p>;
@@ -52,7 +63,7 @@ export const Admin = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">プロジェクト管理</h1>
-              <p className="text-sm text-gray-500 mt-1">プロジェクトコード: {userProject?.code || 'N/A'}</p>
+              <p className="text-sm text-gray-500 mt-1">プロジェクトコード: {activeProject?.code || 'N/A'}</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
