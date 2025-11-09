@@ -193,6 +193,31 @@ export const updateProjectMemberRole = async (
 };
 
 /**
+ * プロジェクトメンバーのロールを取得
+ */
+export const getProjectMemberRole = async (
+  projectId: string,
+  userId: string
+): Promise<'admin' | 'member' | null> => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select('role')
+    .eq('project_id', projectId)
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    throw error;
+  }
+
+  return (data?.role as 'admin' | 'member' | null) ?? null;
+};
+
+/**
  * プロジェクトメンバーを無効化
  */
 export const deactivateProjectMember = async (memberId: string): Promise<void> => {
