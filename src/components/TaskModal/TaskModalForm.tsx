@@ -61,21 +61,43 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
 
   // プロジェクトのユーザー一覧を取得
   useEffect(() => {
+    let isMounted = true;
+
     const fetchProjectUsers = async () => {
-      if (!projectId) return;
+      if (!projectId) {
+        if (isMounted) {
+          setProjectUsers([]);
+          setUsersLoading(false);
+        }
+        return;
+      }
       
-      setUsersLoading(true);
+      if (isMounted) {
+        setUsersLoading(true);
+      }
+
       try {
         const users = await getUsersByProjectId(projectId);
-        setProjectUsers(users);
+        if (isMounted) {
+          setProjectUsers(users);
+        }
       } catch (error) {
         console.error('プロジェクトユーザー取得エラー:', error);
+        if (isMounted) {
+          setProjectUsers([]);
+        }
       } finally {
-        setUsersLoading(false);
+        if (isMounted) {
+          setUsersLoading(false);
+        }
       }
     };
 
     fetchProjectUsers();
+
+    return () => {
+      isMounted = false;
+    };
   }, [projectId]);
 
   return (
