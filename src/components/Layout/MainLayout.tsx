@@ -15,7 +15,7 @@ import type { OutletContextType } from "../types/outletContext";
 const MainLayout : React.FC = () =>{
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedProject, selectedProjectId, clearSelectedProject } = useProject();
+  const { selectedProject, clearSelectedProject } = useProject();
   const { user } = useAuth();
   const { 
     tasks, addTask, deleteTask, toggleTaskStatus, updateTask, setFilter, currentFilter} = useTasks();
