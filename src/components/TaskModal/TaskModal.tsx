@@ -2,7 +2,7 @@ import React from "react";
 import type { ExtendedTask, NewTaskUI } from "../types/task";
 import { useTaskModal } from "../../hooks/useTaskModal";
 import TaskModalForm from "./TaskModalForm";
-import { useAuth } from "../../hooks/useAuth";
+import { useProject } from "../../contexts/ProjectContext";
 
 /**
  * TaskModal - タスクモーダルのメインコンポーネント
@@ -21,8 +21,8 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) => {
-  // 現在のユーザー情報を取得（プロジェクトID用）
-  const { user } = useAuth();
+  // プロジェクトコンテキストから現在選択中のプロジェクトIDを取得
+  const { selectedProjectId } = useProject();
   
   // カスタムフックからロジック部分を取得
   const {
@@ -52,7 +52,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, onSave }) 
       getDeadlineStyle={getDeadlineStyle}
       formatDateForInput={formatDateForInput}
       parseDateFromInput={parseDateFromInput}
-      projectId={user?.project_id}
+      projectId={selectedProjectId || undefined}
     />
   );
 };
