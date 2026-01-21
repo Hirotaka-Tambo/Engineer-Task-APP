@@ -94,7 +94,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <div className="flex items-center gap-2">
             {task.icon && (
               <img
-                src={`/icons/${task.icon}.svg`}
+                src={`${import.meta.env.BASE_URL}icons/${task.icon}.svg`}
                 alt={task.icon}
                 className="w-5 h-5"
                 onError={(e) => {

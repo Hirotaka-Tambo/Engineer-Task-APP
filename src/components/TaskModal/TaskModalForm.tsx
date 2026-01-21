@@ -260,7 +260,7 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
                     <span className="text-sm text-gray-400">|</span>
                     <div className="flex items-center space-x-2">
                       <img 
-                        src={`/icons/${editedTask.icon}.svg`}
+                        src={`${import.meta.env.BASE_URL}icons/${editedTask.icon}.svg`}
                         alt={editedTask.icon}
                         className="w-5 h-5"
                         onError={(e) => {

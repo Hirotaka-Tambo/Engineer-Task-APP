@@ -91,7 +91,7 @@ const IconSelector: React.FC<IconSelectorProps> = ({ selectedIcon, onIconSelect 
               style={{ minWidth: '80px' }}
             >
               <img 
-                src={`/icons/${icon.filename}`}
+                src={`${import.meta.env.BASE_URL}icons/${icon.filename}`}
                 alt={icon.label}
                 className="w-8 h-8 mb-2"
                 onError={(e) => {
