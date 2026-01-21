@@ -18,7 +18,6 @@ export const useAuth = () => {
       // キャッシュチェック
       const cached = userCache[userId];
       if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        console.log("✅ キャッシュ命中 (useAuth):", cached.data);
         return { data: cached.data, status: "ok" };
       }
 
@@ -73,7 +72,6 @@ export const useAuth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!isMounted) return;
-        console.log("Auth Event:", event);
 
         // TOKEN_REFRESHED イベントは無視（無限ループ防止）
         if (event === "TOKEN_REFRESHED") return;
@@ -85,7 +83,6 @@ export const useAuth = () => {
           
           if (status === "ok" && userData) {
             setUser(userData);
-            console.log("✅ ユーザーデータ設定完了:", userData);
           } else if (status === "timeout") {
             console.warn("⚠️ fetchUserData タイムアウト。再試行待機またはスキップ");
             // userをnullにしないことでUIが壊れない
@@ -94,7 +91,6 @@ export const useAuth = () => {
           }
         } else {
           setUser(null);
-          console.log("セッションなし → user=null");
         }
 
         if (isMounted) setLoading(false);

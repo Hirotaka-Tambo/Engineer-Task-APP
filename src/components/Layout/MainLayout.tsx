@@ -221,7 +221,6 @@ const MainLayout : React.FC = () =>{
                 onClick={async () => {
                   try {
                     await logout();
-                    console.log('ログアウト成功');
                     clearSelectedProject();
                     navigate('/login');
                   } catch (error) {

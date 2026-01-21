@@ -29,9 +29,6 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
         const project = JSON.parse(storedProjectData) as Project;
         setSelectedProjectId(storedProjectId);
         setSelectedProjectState(project);
-        if (!import.meta.env.PROD) {
-          console.log('プロジェクト情報を復元しました');
-        }
       } catch (error) {
         console.error('プロジェクト情報の復元に失敗しました:', error);
         localStorage.removeItem(PROJECT_STORAGE_KEY);
@@ -41,9 +38,6 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, []);
 
   const setSelectedProject = (projectId: string, project: Project) => {
-    if (!import.meta.env.PROD) {
-      console.log('プロジェクトを選択しました:', project.name);
-    }
     setSelectedProjectId(projectId);
     setSelectedProjectState(project);
     localStorage.setItem(PROJECT_STORAGE_KEY, projectId);

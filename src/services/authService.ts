@@ -5,10 +5,6 @@ import type { User } from '../components/types/user';
  * メールアドレスとパスワードでログイン
  */
 export const login = async (email: string, password: string) => {
-  if (!import.meta.env.PROD) {
-    console.log('ログイン試行:', email);
-  }
-  
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -18,10 +14,6 @@ export const login = async (email: string, password: string) => {
     if (error) {
       console.error('Supabase Auth エラー:', error);
       throw error;
-    }
-    
-    if (!import.meta.env.PROD) {
-      console.log('ログイン成功');
     }
     
     // ログイン成功後、プロジェクトメンバーシップをチェック
@@ -72,10 +64,6 @@ export const signUp = async (email: string, password: string, userName: string) 
   // データが正しく挿入されたことを確認
   if (!userData) {
     throw new Error('ユーザーデータの挿入に失敗しました');
-  }
-
-  if (!import.meta.env.PROD) {
-    console.log('ユーザー登録完了');
   }
   
   // 登録成功後は自動ログイン状態を維持
@@ -162,10 +150,6 @@ export const getUsersByIds = async (userIds: string[]): Promise<User[]> => {
  * ユーザーがプロジェクトに所属していることを確認し、必要に応じてデフォルトプロジェクトに追加
  */
 export const ensureUserHasProject = async (userId: string) => {
-  if (!import.meta.env.PROD) {
-    console.log('プロジェクトメンバーシップ確認開始');
-  }
-  
   // ユーザーが所属するプロジェクトをチェック
   const { data: userProjects, error } = await supabase
     .from('project_members')
@@ -179,9 +163,6 @@ export const ensureUserHasProject = async (userId: string) => {
   }
 
   if (!userProjects || userProjects.length === 0) {
-    if (!import.meta.env.PROD) {
-      console.log('ユーザーはプロジェクトに所属していません。デフォルトプロジェクトに追加します。');
-    }
     try {
       await addUserToDefaultProject(userId);
     } catch (projectError) {
@@ -189,8 +170,6 @@ export const ensureUserHasProject = async (userId: string) => {
       // RLSポリシーの問題でプロジェクトに追加できない場合は、警告のみ
       console.warn('プロジェクトへの追加ができません。管理者に連絡してください。');
     }
-  } else if (!import.meta.env.PROD) {
-    console.log('ユーザーは既にプロジェクトに所属しています:', userProjects.length, '個のプロジェクト');
   }
 };
 
@@ -198,10 +177,6 @@ export const ensureUserHasProject = async (userId: string) => {
  * デフォルトプロジェクトにユーザーを追加
  */
 export const addUserToDefaultProject = async (userId: string) => {
-  if (!import.meta.env.PROD) {
-    console.log('デフォルトプロジェクトへの追加を開始');
-  }
-  
   // 既存のデフォルトプロジェクトを検索
   const { data: existingProject, error: searchError } = await supabase
     .from('project')
@@ -218,14 +193,7 @@ export const addUserToDefaultProject = async (userId: string) => {
 
   if (existingProject) {
     defaultProject = existingProject;
-    if (!import.meta.env.PROD) {
-      console.log('既存のデフォルトプロジェクトを使用');
-    }
   } else {
-    if (!import.meta.env.PROD) {
-      console.log('デフォルトプロジェクトが存在しません。作成を試行します...');
-    }
-    
     // RLSポリシーの問題を回避するため、まず既存のプロジェクトを確認
     const { data: allProjects, error: allProjectsError } = await supabase
       .from('project')
@@ -240,9 +208,6 @@ export const addUserToDefaultProject = async (userId: string) => {
     if (allProjects && allProjects.length > 0) {
       // 既存のプロジェクトがある場合は、最初のプロジェクトを使用
       defaultProject = allProjects[0];
-      if (!import.meta.env.PROD) {
-        console.log('既存のプロジェクトを使用:', defaultProject.name);
-      }
     } else {
       // プロジェクトが全く存在しない場合は、RLSポリシーの問題の可能性が高い
       console.warn('プロジェクトテーブルにアクセスできません。RLSポリシーを確認してください。');
@@ -263,17 +228,10 @@ export const addUserToDefaultProject = async (userId: string) => {
   if (memberError) {
     // 既にメンバーとして存在する場合はエラーを無視
     if (memberError.code === '23505') { // 重複キーエラー
-      if (!import.meta.env.PROD) {
-        console.log('ユーザーは既にプロジェクトメンバーです');
-      }
       return;
     }
     console.error('プロジェクトメンバー追加エラー:', memberError);
     throw memberError;
-  }
-
-  if (!import.meta.env.PROD) {
-    console.log('ユーザーをデフォルトプロジェクトに追加完了:', defaultProject.name);
   }
 };
 

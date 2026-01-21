@@ -15,7 +15,6 @@ export const useLogin = () => {
     try {
       // ログイン処理
       await login(formData.email, formData.password);
-      console.log("ログイン成功!");
 
       // ログイン成功後はプロジェクト選択ページへ遷移
       setTimeout(() => {

@@ -277,31 +277,6 @@ export const validatePasswordStrength = (
 };
 
 /**
- * URLの検証
- * @param url - 検証するURL
- * @returns 検証結果
- */
-export const validateURL = (url: string): { isValid: boolean; message?: string } => {
-  if (!url) {
-    return { isValid: true }; // オプション項目の場合
-  }
-
-  try {
-    new URL(url);
-    
-    // 危険なプロトコルのチェック
-    const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
-    if (dangerousProtocols.some(protocol => url.toLowerCase().startsWith(protocol))) {
-      return { isValid: false, message: '不正なURLです' };
-    }
-
-    return { isValid: true };
-  } catch {
-    return { isValid: false, message: '有効なURLを入力してください' };
-  }
-};
-
-/**
  * テキスト入力の包括的検証
  * @param input - 検証するテキスト
  * @param options - 検証オプション
@@ -355,44 +330,3 @@ export const validateTextInput = (
   return { isValid: true, sanitized };
 };
 
-/**
- * プロジェクト名の検証
- * @param projectName - 検証するプロジェクト名
- * @returns 検証結果
- */
-export const validateProjectName = (projectName: string): { isValid: boolean; message?: string } => {
-  return validateTextInput(projectName, {
-    minLength: 1,
-    maxLength: 50,
-    required: true,
-    allowHtml: false
-  });
-};
-
-/**
- * タスクタイトルの検証
- * @param title - 検証するタスクタイトル
- * @returns 検証結果
- */
-export const validateTaskTitle = (title: string): { isValid: boolean; message?: string } => {
-  return validateTextInput(title, {
-    minLength: 1,
-    maxLength: 200,
-    required: true,
-    allowHtml: false
-  });
-};
-
-/**
- * メモ欄の検証
- * @param memo - 検証するメモ
- * @returns 検証結果
- */
-export const validateMemo = (memo: string): { isValid: boolean; message?: string } => {
-  return validateTextInput(memo, {
-    minLength: 0,
-    maxLength: 5000,
-    required: false,
-    allowHtml: false
-  });
-};

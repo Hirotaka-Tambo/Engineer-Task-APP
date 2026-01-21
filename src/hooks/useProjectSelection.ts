@@ -27,24 +27,20 @@ export const useProjectSelection = () => {
   // ユーザーの参加済みプロジェクト一覧を取得
   const fetchUserProjects = async () => {
     if (!userId) {
-      console.log('userId が設定されていないため、プロジェクト一覧を取得しません');
       return;
     }
     
-    console.log('プロジェクト一覧取得開始, userId:', userId);
     setLoading(true);
     setError(null);
     
     try {
       const userProjects = await getUserProjects(userId);
-      console.log('取得したプロジェクト一覧:', userProjects);
       
       // 各プロジェクトのメンバー数を取得
       const projectsWithMemberCount = await Promise.all(
         userProjects.map(async (project) => {
           try {
             const members = await getProjectMembers(project.id);
-            console.log(`プロジェクト ${project.name} のメンバー数:`, members.length);
             return {
               ...project,
               memberCount: members.length,
@@ -59,7 +55,6 @@ export const useProjectSelection = () => {
         })
       );
       
-      console.log('メンバー数付きプロジェクト一覧:', projectsWithMemberCount);
       setProjects(projectsWithMemberCount);
     } catch (err) {
       console.error('プロジェクト一覧取得エラー:', err);

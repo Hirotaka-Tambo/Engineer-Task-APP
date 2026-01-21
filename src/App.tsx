@@ -19,17 +19,8 @@ const ProtectedRoutes = () => {
   const { hasSelectedProject, selectedProjectId, selectedProject } = useProject();
   const { isAuthenticated, loading } = useAuth();
 
-  console.log('ProtectedRoutes チェック:', { 
-    isAuthenticated, 
-    loading,
-    hasSelectedProject, 
-    selectedProjectId, 
-    selectedProjectName: selectedProject?.name 
-  });
-
   // 認証状態の読み込み中は待機
   if (loading) {
-    console.log('認証状態読み込み中...');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4]">
         <div className="text-white text-xl font-semibold">読み込み中...</div>
@@ -38,16 +29,13 @@ const ProtectedRoutes = () => {
   }
 
   if (!isAuthenticated) {
-    console.log('認証されていないため、ログインページへリダイレクト');
     return <Navigate to="/login" />;
   }
 
   if (!hasSelectedProject) {
-    console.log('プロジェクトが選択されていないため、プロジェクト選択ページへリダイレクト');
     return <Navigate to="/project-selection" />;
   }
 
-  console.log('認証済みかつプロジェクト選択済み、メインレイアウトを表示');
   return <MainLayout />;
 };
 
@@ -56,7 +44,6 @@ const App = ()=>{
   // Supabaseの認証状態を取得
   const { isAuthenticated, loading } = useAuth();
 
-  console.log('App.tsx - loading:', loading, 'isAuthenticated:', isAuthenticated);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#3B62FF] via-[#5B8FFF] to-[#5BFFE4]">

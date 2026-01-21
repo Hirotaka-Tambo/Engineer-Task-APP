@@ -50,8 +50,6 @@ export const useProjectCreation = () => {
     setError(null);
 
     try {
-      console.log('🏗️ プロジェクト作成開始...', projectData);
-
       // 認証状態を確認
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) {
@@ -63,14 +61,10 @@ export const useProjectCreation = () => {
         console.error('認証セッションが存在しません');
         throw new Error('ログインが必要です');
       }
-      
-      console.log('認証セッション確認完了:', session.user.id);
-      console.log('渡されたcreatorUserId:', creatorUserId);
 
       // セッションのユーザーIDと渡されたユーザーIDが一致しているか確認
       // 空文字の場合はセッションのユーザーIDを使用
       if (!creatorUserId || creatorUserId === '') {
-        console.log('creatorUserIdが空のため、セッションのユーザーIDを使用します');
         creatorUserId = session.user.id;
       } else if (session.user.id !== creatorUserId) {
         console.warn('セッションのユーザーIDと渡されたユーザーIDが一致しません');
@@ -91,7 +85,6 @@ export const useProjectCreation = () => {
 
       // プロジェクトを作成
       const project = await createProject(newProject, creatorUserId);
-      console.log('✅ プロジェクト作成成功:', project);
 
       return {
         success: true,

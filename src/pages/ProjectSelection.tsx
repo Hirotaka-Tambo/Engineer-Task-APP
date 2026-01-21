@@ -26,9 +26,7 @@ const ProjectSelection: React.FC = () => {
 
   // プロジェクトを選択してダッシュボードへ
   const handleSelectProject = (project: Project) => {
-    console.log('プロジェクト選択開始:', project);
     setSelectedProject(project.id, project);
-    console.log('プロジェクト選択完了、ダッシュボードへ遷移');
     
     // 認証状態が安定するまで少し待機してから遷移
     setTimeout(() => {
@@ -180,7 +178,6 @@ const ProjectSelection: React.FC = () => {
                 <div
                   key={project.id}
                   onClick={() => {
-                    console.log('プロジェクトカードがクリックされました:', project.name);
                     handleSelectProject(project);
                   }}
                   className="bg-white bg-opacity-60 backdrop-blur-lg rounded-xl p-6 shadow-md border border-white border-opacity-60 cursor-pointer hover:bg-opacity-80 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
