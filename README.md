@@ -23,7 +23,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 📂 機能一覧
+## 機能一覧
 
 ### サイドバー
 - Project Name
@@ -64,7 +64,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 🗄️ Supabase (DB)
+## Supabase (DB)
 
 ### users テーブル
 | カラム名      | 型                | Nullable | 説明 |
@@ -126,7 +126,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 📁 ディレクトリ構成
+## ディレクトリ構成
 
 ```
 Engineer-Task-APP/
@@ -162,7 +162,8 @@ Engineer-Task-APP/
 │  │  │
 │  │  ├─ TaskCard/
 │  │  │   ├─ TaskCard.tsx             # タスク表示用カード
-│  │  │   └─ PriorityBadge.tsx        # 優先度を色で示すバッジ
+│  │  │   ├─ PriorityBadge.tsx        # 優先度を色で示すバッジ
+│  │  │   └─ TaskCategoryLabel.tsx    # タスクカテゴリラベルコンポーネント
 │  │  │
 │  │  ├─ TaskModal/
 │  │  │   ├─ TaskModal.tsx            # タスクの詳細表示・編集用モーダル
@@ -212,7 +213,9 @@ Engineer-Task-APP/
 │  │  └─ useTasks.ts                  # タスクデータ取得用のカスタムフック
 │  │
 │  ├─ utils/                          # 共通ユーティリティ関数
-│  │  └─ dateUtils.ts                 # 日付操作関連のヘルパー関数
+│  │  ├─ dateUtils.ts                 # 日付操作関連のヘルパー関数
+│  │  ├─ svgUtils.ts                  # SVGアイコンサニタイゼーション関連のユーティリティ
+│  │  └─ validationUtils.ts           # 入力検証関連のユーティリティ
 │  │
 │  ├─ App.tsx                         # アプリケーションのルートコンポーネント
 │  ├─ index.css                       # グローバルCSS
@@ -232,7 +235,7 @@ Engineer-Task-APP/
 └─ README.md                          # プロジェクトドキュメント
 ```
 
-## 🔒 セキュリティ
+## セキュリティ
 
 ### 実装済みセキュリティ対策
 
@@ -254,27 +257,3 @@ Engineer-Task-APP/
 - Referrer-Policy: strict-origin-when-cross-origin
 - Permissions-Policy: geolocation=(), microphone=(), camera=()
 ```
-
-#### 4. 環境変数管理
-- GitHub Secretsを使用した本番環境変数の保護
-- `.env`ファイルの`.gitignore`への追加
-
-### セキュリティベストプラクティス
-
-#### 開発環境
-```bash
-# .env.local ファイルを作成
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-#### 本番環境（GitHub Pages）
-GitHub Repository Settings > Secrets and variables > Actions に以下を設定：
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-### 注意事項
-⚠️ **重要**: SupabaseのAnon Keyは公開されても問題ないように設計されていますが、RLS（Row Level Security）ポリシーを適切に設定することが重要です。
-
----
-
