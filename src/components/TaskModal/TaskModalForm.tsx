@@ -110,7 +110,7 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
               className={`w-full text-2xl font-bold border-none outline-none bg-transparent placeholder-gray-400 ${
                 errors.title ? "text-red-500" : "text-gray-900"
               }`}
-              placeholder="タスク名を入力してください"
+              placeholder="タイトル"
             />
             {errors.title && <p className="mt-2 text-sm text-red-500">{errors.title}</p>}
           </div>
