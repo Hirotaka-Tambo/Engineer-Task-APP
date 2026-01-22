@@ -235,6 +235,52 @@ Engineer-Task-APP/
 └─ README.md                          # プロジェクトドキュメント
 ```
 
+## Supabase Storage設定
+
+### アイコン画像の管理
+
+アプリでは、タスクの言語アイコンをSupabase Storageで管理しています。Storage未設定の場合でも、ローカルパス（`public/icons/`）に自動的にフォールバックします。
+
+### Storageバケットの作成手順
+
+1. **Supabaseダッシュボードにアクセス**
+   - https://app.supabase.com にログイン
+   - プロジェクトを選択
+
+2. **Storageバケットの作成**
+   - 左メニューから「Storage」を選択
+   - 「New bucket」をクリック
+   - バケット名: `icons`
+   - Public bucket: **有効にする**（公開バケットとして設定）
+   - 「Create bucket」をクリック
+
+3. **Storageポリシーの設定**
+   - 作成した`icons`バケットを開く
+   - 「Policies」タブを選択
+   - 「New policy」をクリック
+   - ポリシー名: `Public read access`
+   - ポリシータイプ: `SELECT`（読み取り）
+   - ポリシー定義:
+     ```sql
+     (bucket_id = 'icons'::text)
+     ```
+   - 「Review」→「Save policy」をクリック
+
+4. **アイコンファイルのアップロード**
+   - `icons`バケット内で「Upload file」をクリック
+   - `public/icons/`フォルダ内のすべてのSVGファイル（43個）をアップロード
+   - ファイル名はそのまま使用（例: `html5.svg`, `react.svg`など）
+
+### 動作確認
+
+Storage設定後、アプリを再起動して以下を確認:
+- アイコンが正常に表示されること
+- ブラウザの開発者ツールで、Storage URLから画像が読み込まれていること
+
+### フォールバック機能
+
+Storageが未設定またはエラーの場合、自動的にローカルの`public/icons/`フォルダから読み込みます。これにより、段階的な移行が可能です。
+
 ## セキュリティ
 
 ### 実装済みセキュリティ対策
