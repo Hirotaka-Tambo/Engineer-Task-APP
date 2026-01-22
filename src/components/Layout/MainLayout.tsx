@@ -82,7 +82,7 @@ const MainLayout : React.FC = () =>{
     if (activeItem?.filter) {
       setFilter(activeItem.filter);
     }
-  }, [location.pathname]);
+  }, [location.pathname, setFilter]);
 
   // タスクをクリック(詳細閲覧と 編集時)
   const handleTaskClick = (task:ExtendedTask) =>{

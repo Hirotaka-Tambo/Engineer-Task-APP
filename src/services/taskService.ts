@@ -106,7 +106,7 @@ export const createTask = async (task: NewTaskDB): Promise<TaskDB> => {
   }
   
   // ユーザーがusersテーブルに存在するか確認
-  const { data: userData, error: userError } = await supabase
+  const { error: userError } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)

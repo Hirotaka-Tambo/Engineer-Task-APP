@@ -44,8 +44,6 @@ export const useTasks = () => {
         );
       });
       setTasks(extendedTasks);
-      
-      setTasks(extendedTasks);
     } catch (error) {
       console.error('タスク取得エラー:', error);
       setTasks([]);

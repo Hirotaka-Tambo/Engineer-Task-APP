@@ -41,6 +41,7 @@ export const useTaskModal = ({ task, onClose, onSave }: UseTaskModalProps) => {
       setEditedTask({...defaultNewTask});
       setErrors({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [task]);
 
   /**
