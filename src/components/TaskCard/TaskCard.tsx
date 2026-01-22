@@ -90,19 +90,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
       onClick={() => onClick?.(task)}
     >
       {/*1列目 タイトル+ アイコン + ステータス */}
-      <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center gap-3 mb-4">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             {task.icon && (
               <img
                 src={`${import.meta.env.BASE_URL}icons/${task.icon}.svg`}
                 alt={task.icon}
-                className="w-5 h-5"
+                className="w-5 h-5 flex-shrink-0"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
             )}
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-semibold text-lg truncate">
               {task.title}
             </h3>
           </div>
@@ -116,7 +116,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 onToggleDone?.(task.id!);
               }
             }}
-            className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium ${
+            className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium flex-shrink-0 ${
               task.taskStatus === "todo"
                 ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 : task.taskStatus === "in-progress"
