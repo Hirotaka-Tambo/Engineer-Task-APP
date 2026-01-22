@@ -25,16 +25,12 @@ export const useTasks = () => {
   // タスク一覧を取得する関数
   const fetchTasks = useCallback(async () => {
     if (!selectedProjectId) {
-      console.log('プロジェクトIDが設定されていません');
       setTasks([]);
       return;
     }
     
     try {
-      console.log('タスク取得中... プロジェクトID:', selectedProjectId);
       const tasksData = await getTasksByProjectId(selectedProjectId);
-      console.log('タスク取得成功:', tasksData.length, '件');
-      console.log('取得したタスクデータ:', tasksData);
       
       const users = await getUsersByProjectId(selectedProjectId);
       const extendedTasks = tasksData.map((task) =>{
@@ -60,22 +56,17 @@ export const useTasks = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        console.log('useTasks初期化開始');
         // 現在のユーザー情報を取得
         const user = await getCurrentUser();
         if (user) {
           setCurrentUserId(user.id);
           setCurrentUserName(user.user_name);
-          console.log('ユーザーID取得:', user.id);
-          console.log('ユーザー名取得:', user.user_name);
         } else {
           console.warn('ユーザー情報が取得できませんでした');
         }
-        console.log('useTasks初期化完了');
       } catch (error) {
         console.error('初期化エラー:', error);
       } finally {
-        console.log('loading を false に設定');
         setLoading(false);
       }
     };
@@ -127,11 +118,6 @@ export const useTasks = () => {
       }
 
       try {
-        console.log('タスク作成処理開始:');
-        console.log('  - 現在のユーザーID:', currentUserId);
-        console.log('  - 選択されたプロジェクトID:', selectedProjectId);
-        console.log('  - タスクタイトル:', newTask.title);
-        
         if (!selectedProjectId) {
           console.error('プロジェクトIDが設定されていません');
           return;
@@ -162,13 +148,7 @@ export const useTasks = () => {
           project_id: selectedProjectId,
         };
 
-        console.log('作成するタスクデータ:');
-        console.log('  - created_by:', taskToCreate.created_by);
-        console.log('  - assigned_to:', taskToCreate.assigned_to);
-        console.log('  - assigned_to_username:', newTask.assignedTo);
-        console.log('  - project_id:', taskToCreate.project_id);
         await createTask(taskToCreate);
-        console.log('タスク作成成功');
         
         // タスク一覧を再取得
         await fetchTasks();
@@ -180,10 +160,7 @@ export const useTasks = () => {
   // タスクの削除
   const deleteTask = useCallback(async (id: string) => {
     try {
-      console.log('タスク削除中...', id);
-
       await deleteTaskDB(String(id));
-      console.log('タスク削除成功');
       
       // タスク一覧を再取得
       await fetchTasks();
@@ -213,11 +190,8 @@ export const useTasks = () => {
           break;
       }
 
-      console.log('タスクステータス更新中...', id, newStatus);
-      
       // TODO: taskのidをuuidに変更する必要がある
       await updateTaskDB(String(id), { task_status: newStatus });
-      console.log('タスクステータス更新成功');
       
       // タスク一覧を再取得
       await fetchTasks();
@@ -232,8 +206,6 @@ export const useTasks = () => {
     if (!updatedTask.id) return;
 
     try {
-      console.log('タスク更新中...', updatedTask.id);
-      
       // assignedToName → assignedToId に変換
       let assignedToId: string | undefined;
       if (updatedTask.assignedTo) {
@@ -256,7 +228,6 @@ export const useTasks = () => {
       };
 
       await updateTaskDB(String(updatedTask.id), updates);
-      console.log('タスク更新成功');
       
       // タスク一覧を再取得
       await fetchTasks();

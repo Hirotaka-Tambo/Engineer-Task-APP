@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PriorityBadge from "./PriorityBadge";
 import type { ExtendedTask } from "../types/task";
 import { TaskCategoryLabel } from "./TaskCategoryLabel";
 import { getDeadlineStatus } from "../../utils/dateUtils";
+import { getIconUrl } from "../../services/storageService";
 
 interface TaskCardProps {
   task: ExtendedTask;
@@ -77,6 +78,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const borderStyle = task.taskStatus === 'done' 
     ? 'border-white border-opacity-60' 
     : deadlineStyles.borderStyle;
+
+  // アイコンURLの取得
+  const [iconUrl, setIconUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (task.icon) {
+      getIconUrl(task.icon).then((url) => {
+        setIconUrl(url);
+      });
+    } else {
+      setIconUrl(null);
+    }
+  }, [task.icon]);
     
   return (
     <div 
@@ -90,19 +104,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
       onClick={() => onClick?.(task)}
     >
       {/*1列目 タイトル+ アイコン + ステータス */}
-      <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            {task.icon && (
+      <div className="flex justify-between items-center gap-3 mb-4">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {task.icon && iconUrl && (
               <img
-                src={`/icons/${task.icon}.svg`}
+                src={iconUrl}
                 alt={task.icon}
-                className="w-5 h-5"
+                className="w-5 h-5 flex-shrink-0"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
             )}
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-semibold text-lg truncate">
               {task.title}
             </h3>
           </div>
@@ -116,7 +130,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 onToggleDone?.(task.id!);
               }
             }}
-            className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium ${
+            className={`px-3 py-1 text-xs rounded transition-colors duration-200 font-medium flex-shrink-0 ${
               task.taskStatus === "todo"
                 ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 : task.taskStatus === "in-progress"

@@ -23,7 +23,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 📂 機能一覧
+## 機能一覧
 
 ### サイドバー
 - Project Name
@@ -64,7 +64,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 🗄️ Supabase (DB)
+## Supabase (DB)
 
 ### users テーブル
 | カラム名      | 型                | Nullable | 説明 |
@@ -126,7 +126,7 @@ UIは **Notion** を参考にし、タスクの登録・管理・カレンダー
 
 ---
 
-## 📁 ディレクトリ構成
+## ディレクトリ構成
 
 ```
 Engineer-Task-APP/
@@ -162,7 +162,8 @@ Engineer-Task-APP/
 │  │  │
 │  │  ├─ TaskCard/
 │  │  │   ├─ TaskCard.tsx             # タスク表示用カード
-│  │  │   └─ PriorityBadge.tsx        # 優先度を色で示すバッジ
+│  │  │   ├─ PriorityBadge.tsx        # 優先度を色で示すバッジ
+│  │  │   └─ TaskCategoryLabel.tsx    # タスクカテゴリラベルコンポーネント
 │  │  │
 │  │  ├─ TaskModal/
 │  │  │   ├─ TaskModal.tsx            # タスクの詳細表示・編集用モーダル
@@ -212,7 +213,9 @@ Engineer-Task-APP/
 │  │  └─ useTasks.ts                  # タスクデータ取得用のカスタムフック
 │  │
 │  ├─ utils/                          # 共通ユーティリティ関数
-│  │  └─ dateUtils.ts                 # 日付操作関連のヘルパー関数
+│  │  ├─ dateUtils.ts                 # 日付操作関連のヘルパー関数
+│  │  ├─ svgUtils.ts                  # SVGアイコンサニタイゼーション関連のユーティリティ
+│  │  └─ validationUtils.ts           # 入力検証関連のユーティリティ
 │  │
 │  ├─ App.tsx                         # アプリケーションのルートコンポーネント
 │  ├─ index.css                       # グローバルCSS
@@ -232,7 +235,53 @@ Engineer-Task-APP/
 └─ README.md                          # プロジェクトドキュメント
 ```
 
-## 🔒 セキュリティ
+## Supabase Storage設定
+
+### アイコン画像の管理
+
+アプリでは、タスクの言語アイコンをSupabase Storageで管理しています。Storage未設定の場合でも、ローカルパス（`public/icons/`）に自動的にフォールバックします。
+
+### Storageバケットの作成手順
+
+1. **Supabaseダッシュボードにアクセス**
+   - https://app.supabase.com にログイン
+   - プロジェクトを選択
+
+2. **Storageバケットの作成**
+   - 左メニューから「Storage」を選択
+   - 「New bucket」をクリック
+   - バケット名: `icons`
+   - Public bucket: **有効にする**（公開バケットとして設定）
+   - 「Create bucket」をクリック
+
+3. **Storageポリシーの設定**
+   - 作成した`icons`バケットを開く
+   - 「Policies」タブを選択
+   - 「New policy」をクリック
+   - ポリシー名: `Public read access`
+   - ポリシータイプ: `SELECT`（読み取り）
+   - ポリシー定義:
+     ```sql
+     (bucket_id = 'icons'::text)
+     ```
+   - 「Review」→「Save policy」をクリック
+
+4. **アイコンファイルのアップロード**
+   - `icons`バケット内で「Upload file」をクリック
+   - `public/icons/`フォルダ内のすべてのSVGファイル（43個）をアップロード
+   - ファイル名はそのまま使用（例: `html5.svg`, `react.svg`など）
+
+### 動作確認
+
+Storage設定後、アプリを再起動して以下を確認:
+- アイコンが正常に表示されること
+- ブラウザの開発者ツールで、Storage URLから画像が読み込まれていること
+
+### フォールバック機能
+
+Storageが未設定またはエラーの場合、自動的にローカルの`public/icons/`フォルダから読み込みます。これにより、段階的な移行が可能です。
+
+## セキュリティ
 
 ### 実装済みセキュリティ対策
 
@@ -254,27 +303,3 @@ Engineer-Task-APP/
 - Referrer-Policy: strict-origin-when-cross-origin
 - Permissions-Policy: geolocation=(), microphone=(), camera=()
 ```
-
-#### 4. 環境変数管理
-- GitHub Secretsを使用した本番環境変数の保護
-- `.env`ファイルの`.gitignore`への追加
-
-### セキュリティベストプラクティス
-
-#### 開発環境
-```bash
-# .env.local ファイルを作成
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-#### 本番環境（GitHub Pages）
-GitHub Repository Settings > Secrets and variables > Actions に以下を設定：
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-### 注意事項
-⚠️ **重要**: SupabaseのAnon Keyは公開されても問題ないように設計されていますが、RLS（Row Level Security）ポリシーを適切に設定することが重要です。
-
----
-

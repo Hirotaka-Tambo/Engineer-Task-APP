@@ -1,21 +1,6 @@
 /* 日付・時刻周りの関数*/
 
 /**
- * @description 日付の短縮形式表示(例:12/25)にフォーマット。
- * @param date - フォーマット対象のDateオブジェクト
- * @returns 短縮形式の文字列 
- */
-
-export const formatDateShort = (date : Date): string=>{
-    // 日本語ローカルで月と日のみの表示
-    return date.toLocaleDateString('ja-JP',{
-        year:'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-};
-
-/**
  * @description 締め切りまでの残り日数を計算
  * @param deadline -締め切りのDateオブジェクト
  * @returns 残り日数の情報

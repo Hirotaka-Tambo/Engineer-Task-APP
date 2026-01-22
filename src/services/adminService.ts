@@ -7,8 +7,6 @@ import type { Project, NewProject } from '../components/types/project';
  */
 export const createProject = async (project: NewProject, creatorUserId: string): Promise<Project> => {
   try {
-    console.log('🏗️ プロジェクト作成開始...', project);
-    
     // 認証状態を確認
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) {
@@ -20,8 +18,6 @@ export const createProject = async (project: NewProject, creatorUserId: string):
       console.error('認証セッションが存在しません');
       throw new Error('ログインが必要です');
     }
-    
-    console.log('認証セッション確認完了:', session.user.id);
     
     // プロジェクトを作成
     const { data: projectData, error: projectError } = await supabase
@@ -44,10 +40,7 @@ export const createProject = async (project: NewProject, creatorUserId: string):
       throw new Error('プロジェクト作成に失敗しました');
     }
 
-    console.log('プロジェクト作成成功, project ID:', projectData.id);
-
     // 作成者を管理者として追加
-    console.log('プロジェクトメンバーに作成者を追加中...');
     const { error: memberError } = await supabase
       .from('project_members')
       .insert({
@@ -64,7 +57,6 @@ export const createProject = async (project: NewProject, creatorUserId: string):
       throw new Error(`プロジェクトメンバーの追加に失敗しました: ${memberError.message}`);
     }
 
-    console.log('プロジェクトメンバー追加成功');
     return projectData as Project;
     
   } catch (error) {

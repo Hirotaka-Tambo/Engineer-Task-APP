@@ -100,9 +100,6 @@ export const getTasksByCategory = async (projectId: string, category: string): P
 export const createTask = async (task: NewTaskDB): Promise<TaskDB> => {
   // 認証状態を確認
   const { data: { user } } = await supabase.auth.getUser();
-  console.log('🚀 タスク作成開始:');
-  console.log('  - Supabase Auth ユーザーID:', user?.id);
-  console.log('  - メールアドレス:', user?.email);
   
   if (!user) {
     throw new Error('認証されていません');
@@ -119,12 +116,6 @@ export const createTask = async (task: NewTaskDB): Promise<TaskDB> => {
     console.error('❌ ユーザー確認エラー:', userError);
     throw new Error('ユーザー情報の確認に失敗しました。再度ログインしてください。');
   }
-  
-  console.log('✅ usersテーブル確認成功:');
-  console.log('  - ユーザーID:', userData.id);
-  console.log('  - ユーザー名:', userData.user_name);
-  console.log('  - 役割:', userData.role);
-  console.log('  - プロジェクトID:', userData.project_id || '未設定');
   
   const { data, error } = await supabase
     .from('task')

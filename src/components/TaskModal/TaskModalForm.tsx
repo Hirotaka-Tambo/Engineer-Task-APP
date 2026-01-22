@@ -4,6 +4,7 @@ import { getDeadlineStatus } from "../../utils/dateUtils";
 import IconSelector from "../IconSelector/IconSelector";
 import { getUsersByProjectId } from "../../services/userService";
 import type { User } from "../types/user";
+import { getIconUrl } from "../../services/storageService";
 
 interface TaskModalFormProps {
   editedTask: ExtendedTask | NewTaskUI;                      // 編集中のタスクデータ
@@ -36,6 +37,9 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
   
   // バリデーションエラーの表示状態
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+
+  // アイコンURLの管理
+  const [iconUrl, setIconUrl] = useState<string | null>(null);
 
   // 保存ボタンのハンドラー
   const handleSave = () => {
@@ -100,6 +104,17 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
     };
   }, [projectId]);
 
+  // アイコンURLの取得
+  useEffect(() => {
+    if (editedTask.icon) {
+      getIconUrl(editedTask.icon).then((url) => {
+        setIconUrl(url);
+      });
+    } else {
+      setIconUrl(null);
+    }
+  }, [editedTask.icon]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-hidden">
       {/* モーダルコンテナ */}
@@ -132,7 +147,7 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
               className={`w-full text-2xl font-bold border-none outline-none bg-transparent placeholder-gray-400 ${
                 errors.title ? "text-red-500" : "text-gray-900"
               }`}
-              placeholder="タスク名を入力してください"
+              placeholder="タイトル"
             />
             {errors.title && <p className="mt-2 text-sm text-red-500">{errors.title}</p>}
           </div>
@@ -281,14 +296,16 @@ const TaskModalForm: React.FC<TaskModalFormProps> = ({
                   <>
                     <span className="text-sm text-gray-400">|</span>
                     <div className="flex items-center space-x-2">
-                      <img 
-                        src={`/icons/${editedTask.icon}.svg`}
-                        alt={editedTask.icon}
-                        className="w-5 h-5"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
+                      {iconUrl && (
+                        <img 
+                          src={iconUrl}
+                          alt={editedTask.icon}
+                          className="w-5 h-5"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
                       <span className="text-sm text-gray-600 font-medium">
                         {editedTask.icon.charAt(0).toUpperCase() + editedTask.icon.slice(1)}
                       </span>
