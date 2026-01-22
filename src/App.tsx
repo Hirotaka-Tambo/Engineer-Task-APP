@@ -16,7 +16,7 @@ import { ProjectProvider, useProject } from "./contexts/ProjectContext";
 
 // プロジェクト選択状態を考慮したルートラッパー
 const ProtectedRoutes = () => {
-  const { hasSelectedProject, selectedProjectId, selectedProject } = useProject();
+  const { hasSelectedProject } = useProject();
   const { isAuthenticated, loading } = useAuth();
 
   // 認証状態の読み込み中は待機
